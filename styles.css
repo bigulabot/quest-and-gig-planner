@@ -57,6 +57,15 @@ body {
   text-transform: uppercase;
 }
 
+.panel-header h1 {
+  display: block;
+  width: 100%;
+  font-family: "Barlow Condensed", "Arial Narrow", sans-serif;
+  font-size: 2rem;
+  line-height: .95;
+  letter-spacing: .06em;
+}
+
 .subtle {
   color: rgba(255,255,255,.88);
   font-size: .92rem;
@@ -120,7 +129,8 @@ body {
 
 .section-title h3 {
   margin: 0;
-  font-size: .95rem;
+  font-size: 1.35rem;
+  font-family: "Barlow Condensed", "Arial Narrow", sans-serif;
   text-transform: uppercase;
   letter-spacing: .06em;
   color: #fff;
@@ -759,7 +769,9 @@ button.danger:hover {
 }
 
 .npc-name-symbol {
-  vertical-align: baseline;
+  display: inline-flex;
+  align-items: center;
+  vertical-align: middle;
 }
 
 .print-tag-separator {
@@ -778,6 +790,10 @@ button.danger:hover {
   display: inline-flex;
   align-items: center;
   margin-left: 6px;
+}
+
+.npc-title-icon {
+  margin-left: 2px;
 }
 
 .sheet-list {
@@ -808,6 +824,18 @@ button.danger:hover {
   font-size: .92rem;
   line-height: 1.2;
   color: #151515;
+}
+
+.sheet-item-title-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.sheet-item-role {
+  font-weight: 400;
+  color: #666;
 }
 
 .empty {
@@ -916,6 +944,9 @@ button.danger:hover {
   .sheet-item-title {
     margin-bottom: 2px;
     font-size: .82rem;
+  }
+  .sheet-item-title-row {
+    gap: 5px;
   }
   .sheet-field {
     line-height: 1.2;
@@ -1043,6 +1074,10 @@ button.danger:hover {
 .print-preview-window .sheet-item-title {
   margin-bottom: 2px;
   font-size: .82rem;
+}
+
+.print-preview-window .sheet-item-title-row {
+  gap: 5px;
 }
 
 .print-preview-window .sheet-field {

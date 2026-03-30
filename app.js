@@ -611,7 +611,8 @@ function buildPrintMarkup(data) {
     data.npcs,
     (npc, index) => {
       const npcTypeMeta = getNpcTypeMeta(npc.npcType);
-      const npcSymbol = npcTypeMeta ? `<span class="inline-print-symbols"><span class="print-tag-symbol npc-name-symbol">${renderIconImage(absoluteAssetUrl(npcTypeMeta.icon), npcTypeMeta.label, 'print-tag-icon')}</span></span>` : '';
+      const npcSymbol = npcTypeMeta ? `<span class="inline-print-symbols npc-title-icon"><span class="print-tag-symbol npc-name-symbol">${renderIconImage(absoluteAssetUrl(npcTypeMeta.icon), npcTypeMeta.label, 'print-tag-icon')}</span></span>` : '';
+      const npcRole = npc.role ? `<span class="sheet-item-role">- ${escapeHtml(npc.role)}</span>` : '';
       const npcFields = [
         printField('Quirk / Vibe', npc.vibe),
         printField('Wants', npc.plus),
@@ -621,7 +622,7 @@ function buildPrintMarkup(data) {
       ].filter(Boolean).join('');
       return `
       <div class="sheet-item">
-        <div class="sheet-item-title">${escapeHtml(npc.name || `NPC ${index + 1}`)}${npc.role ? ` <span style="font-weight:400;color:#666;">- ${escapeHtml(npc.role)}</span>${npcSymbol ? ` ${npcSymbol}` : ''}` : npcSymbol ? ` ${npcSymbol}` : ''}</div>
+        <div class="sheet-item-title sheet-item-title-row"><span class="sheet-item-name">${escapeHtml(npc.name || `NPC ${index + 1}`)}</span>${npcRole}${npcSymbol}</div>
         ${npcFields}
       </div>
     `;
