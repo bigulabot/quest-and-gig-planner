@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>CPR GIG PLANNER</title>
+  <title>Cyberpunk RED GIG PLANNER</title>
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
@@ -11,23 +11,29 @@
     <section class="panel">
       <div class="panel-header">
         <div>
-          <h1>CPR GIG PLANNER</h1>
+          <h1>Cyberpunk RED GIG PLANNER</h1>
           <div class="subtle header-subtitle">
-            <div class="header-copy">A modular, fillable gig-building tool for Cyberpunk RED, featuring dropdowns, expandable sections, and clean printable export, designed to quickly turn ideas into table-ready jobs. Created by bigulabot. <span class="header-donate">If you'd like to support the project, <a href="https://buymeacoffee.com/bigula" target="_blank" rel="noopener noreferrer">☕ buy me a coffee</a>.</span></div>
+            <div class="header-copy">A modular Cyberpunk RED gig planner with expandable sections, structured NPC and encounter tools, optional printable stat blocks, save/load support, and clean export formatting, built to turn rough ideas into table-ready jobs fast.</div>
             <div class="header-copy">
               Inspired by the teachings of
               <a href="https://www.youtube.com/@DeficientMaster" target="_blank" rel="noopener noreferrer">Deficient Master</a>, as well as
               <a href="https://deckanddicegames.com/quartershots_retail/" target="_blank" rel="noopener noreferrer">Marcus Pascall's QuarterShots</a>,
               and <a href="https://www.youtube.com/@CybernationUncensored" target="_blank" rel="noopener noreferrer">Rob Mulligan's Quick Campaign Builder</a>.
             </div>
+            <div class="header-copy">
+              Created by <a href="https://github.com/bigulabot" target="_blank" rel="noopener noreferrer"><em>bigulabot</em></a>. <span class="header-donate">If you'd like to support the project, <a href="https://buymeacoffee.com/bigula" target="_blank" rel="noopener noreferrer">buy me a coffee ☕</a>!</span>
+            </div>
           </div>
         </div>
-        <div class="actions">
-          <button id="newQuestBtn">New gig</button>
-          <button id="loadDemoBtn">Load demo</button>
-          <button id="exportJsonBtn">Save plan</button>
-          <button id="importJsonBtn">Load plan</button>
-          <button class="primary" id="printBtn">Print / Export PDF</button>
+        <div class="actions actions-grid">
+          <button id="newQuestBtn">New GIG</button>
+          <button id="exportJsonBtn">Save GIG</button>
+          <button id="loadDemoBtn">Demo GIG</button>
+          <button id="importJsonBtn">Load GIG</button>
+          <div class="action-with-note action-span-2">
+            <button class="primary" id="printBtn">Print / Export PDF*</button>
+            <div class="action-note">*Empty fields will not be printed.</div>
+          </div>
         </div>
       </div>
       <div class="content">
@@ -77,7 +83,7 @@
                   <option value="5">XL</option>
                 </select>
               </div>
-              <div id="corePitch" class="rich-input" contenteditable="true" role="textbox" aria-multiline="true" data-placeholder="Brief setup of the gig."></div>
+              <div id="corePitch" class="rich-input" contenteditable="true" role="textbox" aria-multiline="true" data-placeholder="Brief setup of the gig"></div>
             </div>
           </div>
           <div class="grid grid-3" style="margin-top:14px;">
@@ -102,7 +108,7 @@
 
         <div class="section">
           <div class="section-title">
-            <h3>Locations</h3>
+            <h3>Locations / SCENES</h3>
             <div class="actions"><button id="addLocationBtn">+ Add location</button></div>
           </div>
           <div id="locations"></div>
@@ -151,9 +157,11 @@
           <textarea id="gmNotes" placeholder="Improvised details, names, spare clues, stat notes..."></textarea>
         </div>
 
-        <div class="section section-action">
-          <button class="primary wide-action-btn" id="printBtnBottom" type="button">Print / Export PDF</button>
+        <div class="bottom-action-wrap">
+          <button class="primary wide-action-btn bottom-print-btn" id="printBtnBottom" type="button">Print / Export PDF*</button>
+          <div class="action-note action-note-spaced">*Empty fields will not be printed.</div>
         </div>
+        <div class="icon-credit">Icons adapted from packs by Delapouite, Lorc, and Skoll.</div>
       </div>
     </section>
   </div>
@@ -174,20 +182,16 @@
               </button>
               <button type="button" class="type-option" data-field-name="sceneStyle" data-type="battle-map">
                 <span class="type-option-symbol">▦</span>
-                <span class="type-option-copy">Battle Map</span>
+                <span class="type-option-copy">Battlemap</span>
               </button>
               <button type="button" class="type-option" data-field-name="sceneStyle" data-type="totm">
                 <span class="type-option-symbol">☁</span>
                 <span class="type-option-copy">TOTM</span>
               </button>
-              <button type="button" class="type-option" data-field-name="sceneStyle" data-type="hybrid">
-                <span class="type-option-symbol">◫</span>
-                <span class="type-option-copy">Hybrid</span>
-              </button>
             </div>
           </div>
         </div>
-        <button class="danger remove-btn" type="button">Remove</button>
+        <button class="danger remove-btn" type="button" aria-label="Remove">X</button>
       </div>
       <div class="grid grid-2">
         <div>
@@ -201,11 +205,11 @@
       </div>
       <div style="margin-top:14px;">
         <label>What it is</label>
-        <textarea data-field="what"></textarea>
+        <textarea data-field="what" data-autogrow="true"></textarea>
       </div>
       <div style="margin-top:14px;">
         <label>Why it matters</label>
-        <textarea data-field="why"></textarea>
+        <textarea data-field="why" data-autogrow="true"></textarea>
       </div>
     </div>
   </template>
@@ -224,15 +228,15 @@
               </button>
               <button type="button" class="type-option" data-field-name="revealType" data-type="apparent" data-symbol="➤">
                 <span class="type-option-symbol">➤</span>
-                <span class="type-option-copy">This information is either immediately or eventually apparent to the players, regardless of their actions or abilities.</span>
+                <span class="type-option-copy"><strong>Open Info</strong><br />This is immediately apparent to the players or quickly becomes obvious through normal play.</span>
               </button>
               <button type="button" class="type-option" data-field-name="revealType" data-type="hidden" data-symbol="🔎">
                 <span class="type-option-symbol">🔎</span>
-                <span class="type-option-copy">This information is hidden from the players. PCs trying to investigate, having specific abilities or asking the right questions might earn this.</span>
+                <span class="type-option-copy"><strong>Hidden Info</strong><br />This is not visible upfront. Players can uncover it through investigation, abilities, or the right questions.</span>
               </button>
               <button type="button" class="type-option" data-field-name="revealType" data-type="conditional" data-symbol="?">
                 <span class="type-option-symbol">?</span>
-                <span class="type-option-copy">This information might become true depending on how the adventure progresses, or if the GM chooses to make it true.</span>
+                <span class="type-option-copy"><strong>Flexible Info</strong><br />This may change or emerge depending on how the gig unfolds, or at the GM’s discretion.</span>
               </button>
             </div>
           </div>
@@ -263,10 +267,10 @@
             </div>
           </div>
         </div>
-        <button class="danger remove-btn" type="button">Remove</button>
+        <button class="danger remove-btn" type="button" aria-label="Remove">X</button>
       </div>
       <label>Complication</label>
-      <textarea data-field="text" placeholder="A twist, escalation, obstacle, deadline, betrayal..."></textarea>
+      <textarea data-field="text" data-autogrow="true" placeholder="A twist, escalation, obstacle, deadline, betrayal..."></textarea>
     </div>
   </template>
 
@@ -301,7 +305,7 @@
             </div>
           </div>
         </div>
-        <button class="danger remove-btn" type="button">Remove</button>
+        <button class="danger remove-btn" type="button" aria-label="Remove">X</button>
       </div>
       <div class="grid grid-3">
         <div>
@@ -338,6 +342,61 @@
           <div style="margin-top:14px;">
             <label>🙃 Incongruency / contradiction</label>
             <textarea data-field="incongruency" placeholder="Details that don't fit in with stereotypical tropes, e.g. bandits that are deeply religious, or a ruthless mercenary who refuses to kill animals."></textarea>
+          </div>
+          <div style="margin-top:14px;">
+            <button class="pill statblock-toggle" type="button">Stat block</button>
+            <div class="npc-statblock-details" style="display:none;">
+              <div class="compact-stat-grid" style="margin-top:14px;">
+                <label class="compact-stat-field"><span>INT</span><input data-field="statInt" /></label>
+                <label class="compact-stat-field"><span>REF</span><input data-field="statRef" /></label>
+                <label class="compact-stat-field"><span>DEX</span><input data-field="statDex" /></label>
+                <label class="compact-stat-field"><span>TECH</span><input data-field="statTech" /></label>
+                <label class="compact-stat-field"><span>COOL</span><input data-field="statCool" /></label>
+                <label class="compact-stat-field"><span>WILL</span><input data-field="statWill" /></label>
+                <label class="compact-stat-field"><span>LUCK</span><input data-field="statLuck" /></label>
+                <label class="compact-stat-field"><span>MOVE</span><input data-field="statMove" /></label>
+                <label class="compact-stat-field"><span>BODY</span><input data-field="statBody" /></label>
+                <label class="compact-stat-field"><span>EMP</span><input data-field="statEmp" /></label>
+              </div>
+              <div class="compact-stat-grid compact-stat-grid-wide" style="margin-top:14px;">
+                <label class="compact-stat-field"><span>HP</span><input data-field="statHp" /></label>
+                <label class="compact-stat-field"><span>Seriously Wounded</span><input data-field="statSeriouslyWounded" /></label>
+                <label class="compact-stat-field"><span>Death Save</span><input data-field="statDeathSave" /></label>
+              </div>
+              <div class="compact-stat-grid compact-stat-grid-armor" style="margin-top:14px;">
+                <label class="compact-stat-field"><span>Armor Head</span><input data-field="statArmorHead" placeholder="7 SP" /></label>
+                <label class="compact-stat-field"><span>Armor Body</span><input data-field="statArmorBody" placeholder="7 SP" /></label>
+              </div>
+              <div style="margin-top:14px;">
+                <label>Weapon 1</label>
+                <div class="grid grid-2">
+                  <input data-field="statWeapon1" placeholder="Very Heavy Pistol" />
+                  <input data-field="statWeapon1Damage" placeholder="4d6" />
+                </div>
+              </div>
+              <div style="margin-top:14px;">
+                <label>Weapon 2</label>
+                <div class="grid grid-2">
+                  <input data-field="statWeapon2" placeholder="Poor Quality Shotgun" />
+                  <input data-field="statWeapon2Damage" placeholder="5d6" />
+                </div>
+              </div>
+              <div style="margin-top:14px;">
+                <label>Weapon 3</label>
+                <div class="grid grid-2">
+                  <input data-field="statWeapon3" placeholder="Baton" />
+                  <input data-field="statWeapon3Damage" placeholder="2d6" />
+                </div>
+              </div>
+              <div style="margin-top:14px;">
+                <label>Skill Bases</label>
+                <textarea data-field="statSkills" placeholder="Athletics 9, Brawling 11, Evasion 7..."></textarea>
+              </div>
+              <div style="margin-top:14px;">
+                <label>Cyberware & Equipment</label>
+                <textarea data-field="statGear" placeholder="Radio communicator, kevlar, shotgun shells..."></textarea>
+              </div>
+            </div>
           </div>
         </div>
       </div>

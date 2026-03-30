@@ -44,12 +44,47 @@ function textOrDash(value, fallback = '—') {
   return value && String(value).trim() ? escapeHtml(value) : `<span class="empty">${fallback}</span>`;
 }
 
+function hasMeaningfulValue(value) {
+  return Boolean(value && String(value).trim());
+}
+
+function printField(label, value) {
+  if (!hasMeaningfulValue(value)) return '';
+  return `<div class="sheet-field"><strong>${escapeHtml(label)}</strong><div>${escapeHtml(value)}</div></div>`;
+}
+
+function autosizeTextarea(textarea) {
+  if (!textarea) return;
+  const minHeight = parseFloat(window.getComputedStyle(textarea).minHeight) || 0;
+  textarea.style.height = 'auto';
+  textarea.style.height = `${Math.max(textarea.scrollHeight, minHeight)}px`;
+}
+
+function bindAutoGrowField(field) {
+  if (!field || field.dataset.autogrow !== 'true') return;
+  autosizeTextarea(field);
+  field.addEventListener('input', () => autosizeTextarea(field));
+}
+
+function closeAllNpcStatBlocks(exceptCard = null) {
+  document.querySelectorAll('.npc-card').forEach(card => {
+    if (exceptCard && card === exceptCard) return;
+    const details = card.querySelector('.npc-statblock-details');
+    const button = card.querySelector('.statblock-toggle');
+    if (!details || !button) return;
+    details.style.display = 'none';
+    button.classList.remove('is-open');
+    button.textContent = 'Stat block';
+  });
+}
+
 function addLocation(data = {}) {
   const tpl = byId('locationTemplate').content.firstElementChild.cloneNode(true);
   tpl.querySelectorAll('[data-field]').forEach(input => {
     const key = input.dataset.field;
     if (input.tagName === 'INPUT' || input.tagName === 'TEXTAREA') {
       input.value = data[key] || '';
+      bindAutoGrowField(input);
       input.addEventListener('input', renderPreview);
     }
   });
@@ -68,6 +103,7 @@ function addLocation(data = {}) {
       menu.hidden = !menu.hidden;
     });
   });
+  hydrateTypeOptionIcons(tpl);
   tpl.querySelectorAll('.type-option').forEach(option => {
     option.addEventListener('click', () => {
       setComplicationTag(tpl, 'sceneStyle', '.location-style-toggle', option.dataset.type, 'Scene style');
@@ -105,16 +141,16 @@ function updateComplicationNumbers() {
 function getComplicationTypeMeta(type) {
   const map = {
     apparent: {
-      symbol: '➤',
-      label: 'Immediately or eventually apparent',
+      symbol: '🔺',
+      label: 'Open Info',
     },
     hidden: {
-      symbol: '🔎',
-      label: 'Hidden and discoverable',
+      symbol: '🔒',
+      label: 'Hidden Info',
     },
     conditional: {
-      symbol: '?',
-      label: 'Conditional or optional truth',
+      symbol: '❓',
+      label: 'Flexible Info',
     },
   };
   return map[type] || null;
@@ -164,20 +200,93 @@ function getNpcTypeMeta(type) {
   return map[type] || null;
 }
 
-function setComplicationTag(card, fieldName, buttonSelector, type, placeholder) {
-  const hidden = card.querySelector(`[data-field="${fieldName}"]`);
-  const button = card.querySelector(buttonSelector);
-  const meta = fieldName === 'dangerLevel'
+function getSceneStyleMeta(style) {
+  const map = {
+    'battle-map': { icon: 'assets/icons/battlemap.webp', label: 'Battlemap' },
+    totm: { icon: 'assets/icons/TOTM.webp', label: 'TOTM' },
+  };
+  return map[style] || null;
+}
+
+function getComplicationTypeMeta(type) {
+  const map = {
+    apparent: { icon: 'assets/icons/open-info.webp', label: 'Open Info' },
+    hidden: { icon: 'assets/icons/hidden-info.webp', label: 'Hidden Info' },
+    conditional: { icon: 'assets/icons/flexible.webp', label: 'Flexible Info' },
+  };
+  return map[type] || null;
+}
+
+function getDangerLevelMeta(level) {
+  const map = {
+    routine: { icon: 'assets/icons/routine.webp', label: 'Routine' },
+    risky: { icon: 'assets/icons/risky.webp', label: 'Risky' },
+    dangerous: { icon: 'assets/icons/dangerous.webp', label: 'Dangerous' },
+    deadly: { icon: 'assets/icons/deadly.webp', label: 'Deadly' },
+  };
+  return map[level] || null;
+}
+
+function getNpcTypeMeta(type) {
+  const map = {
+    friendly: { icon: 'assets/icons/friendly.webp', label: 'Friendly' },
+    neutral: { icon: 'assets/icons/neutral.webp', label: 'Neutral' },
+    enemy: { icon: 'assets/icons/enemy.webp', label: 'Enemy' },
+    boss: { icon: 'assets/icons/boss.webp', label: 'Boss' },
+  };
+  return map[type] || null;
+}
+
+function getTagMeta(fieldName, type) {
+  return fieldName === 'dangerLevel'
     ? getDangerLevelMeta(type)
     : fieldName === 'sceneStyle'
       ? getSceneStyleMeta(type)
     : fieldName === 'npcType'
       ? getNpcTypeMeta(type)
       : getComplicationTypeMeta(type);
+}
+
+function renderIconImage(src, alt, className = 'tag-icon') {
+  return `<img class="${className}" src="${escapeHtml(src)}" alt="${escapeHtml(alt)}" />`;
+}
+
+function absoluteAssetUrl(path) {
+  return new URL(path, window.location.href).href;
+}
+
+function hydrateTypeOptionIcons(scope) {
+  scope.querySelectorAll('.type-option').forEach(option => {
+    const symbolWrap = option.querySelector('.type-option-symbol');
+    if (!symbolWrap || option.classList.contains('type-option-reset')) return;
+    const meta = getTagMeta(option.dataset.fieldName, option.dataset.type);
+    if (!meta?.icon) return;
+    symbolWrap.innerHTML = renderIconImage(meta.icon, meta.label, 'type-option-icon');
+  });
+}
+
+function npcHasStatBlockData(npc) {
+  const keys = [
+    'statInt', 'statRef', 'statDex', 'statTech', 'statCool',
+    'statWill', 'statLuck', 'statMove', 'statBody', 'statEmp',
+    'statHp', 'statSeriouslyWounded', 'statDeathSave',
+    'statArmorHead', 'statArmorBody',
+    'statWeapon1', 'statWeapon1Damage',
+    'statWeapon2', 'statWeapon2Damage',
+    'statWeapon3', 'statWeapon3Damage',
+    'statSkills', 'statGear'
+  ];
+  return keys.some(key => hasMeaningfulValue(npc[key]));
+}
+
+function setComplicationTag(card, fieldName, buttonSelector, type, placeholder) {
+  const hidden = card.querySelector(`[data-field="${fieldName}"]`);
+  const button = card.querySelector(buttonSelector);
+  const meta = getTagMeta(fieldName, type);
 
   hidden.value = meta ? type : '';
   button.classList.toggle('is-placeholder', !meta);
-  button.textContent = meta ? meta.symbol : placeholder;
+  button.innerHTML = meta?.icon ? renderIconImage(meta.icon, meta.label) : escapeHtml(placeholder);
   button.title = meta ? meta.label : placeholder;
 }
 
@@ -186,6 +295,7 @@ function addComplication(data = {}) {
   tpl.querySelectorAll('[data-field]').forEach(input => {
     const key = input.dataset.field;
     input.value = data[key] || '';
+    bindAutoGrowField(input);
     input.addEventListener('input', renderPreview);
   });
   tpl.querySelector('.remove-btn').addEventListener('click', () => {
@@ -204,6 +314,7 @@ function addComplication(data = {}) {
       menu.hidden = !menu.hidden;
     });
   });
+  hydrateTypeOptionIcons(tpl);
   tpl.querySelectorAll('.type-option').forEach(option => {
     option.addEventListener('click', () => {
       const fieldName = option.dataset.fieldName;
@@ -235,11 +346,42 @@ function addNpc(data = {}) {
 
   const toggle = tpl.querySelector('[data-toggle="advanced"]');
   const advanced = tpl.querySelector('.npc-advanced');
-  const hasAdvanced = Boolean((data.secret && data.secret.trim()) || (data.incongruency && data.incongruency.trim()));
+  const statDetails = tpl.querySelector('.npc-statblock-details');
+  const statToggleButton = tpl.querySelector('.statblock-toggle');
+  const hasStatBlock = npcHasStatBlockData(data);
+  const hasAdvanced = Boolean(
+    (data.secret && data.secret.trim()) ||
+    (data.incongruency && data.incongruency.trim()) ||
+    hasStatBlock
+  );
   toggle.checked = hasAdvanced;
   advanced.style.display = hasAdvanced ? 'block' : 'none';
   toggle.addEventListener('change', () => {
     advanced.style.display = toggle.checked ? 'block' : 'none';
+    if (!toggle.checked) {
+      statDetails.style.display = 'none';
+      statToggleButton.classList.remove('is-open');
+      statToggleButton.textContent = 'Stat block';
+    }
+    renderPreview();
+  });
+  statDetails.style.display = 'none';
+  statToggleButton.addEventListener('click', () => {
+    if (!toggle.checked) {
+      toggle.checked = true;
+      advanced.style.display = 'block';
+    }
+    const isOpen = statDetails.style.display !== 'none';
+    if (isOpen) {
+      statDetails.style.display = 'none';
+      statToggleButton.classList.remove('is-open');
+      statToggleButton.textContent = 'Stat block';
+    } else {
+      closeAllNpcStatBlocks(tpl);
+      statDetails.style.display = 'block';
+      statToggleButton.classList.add('is-open');
+      statToggleButton.textContent = 'Hide stat block';
+    }
     renderPreview();
   });
 
@@ -258,6 +400,7 @@ function addNpc(data = {}) {
       menu.hidden = !menu.hidden;
     });
   });
+  hydrateTypeOptionIcons(tpl);
   tpl.querySelectorAll('.type-option').forEach(option => {
     option.addEventListener('click', () => {
       setComplicationTag(tpl, 'npcType', '.npc-type-toggle', option.dataset.type, 'NPC type');
@@ -275,7 +418,10 @@ function collectRepeating(selector) {
     const obj = {};
     card.querySelectorAll('[data-field]').forEach(field => {
       const advancedWrap = field.closest('.npc-advanced');
-      if (advancedWrap) {
+      const statWrap = field.closest('.npc-statblock-details');
+      if (statWrap) {
+        obj[field.dataset.field] = field.value.trim();
+      } else if (advancedWrap) {
         const toggle = card.querySelector('[data-toggle="advanced"]');
         obj[field.dataset.field] = toggle && toggle.checked ? field.value.trim() : '';
       } else {
@@ -314,8 +460,108 @@ function formatPrintSymbols(symbols) {
   const filtered = symbols.filter(Boolean);
   if (!filtered.length) return '';
   return filtered
-    .map(symbol => `<span class="print-tag-symbol">${escapeHtml(symbol)}</span>`)
+    .map(meta => `<span class="print-tag-symbol">${renderIconImage(absoluteAssetUrl(meta.icon), meta.label, 'print-tag-icon')}</span>`)
     .join('<span class="print-tag-separator">|</span>');
+}
+
+function buildStatBox(label, value) {
+  return `
+    <div class="stat-box">
+      <div class="stat-box-label">${escapeHtml(label)}</div>
+      <div class="stat-box-value">${escapeHtml(value || '-')}</div>
+    </div>
+  `;
+}
+
+function buildStatWeapons(npc) {
+  const rows = [
+    [npc.statWeapon1, npc.statWeapon1Damage],
+    [npc.statWeapon2, npc.statWeapon2Damage],
+    [npc.statWeapon3, npc.statWeapon3Damage],
+  ].filter(([name, dmg]) => hasMeaningfulValue(name) || hasMeaningfulValue(dmg));
+
+  if (!rows.length) return '';
+
+  return `
+    <div class="stat-panel">
+      <div class="stat-panel-head">Weapons</div>
+      <div class="stat-panel-body">
+        <table class="stat-table">
+          ${rows.map(([name, dmg]) => `<tr><td>${escapeHtml(name || '-')}</td><td>${escapeHtml(dmg || '-')}</td></tr>`).join('')}
+        </table>
+      </div>
+    </div>
+  `;
+}
+
+function buildStatArmor(npc) {
+  if (!hasMeaningfulValue(npc.statArmorHead) && !hasMeaningfulValue(npc.statArmorBody)) return '';
+  return `
+    <div class="stat-panel">
+      <div class="stat-panel-head">Armor</div>
+      <div class="stat-panel-body">
+        <table class="stat-table">
+          <tr><td>Head</td><td>${escapeHtml(npc.statArmorHead || '-')}</td></tr>
+          <tr><td>Body</td><td>${escapeHtml(npc.statArmorBody || '-')}</td></tr>
+        </table>
+      </div>
+    </div>
+  `;
+}
+
+function buildStatStrip(label, value) {
+  if (!hasMeaningfulValue(value)) return '';
+  return `
+    <div class="stat-strip">
+      <div class="stat-strip-label">${escapeHtml(label)}</div>
+      <div class="stat-panel-body stat-text">${escapeHtml(value)}</div>
+    </div>
+  `;
+}
+
+function buildNpcStatPages(npcs) {
+  const statNpcs = npcs.filter(npc => npcHasStatBlockData(npc));
+  if (!statNpcs.length) return '';
+
+  return statNpcs.map(npc => {
+    const title = npc.name || 'NPC';
+    const roleTag = npc.role || '';
+    return `
+      <article class="print-sheet stat-card-page">
+        <div class="stat-card">
+          <div class="stat-card-side">${escapeHtml(title)}</div>
+          <div class="stat-card-main">
+            ${roleTag ? `<div class="stat-strip"><div class="stat-strip-label">Role</div><div class="stat-panel-body stat-text">${escapeHtml(roleTag)}</div></div>` : ''}
+            <div class="stat-row-5">
+              ${buildStatBox('INT', npc.statInt)}
+              ${buildStatBox('REF', npc.statRef)}
+              ${buildStatBox('DEX', npc.statDex)}
+              ${buildStatBox('TECH', npc.statTech)}
+              ${buildStatBox('COOL', npc.statCool)}
+            </div>
+            <div class="stat-row-5">
+              ${buildStatBox('WILL', npc.statWill)}
+              ${buildStatBox('LUCK', npc.statLuck)}
+              ${buildStatBox('MOVE', npc.statMove)}
+              ${buildStatBox('BODY', npc.statBody)}
+              ${buildStatBox('EMP', npc.statEmp)}
+            </div>
+            <div class="stat-row-3">
+              ${buildStatBox('Hit Points', npc.statHp)}
+              ${buildStatBox('Seriously Wounded', npc.statSeriouslyWounded)}
+              ${buildStatBox('Death Save', npc.statDeathSave)}
+            </div>
+            <div class="stat-row-2">
+              ${buildStatWeapons(npc) || '<div></div>'}
+              ${buildStatArmor(npc) || '<div></div>'}
+            </div>
+            ${buildStatStrip('Skill Bases', npc.statSkills)}
+            ${buildStatStrip('Cyberware & Special Equipment', npc.statGear)}
+          </div>
+        </div>
+      </article>
+    `;
+  }).join('');
 }
 
 function buildPrintMarkup(data) {
@@ -327,11 +573,11 @@ function buildPrintMarkup(data) {
       item => {
         const typeMeta = getComplicationTypeMeta(item.revealType);
         const dangerMeta = getDangerLevelMeta(item.dangerLevel);
-        const tags = formatPrintSymbols([typeMeta?.symbol, dangerMeta?.symbol]);
+        const tags = formatPrintSymbols([typeMeta, dangerMeta]);
         return `
           <div class="sheet-item">
             ${tags ? `<div class="sheet-field complication-symbols">${tags}</div>` : ''}
-            <div class="sheet-field"${tags ? ' style="margin-top:6px;"' : ''}>${textOrDash(item.text)}</div>
+            <div class="sheet-field"${tags ? ' style="margin-top:6px;"' : ''}>${escapeHtml(item.text)}</div>
           </div>
         `;
       },
@@ -344,13 +590,16 @@ function buildPrintMarkup(data) {
     data.locations,
     (loc, index) => {
       const sceneMeta = getSceneStyleMeta(loc.sceneStyle);
-      const sceneSymbols = formatPrintSymbols([sceneMeta?.symbol]);
+      const sceneSymbols = formatPrintSymbols([sceneMeta]);
+      const locationFields = [
+        printField('What it is', loc.what),
+        printField('Why it matters', loc.why),
+        printField('Obstacle', loc.obstacle),
+      ].filter(Boolean).join('');
       return `
       <div class="sheet-item">
         <div class="sheet-item-title">${escapeHtml(loc.name || `Location ${index + 1}`)}${sceneSymbols ? ` <span class="inline-print-symbols">${sceneSymbols}</span>` : ''}</div>
-        <div class="sheet-field"><strong>What it is</strong>${textOrDash(loc.what)}</div>
-        <div class="sheet-field" style="margin-top:6px;"><strong>Why it matters</strong>${textOrDash(loc.why)}</div>
-        <div class="sheet-field" style="margin-top:6px;"><strong>Obstacle</strong>${textOrDash(loc.obstacle)}</div>
+        ${locationFields}
       </div>
     `;
     },
@@ -362,21 +611,41 @@ function buildPrintMarkup(data) {
     data.npcs,
     (npc, index) => {
       const npcTypeMeta = getNpcTypeMeta(npc.npcType);
-      const npcSymbol = npcTypeMeta ? `<span class="inline-print-symbols"><span class="print-tag-symbol npc-name-symbol">${escapeHtml(npcTypeMeta.symbol)}</span></span>` : '';
+      const npcSymbol = npcTypeMeta ? `<span class="inline-print-symbols"><span class="print-tag-symbol npc-name-symbol">${renderIconImage(absoluteAssetUrl(npcTypeMeta.icon), npcTypeMeta.label, 'print-tag-icon')}</span></span>` : '';
+      const npcFields = [
+        printField('Quirk / Vibe', npc.vibe),
+        printField('Wants', npc.plus),
+        printField("Doesn't Want", npc.minus),
+        printField('Secret', npc.secret),
+        printField('Incongruency / contradiction', npc.incongruency),
+      ].filter(Boolean).join('');
       return `
       <div class="sheet-item">
         <div class="sheet-item-title">${escapeHtml(npc.name || `NPC ${index + 1}`)}${npc.role ? ` <span style="font-weight:400;color:#666;">- ${escapeHtml(npc.role)}</span>${npcSymbol ? ` ${npcSymbol}` : ''}` : npcSymbol ? ` ${npcSymbol}` : ''}</div>
-        <div class="sheet-field"><strong>Quirk / Vibe</strong>${textOrDash(npc.vibe)}</div>
-        <div class="sheet-field" style="margin-top:6px;"><strong>Wants</strong>${textOrDash(npc.plus)}</div>
-        <div class="sheet-field" style="margin-top:6px;"><strong>Doesn't Want</strong>${textOrDash(npc.minus)}</div>
-        ${npc.secret ? `<div class="sheet-field" style="margin-top:6px;"><strong>Secret</strong>${textOrDash(npc.secret)}</div>` : ''}
-        ${npc.incongruency ? `<div class="sheet-field" style="margin-top:6px;"><strong>Incongruency / contradiction</strong>${textOrDash(npc.incongruency)}</div>` : ''}
+        ${npcFields}
       </div>
     `;
     },
     'No NPCs yet.',
     'previewNpcs'
   );
+
+  const hookFields = [
+    printField('Who contacts them', data.contactRole),
+    printField('Gig Type', data.format),
+    printField("What's the job", data.job),
+    printField("What's the pay", data.pay),
+    printField('Why now', data.whyNow),
+  ].filter(Boolean).join('');
+
+  const developmentFields = [
+    printField('Who benefits', data.benefits),
+    printField("Who's pissed", data.pissed),
+    printField('What escalates', data.escalates),
+    printField('New hook unlocked', data.newHook),
+  ].filter(Boolean).join('');
+
+  const statPages = buildNpcStatPages(data.npcs);
 
   return `<!DOCTYPE html>
 <html lang="en">
@@ -392,53 +661,43 @@ function buildPrintMarkup(data) {
     <h1 class="sheet-title">${title}</h1>
     <div class="sheet-subtitle">${pitch}</div>
 
-    <section class="sheet-section">
+    ${hookFields ? `<section class="sheet-section">
       <h4>Hook</h4>
-      <div class="sheet-grid">
-        <div class="sheet-field"><strong>Who contacts them</strong><div>${textOrDash(data.contactRole)}</div></div>
-        <div class="sheet-field"><strong>Gig Type</strong><div>${textOrDash(data.format)}</div></div>
-        <div class="sheet-field"><strong>What's the job</strong><div>${textOrDash(data.job)}</div></div>
-        <div class="sheet-field"><strong>What's the pay</strong><div>${textOrDash(data.pay)}</div></div>
-        <div class="sheet-field"><strong>Why now</strong><div>${textOrDash(data.whyNow)}</div></div>
-      </div>
-    </section>
+      <div class="sheet-grid">${hookFields}</div>
+    </section>` : ''}
 
     <div class="print-columns">
       <div>
-        <section class="sheet-section">
+        ${data.locations.length ? `<section class="sheet-section">
           <h4>Locations</h4>
           ${locations}
-        </section>
+        </section>` : ''}
 
-        <section class="sheet-section">
+        ${data.complications.length ? `<section class="sheet-section">
           <h4>Encounters / Complications</h4>
           ${complications}
-        </section>
+        </section>` : ''}
       </div>
 
       <div>
-        <section class="sheet-section">
+        ${data.npcs.length ? `<section class="sheet-section">
           <h4>Non-playable Characters</h4>
           ${npcs}
-        </section>
+        </section>` : ''}
 
-        <section class="sheet-section">
+        ${developmentFields ? `<section class="sheet-section">
           <h4>Developments</h4>
-          <div class="sheet-grid">
-            <div class="sheet-field"><strong>Who benefits</strong><div>${textOrDash(data.benefits)}</div></div>
-            <div class="sheet-field"><strong>Who's pissed</strong><div>${textOrDash(data.pissed)}</div></div>
-            <div class="sheet-field"><strong>What escalates</strong><div>${textOrDash(data.escalates)}</div></div>
-            <div class="sheet-field"><strong>New hook unlocked</strong><div>${textOrDash(data.newHook)}</div></div>
-          </div>
-        </section>
+          <div class="sheet-grid">${developmentFields}</div>
+        </section>` : ''}
 
-        <section class="sheet-section">
+        ${hasMeaningfulValue(data.gmNotes) ? `<section class="sheet-section">
           <h4>GM Notes</h4>
-          <div>${textOrDash(data.gmNotes)}</div>
-        </section>
+          <div>${escapeHtml(data.gmNotes)}</div>
+        </section>` : ''}
       </div>
     </div>
   </article>
+  ${statPages}
 </body>
 </html>`;
 }
@@ -504,7 +763,7 @@ function loadDemo() {
   populateForm({
     title: 'Ashes at the Night Market',
     format: 'Mystery',
-    corePitch: '<p>A burned stall, a missing courier, and a memory shard that should not exist.</p>',
+    corePitch: '<p>A burned stall, a missing courier, and a memory shard that should not exist. The crew is pulled into the aftermath before the market can decide whether this was random violence or a deliberate hit.</p><p>Every witness has only part of the truth, and sunrise will bring outside interests who would rather bury the whole thing than let anyone learn what the courier was carrying.</p>',
     contactRole: 'Neighbourhood organiser',
     job: 'Find the courier and the shard',
     pay: '1,200 eb plus future protection',
@@ -520,11 +779,40 @@ function loadDemo() {
     ],
     complications: [
       { text: 'The shard is damaged but still active.', revealType: 'hidden', dangerLevel: 'risky' },
-      { text: 'A local gang is protecting the wrong suspect.', revealType: 'conditional', dangerLevel: 'dangerous' }
+      { text: 'A local gang is protecting the wrong suspect. They are convinced the courier sold them out, and they are already roughing up bystanders, locking down exits, and warning everyone in the market not to talk. If the crew pushes too hard or asks the wrong questions in public, the gang may escalate from intimidation to outright violence before anyone realises they are hunting the wrong person.', revealType: 'conditional', dangerLevel: 'dangerous' }
     ],
     npcs: [
-      { name: 'Mira Kovač', role: 'Organiser', vibe: 'Tired but composed', plus: 'Knows who still talks.', minus: 'Hiding how much she already knows.', secret: 'She asked the courier to move the shard in the first place.', incongruency: 'Acts like a bystander but is already deeply involved.' },
+      { name: 'Mira Kovač', role: 'Organiser', vibe: 'Tired but composed', plus: 'Knows who still talks.', minus: 'Hiding how much she already knows.', secret: 'She asked the courier to move the shard in the first place.', incongruency: 'Acts like a bystander but is already deeply involved.', statInt: '7', statRef: '6', statDex: '6', statTech: '4', statCool: '8', statWill: '7', statLuck: '5', statMove: '5', statBody: '4', statEmp: '6', statHp: '35', statSeriouslyWounded: '18', statDeathSave: '6', statArmorHead: '4 SP', statArmorBody: '7 SP', statWeapon1: 'Very Heavy Pistol', statWeapon1Damage: '4d6', statWeapon2: 'Light Armorjack', statWeapon2Damage: '-', statSkills: 'Conversation 10, Human Perception 9, Persuasion 10, Local Expert 8, Handgun 8, Wardrobe & Style 9', statGear: 'Agent, encrypted shard, budget bribes, very heavy pistol ammo x24' },
       { name: 'Talon', role: 'Booster lieutenant', vibe: 'Aggressive, performative', plus: 'Saw the getaway vehicle.', minus: 'Will lie if challenged in public.', incongruency: 'Was paid to chase the wrong person.', npcType: 'enemy' }
+    ]
+  });
+}
+
+function loadDemo() {
+  populateForm({
+    title: 'Ashes at the Night Market',
+    format: 'Mystery',
+    corePitch: '<p>A burned stall, a missing courier, and a memory shard that should not exist. The crew is pulled into the aftermath before the market can decide whether this was random violence or a deliberate hit.</p><p>Every witness has only part of the truth, and sunrise will bring outside interests who would rather bury the whole thing than let anyone learn what the courier was carrying.</p>',
+    contactRole: 'Neighbourhood organiser',
+    job: 'Find the courier and the shard',
+    pay: '1,200 eb plus future protection',
+    whyNow: 'A corp retrieval team arrives at sunrise',
+    benefits: 'Mira and the market vendors',
+    pissed: 'PetroChem subcontractors and a local booster crew',
+    escalates: 'Block-wide tensions and surveillance',
+    newHook: 'One data fragment points to a clinic in Sector 12',
+    gmNotes: 'Keep the actual culprit sympathetic. Let the crew choose between exposure and quiet leverage.',
+    locations: [
+      { name: 'Burned Night Market Stall', what: 'Charred kiosk at the edge of the market.', why: 'Start point with physical clues and nervous witnesses.', obstacle: 'Crowd pressure and hidden camera blind spots.' },
+      { name: 'Canal Service Tunnel', what: 'Smuggler route beneath the district.', why: 'Courier passed through here after the fire.', obstacle: 'Flooding and scavenger squatters.' }
+    ],
+    complications: [
+      { text: 'The shard is damaged but still active.', revealType: 'hidden', dangerLevel: 'risky' },
+      { text: 'A local gang is protecting the wrong suspect. They are convinced the courier sold them out, and they are already roughing up bystanders, locking down exits, and warning everyone in the market not to talk. If the crew pushes too hard or asks the wrong questions in public, the gang may escalate from intimidation to outright violence before anyone realises they are hunting the wrong person.', revealType: 'conditional', dangerLevel: 'dangerous' }
+    ],
+    npcs: [
+      { name: 'Mira Kovac', role: 'Organiser', vibe: 'Tired but composed', plus: 'Keep the market calm and steer the crew toward useful witnesses.', minus: 'Corp attention, public violence, or anyone digging too closely into her involvement.', secret: 'She keeps a private ranking of every noodle stall in the market.', incongruency: 'Despite her fixer instincts, she speaks like a community mediator and always pushes de-escalation first.', statInt: '7', statRef: '6', statDex: '6', statTech: '4', statCool: '8', statWill: '7', statLuck: '5', statMove: '5', statBody: '4', statEmp: '6', statHp: '35', statSeriouslyWounded: '18', statDeathSave: '6', statArmorHead: '4 SP', statArmorBody: '7 SP', statWeapon1: 'Very Heavy Pistol', statWeapon1Damage: '4d6', statWeapon2: 'Light Armorjack', statWeapon2Damage: '-', statSkills: 'Conversation 10, Human Perception 9, Persuasion 10, Local Expert 8, Handgun 8, Wardrobe & Style 9', statGear: 'Agent, encrypted shard, budget bribes, very heavy pistol ammo x24' },
+      { name: 'Talon', role: 'Booster lieutenant', vibe: 'Aggressive, performative', plus: 'Find the supposed traitor fast and look strong in front of the gang.', minus: 'Being embarrassed in public or admitting his crew grabbed the wrong target.', incongruency: 'Despite the swagger, he is obsessive about keeping his jacket spotless.', npcType: 'enemy' }
     ]
   });
 }
