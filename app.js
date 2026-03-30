@@ -78,7 +78,8 @@ function closeAllNpcStatBlocks(exceptCard = null) {
   });
 }
 
-function addLocation(data = {}) {
+function addLocation(data = {}, options = {}) {
+  const { prepend = true } = options;
   const tpl = byId('locationTemplate').content.firstElementChild.cloneNode(true);
   tpl.querySelectorAll('[data-field]').forEach(input => {
     const key = input.dataset.field;
@@ -112,7 +113,11 @@ function addLocation(data = {}) {
     });
   });
   setComplicationTag(tpl, 'sceneStyle', '.location-style-toggle', data.sceneStyle || '', 'Scene style');
-  byId('locations').appendChild(tpl);
+  if (prepend) {
+    byId('locations').prepend(tpl);
+  } else {
+    byId('locations').appendChild(tpl);
+  }
   renderPreview();
 }
 
@@ -290,7 +295,8 @@ function setComplicationTag(card, fieldName, buttonSelector, type, placeholder) 
   button.title = meta ? meta.label : placeholder;
 }
 
-function addComplication(data = {}) {
+function addComplication(data = {}, options = {}) {
+  const { prepend = true } = options;
   const tpl = byId('complicationTemplate').content.firstElementChild.cloneNode(true);
   tpl.querySelectorAll('[data-field]').forEach(input => {
     const key = input.dataset.field;
@@ -329,12 +335,17 @@ function addComplication(data = {}) {
   });
   setComplicationTag(tpl, 'revealType', '.complication-type-toggle', data.revealType || '', 'Choose complication type');
   setComplicationTag(tpl, 'dangerLevel', '.complication-danger-toggle', data.dangerLevel || '', 'Choose danger level');
-  byId('complicationsList').appendChild(tpl);
+  if (prepend) {
+    byId('complicationsList').prepend(tpl);
+  } else {
+    byId('complicationsList').appendChild(tpl);
+  }
   updateComplicationNumbers();
   renderPreview();
 }
 
-function addNpc(data = {}) {
+function addNpc(data = {}, options = {}) {
+  const { prepend = true } = options;
   const tpl = byId('npcTemplate').content.firstElementChild.cloneNode(true);
   tpl.querySelectorAll('[data-field]').forEach(input => {
     const key = input.dataset.field;
@@ -409,7 +420,11 @@ function addNpc(data = {}) {
     });
   });
   setComplicationTag(tpl, 'npcType', '.npc-type-toggle', data.npcType || '', 'NPC type');
-  byId('npcs').appendChild(tpl);
+  if (prepend) {
+    byId('npcs').prepend(tpl);
+  } else {
+    byId('npcs').appendChild(tpl);
+  }
   renderPreview();
 }
 
@@ -478,9 +493,7 @@ function buildStatWeapons(npc) {
     [npc.statWeapon1, npc.statWeapon1Damage],
     [npc.statWeapon2, npc.statWeapon2Damage],
     [npc.statWeapon3, npc.statWeapon3Damage],
-  ].filter(([name, dmg]) => hasMeaningfulValue(name) || hasMeaningfulValue(dmg));
-
-  if (!rows.length) return '';
+  ];
 
   return `
     <div class="stat-panel">
@@ -495,7 +508,6 @@ function buildStatWeapons(npc) {
 }
 
 function buildStatArmor(npc) {
-  if (!hasMeaningfulValue(npc.statArmorHead) && !hasMeaningfulValue(npc.statArmorBody)) return '';
   return `
     <div class="stat-panel">
       <div class="stat-panel-head">Armor</div>
@@ -510,11 +522,10 @@ function buildStatArmor(npc) {
 }
 
 function buildStatStrip(label, value) {
-  if (!hasMeaningfulValue(value)) return '';
   return `
-    <div class="stat-strip">
+    <div class="stat-strip stat-strip-writing">
       <div class="stat-strip-label">${escapeHtml(label)}</div>
-      <div class="stat-panel-body stat-text">${escapeHtml(value)}</div>
+      <div class="stat-panel-body stat-text">${hasMeaningfulValue(value) ? escapeHtml(value) : '&nbsp;'}</div>
     </div>
   `;
 }
@@ -523,45 +534,58 @@ function buildNpcStatPages(npcs) {
   const statNpcs = npcs.filter(npc => npcHasStatBlockData(npc));
   if (!statNpcs.length) return '';
 
-  return statNpcs.map(npc => {
-    const title = npc.name || 'NPC';
-    const roleTag = npc.role || '';
-    return `
-      <article class="print-sheet stat-card-page">
-        <div class="stat-card">
-          <div class="stat-card-side">${escapeHtml(title)}</div>
-          <div class="stat-card-main">
-            ${roleTag ? `<div class="stat-strip"><div class="stat-strip-label">Role</div><div class="stat-panel-body stat-text">${escapeHtml(roleTag)}</div></div>` : ''}
-            <div class="stat-row-5">
-              ${buildStatBox('INT', npc.statInt)}
-              ${buildStatBox('REF', npc.statRef)}
-              ${buildStatBox('DEX', npc.statDex)}
-              ${buildStatBox('TECH', npc.statTech)}
-              ${buildStatBox('COOL', npc.statCool)}
+  const pages = [];
+  for (let index = 0; index < statNpcs.length; index += 2) {
+    pages.push(statNpcs.slice(index, index + 2));
+  }
+
+  return pages.map(pageNpcs => `
+    <article class="print-sheet stat-card-page">
+      <div class="stat-card-stack">
+        ${pageNpcs.map(npc => {
+          const title = npc.name || 'NPC';
+          const roleTag = npc.role || '';
+          const weaponsPanel = buildStatWeapons(npc);
+          const armorPanel = buildStatArmor(npc);
+          const skillsStrip = buildStatStrip('Skill Bases', npc.statSkills);
+          const gearStrip = buildStatStrip('Cyberware & Special Equipment', npc.statGear);
+          return `
+            <div class="stat-card">
+              <div class="stat-card-side">${escapeHtml(title)}</div>
+              <div class="stat-card-main">
+                ${roleTag ? `<div class="stat-strip"><div class="stat-strip-label">Role</div><div class="stat-panel-body stat-text">${escapeHtml(roleTag)}</div></div>` : ''}
+                <div class="stat-row-5">
+                  ${buildStatBox('INT', npc.statInt)}
+                  ${buildStatBox('REF', npc.statRef)}
+                  ${buildStatBox('DEX', npc.statDex)}
+                  ${buildStatBox('TECH', npc.statTech)}
+                  ${buildStatBox('COOL', npc.statCool)}
+                </div>
+                <div class="stat-row-5">
+                  ${buildStatBox('WILL', npc.statWill)}
+                  ${buildStatBox('LUCK', npc.statLuck)}
+                  ${buildStatBox('MOVE', npc.statMove)}
+                  ${buildStatBox('BODY', npc.statBody)}
+                  ${buildStatBox('EMP', npc.statEmp)}
+                </div>
+                <div class="stat-row-3">
+                  ${buildStatBox('Hit Points', npc.statHp)}
+                  ${buildStatBox('Seriously Wounded', npc.statSeriouslyWounded)}
+                  ${buildStatBox('Death Save', npc.statDeathSave)}
+                </div>
+                <div class="stat-row-2">
+                  ${weaponsPanel}
+                  ${armorPanel}
+                </div>
+                ${skillsStrip}
+                ${gearStrip}
+              </div>
             </div>
-            <div class="stat-row-5">
-              ${buildStatBox('WILL', npc.statWill)}
-              ${buildStatBox('LUCK', npc.statLuck)}
-              ${buildStatBox('MOVE', npc.statMove)}
-              ${buildStatBox('BODY', npc.statBody)}
-              ${buildStatBox('EMP', npc.statEmp)}
-            </div>
-            <div class="stat-row-3">
-              ${buildStatBox('Hit Points', npc.statHp)}
-              ${buildStatBox('Seriously Wounded', npc.statSeriouslyWounded)}
-              ${buildStatBox('Death Save', npc.statDeathSave)}
-            </div>
-            <div class="stat-row-2">
-              ${buildStatWeapons(npc) || '<div></div>'}
-              ${buildStatArmor(npc) || '<div></div>'}
-            </div>
-            ${buildStatStrip('Skill Bases', npc.statSkills)}
-            ${buildStatStrip('Cyberware & Special Equipment', npc.statGear)}
-          </div>
-        </div>
-      </article>
-    `;
-  }).join('');
+          `;
+        }).join('')}
+      </div>
+    </article>
+  `).join('');
 }
 
 function buildPrintMarkup(data) {
@@ -598,7 +622,7 @@ function buildPrintMarkup(data) {
       ].filter(Boolean).join('');
       return `
       <div class="sheet-item">
-        <div class="sheet-item-title">${escapeHtml(loc.name || `Location ${index + 1}`)}${sceneSymbols ? ` <span class="inline-print-symbols">${sceneSymbols}</span>` : ''}</div>
+        <div class="sheet-item-title sheet-item-title-row"><span class="sheet-item-name">${escapeHtml(loc.name || `Location ${index + 1}`)}</span>${sceneSymbols ? `<span class="inline-print-symbols location-title-icon">${sceneSymbols}</span>` : ''}</div>
         ${locationFields}
       </div>
     `;
@@ -669,19 +693,19 @@ function buildPrintMarkup(data) {
 
     <div class="print-columns">
       <div>
-        ${data.locations.length ? `<section class="sheet-section">
+        ${data.locations.length ? `<section class="sheet-section flowing-section">
           <h4>Locations</h4>
           ${locations}
         </section>` : ''}
 
-        ${data.complications.length ? `<section class="sheet-section">
+        ${data.complications.length ? `<section class="sheet-section flowing-section">
           <h4>Encounters / Complications</h4>
           ${complications}
         </section>` : ''}
       </div>
 
       <div>
-        ${data.npcs.length ? `<section class="sheet-section">
+        ${data.npcs.length ? `<section class="sheet-section flowing-section">
           <h4>Non-playable Characters</h4>
           ${npcs}
         </section>` : ''}
@@ -691,7 +715,7 @@ function buildPrintMarkup(data) {
           <div class="sheet-grid">${developmentFields}</div>
         </section>` : ''}
 
-        ${hasMeaningfulValue(data.gmNotes) ? `<section class="sheet-section">
+        ${hasMeaningfulValue(data.gmNotes) ? `<section class="sheet-section gm-notes-section">
           <h4>GM Notes</h4>
           <div>${escapeHtml(data.gmNotes)}</div>
         </section>` : ''}
@@ -750,12 +774,12 @@ function populateForm(data = {}) {
   const complications = Array.isArray(data.complications) && data.complications.length ? data.complications : [{}];
   const npcs = Array.isArray(data.npcs) && data.npcs.length ? data.npcs : [{}];
 
-  locations.forEach(item => addLocation(item || {}));
+  locations.forEach(item => addLocation(item || {}, { prepend: false }));
   complications.forEach(item => {
     const normalized = typeof item === 'string' ? { text: item } : (item || {});
-    addComplication(normalized);
+    addComplication(normalized, { prepend: false });
   });
-  npcs.forEach(item => addNpc(item || {}));
+  npcs.forEach(item => addNpc(item || {}, { prepend: false }));
 
   renderPreview();
 }
@@ -779,11 +803,12 @@ function loadDemo() {
       { name: 'Canal Service Tunnel', what: 'Smuggler route beneath the district.', why: 'Courier passed through here after the fire.', obstacle: 'Flooding and scavenger squatters.' }
     ],
     complications: [
-      { text: 'The shard is damaged but still active.', revealType: 'hidden', dangerLevel: 'risky' },
-      { text: 'A local gang is protecting the wrong suspect. They are convinced the courier sold them out, and they are already roughing up bystanders, locking down exits, and warning everyone in the market not to talk. If the crew pushes too hard or asks the wrong questions in public, the gang may escalate from intimidation to outright violence before anyone realises they are hunting the wrong person.', revealType: 'conditional', dangerLevel: 'dangerous' }
+      { text: 'The shard is damaged but still active.', revealType: 'hidden' },
+      { text: 'A local gang is protecting the wrong suspect. They are convinced the courier sold them out, and they are already roughing up bystanders, locking down exits, and warning everyone in the market not to talk. If the crew pushes too hard or asks the wrong questions in public, the gang may escalate from intimidation to outright violence before anyone realises they are hunting the wrong person.', revealType: 'conditional', dangerLevel: 'dangerous' },
+      { text: 'The courier left the shard with a child vendor for safekeeping.', revealType: 'apparent' }
     ],
     npcs: [
-      { name: 'Mira Kovač', role: 'Organiser', vibe: 'Tired but composed', plus: 'Knows who still talks.', minus: 'Hiding how much she already knows.', secret: 'She asked the courier to move the shard in the first place.', incongruency: 'Acts like a bystander but is already deeply involved.', statInt: '7', statRef: '6', statDex: '6', statTech: '4', statCool: '8', statWill: '7', statLuck: '5', statMove: '5', statBody: '4', statEmp: '6', statHp: '35', statSeriouslyWounded: '18', statDeathSave: '6', statArmorHead: '4 SP', statArmorBody: '7 SP', statWeapon1: 'Very Heavy Pistol', statWeapon1Damage: '4d6', statWeapon2: 'Light Armorjack', statWeapon2Damage: '-', statSkills: 'Conversation 10, Human Perception 9, Persuasion 10, Local Expert 8, Handgun 8, Wardrobe & Style 9', statGear: 'Agent, encrypted shard, budget bribes, very heavy pistol ammo x24' },
+      { name: 'Mira Kovač', role: 'Organiser', vibe: 'Tired but composed', plus: 'Knows who still talks.', minus: 'Hiding how much she already knows.', secret: 'She asked the courier to move the shard in the first place.', incongruency: 'Acts like a bystander but is already deeply involved.', statInt: '7', statRef: '6', statDex: '6', statTech: '4', statCool: '8', statWill: '7', statLuck: '5', statMove: '5', statBody: '4', statEmp: '6', statHp: '35', statSeriouslyWounded: '18', statDeathSave: '6', statArmorHead: '4 SP', statArmorBody: '7 SP', statWeapon1: 'Very Heavy Pistol', statWeapon1Damage: '4d6', statSkills: 'Conversation 10, Human Perception 9, Persuasion 10, Local Expert 8, Handgun 8, Wardrobe & Style 9', statGear: 'Agent, encrypted shard, budget bribes, very heavy pistol ammo x24' },
       { name: 'Talon', role: 'Booster lieutenant', vibe: 'Aggressive, performative', plus: 'Saw the getaway vehicle.', minus: 'Will lie if challenged in public.', incongruency: 'Was paid to chase the wrong person.', npcType: 'enemy' }
     ]
   });
@@ -808,12 +833,13 @@ function loadDemo() {
       { name: 'Canal Service Tunnel', what: 'Smuggler route beneath the district.', why: 'Courier passed through here after the fire.', obstacle: 'Flooding and scavenger squatters.' }
     ],
     complications: [
-      { text: 'The shard is damaged but still active.', revealType: 'hidden', dangerLevel: 'risky' },
+      { text: 'The shard is damaged but still active.', revealType: 'hidden' },
       { text: 'A local gang is protecting the wrong suspect. They are convinced the courier sold them out, and they are already roughing up bystanders, locking down exits, and warning everyone in the market not to talk. If the crew pushes too hard or asks the wrong questions in public, the gang may escalate from intimidation to outright violence before anyone realises they are hunting the wrong person.', revealType: 'conditional', dangerLevel: 'dangerous' }
     ],
     npcs: [
-      { name: 'Mira Kovac', role: 'Organiser', vibe: 'Tired but composed', plus: 'Keep the market calm and steer the crew toward useful witnesses.', minus: 'Corp attention, public violence, or anyone digging too closely into her involvement.', secret: 'She keeps a private ranking of every noodle stall in the market.', incongruency: 'Despite her fixer instincts, she speaks like a community mediator and always pushes de-escalation first.', statInt: '7', statRef: '6', statDex: '6', statTech: '4', statCool: '8', statWill: '7', statLuck: '5', statMove: '5', statBody: '4', statEmp: '6', statHp: '35', statSeriouslyWounded: '18', statDeathSave: '6', statArmorHead: '4 SP', statArmorBody: '7 SP', statWeapon1: 'Very Heavy Pistol', statWeapon1Damage: '4d6', statWeapon2: 'Light Armorjack', statWeapon2Damage: '-', statSkills: 'Conversation 10, Human Perception 9, Persuasion 10, Local Expert 8, Handgun 8, Wardrobe & Style 9', statGear: 'Agent, encrypted shard, budget bribes, very heavy pistol ammo x24' },
-      { name: 'Talon', role: 'Booster lieutenant', vibe: 'Aggressive, performative', plus: 'Find the supposed traitor fast and look strong in front of the gang.', minus: 'Being embarrassed in public or admitting his crew grabbed the wrong target.', incongruency: 'Despite the swagger, he is obsessive about keeping his jacket spotless.', npcType: 'enemy' }
+      { name: 'Mira Kovac', role: 'Organiser', vibe: 'Tired but composed', plus: 'Keep the market calm and steer the crew toward useful witnesses.', minus: 'Corp attention, public violence, or anyone digging too closely into her involvement.', secret: 'She keeps a private ranking of every noodle stall in the market.', incongruency: 'Despite her fixer instincts, she speaks like a community mediator and always pushes de-escalation first.', statInt: '7', statRef: '6', statDex: '6', statTech: '4', statCool: '8', statWill: '7', statLuck: '5', statMove: '5', statBody: '4', statEmp: '6', statHp: '35', statSeriouslyWounded: '18', statDeathSave: '6', statArmorHead: '4 SP', statArmorBody: '7 SP', statWeapon1: 'Very Heavy Pistol', statWeapon1Damage: '4d6', statSkills: 'Conversation 10, Human Perception 9, Persuasion 10, Local Expert 8, Handgun 8, Wardrobe & Style 9', statGear: 'Agent, encrypted shard, budget bribes, very heavy pistol ammo x24' },
+      { name: 'Talon', role: 'Booster lieutenant', vibe: 'Aggressive, performative', plus: 'Find the supposed traitor fast and look strong in front of the gang.', minus: 'Being embarrassed in public or admitting his crew grabbed the wrong target.', incongruency: 'Despite the swagger, he is obsessive about keeping his jacket spotless.', npcType: 'enemy' },
+      { name: 'Brick', role: 'Hired muscle', vibe: 'Silent, watchful', plus: 'Keep the client alive and end trouble quickly.', minus: 'Drawn-out arguments, surprises, or getting pinned in a tight space.', npcType: 'friendly', statRef: '6', statDex: '5', statCool: '5', statWill: '6', statMove: '5', statBody: '8', statHp: '40', statSeriouslyWounded: '20', statDeathSave: '8' }
     ]
   });
 }

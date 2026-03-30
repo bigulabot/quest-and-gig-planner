@@ -722,6 +722,20 @@ button.danger:hover {
   break-inside: avoid;
 }
 
+.gm-notes-section {
+  break-inside: auto;
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+  padding-top: 14px;
+}
+
+.flowing-section {
+  break-inside: auto;
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+  padding-top: 14px;
+}
+
 .sheet-section h4 {
   margin: 0 0 9px;
   font-size: .82rem;
@@ -734,6 +748,7 @@ button.danger:hover {
   display: grid;
   gap: 8px;
   grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-items: start;
 }
 
 .sheet-field strong {
@@ -747,6 +762,14 @@ button.danger:hover {
 
 .sheet-field + .sheet-field {
   margin-top: 7px;
+}
+
+.sheet-grid > .sheet-field {
+  margin-top: 0;
+}
+
+.sheet-grid > .sheet-field + .sheet-field {
+  margin-top: 0;
 }
 
 .print-tag-symbol,
@@ -797,6 +820,10 @@ button.danger:hover {
   margin-left: 2px;
 }
 
+.location-title-icon {
+  margin-left: 2px;
+}
+
 .sheet-list {
   display: grid;
   gap: 6px;
@@ -817,6 +844,8 @@ button.danger:hover {
   background: #fff;
   border-radius: 8px;
   padding: 7px 8px;
+  break-inside: avoid;
+  page-break-inside: avoid;
 }
 
 .sheet-item-title {
@@ -888,7 +917,7 @@ button.danger:hover {
     margin: 0;
     max-width: none;
     width: 100%;
-    padding: 6mm 7mm;
+    padding: 0;
     font-size: 11px;
     border: 0;
   }
@@ -898,6 +927,16 @@ button.danger:hover {
     margin-bottom: 7px;
     padding: 7px 8px;
     border-radius: 7px;
+  }
+  .gm-notes-section {
+    break-inside: auto;
+    page-break-inside: auto;
+    padding-top: 14px;
+  }
+  .flowing-section {
+    break-inside: auto;
+    page-break-inside: auto;
+    padding-top: 14px;
   }
   .sheet-title {
     margin: 0 0 7px;
@@ -955,6 +994,10 @@ button.danger:hover {
   .sheet-field + .sheet-field {
     margin-top: 6px;
   }
+  .sheet-grid > .sheet-field,
+  .sheet-grid > .sheet-field + .sheet-field {
+    margin-top: 0;
+  }
   .sheet-field strong {
     margin-bottom: 1px;
     font-size: .6rem;
@@ -979,7 +1022,8 @@ button.danger:hover {
     line-height: 1.15;
   }
   .print-columns {
-    gap: 6px;
+    display: block;
+    gap: 0;
   }
   .empty {
     line-height: 1.15;
@@ -991,7 +1035,7 @@ button.danger:hover {
   #printComplications .empty {
     grid-column: 1 / -1;
   }
-  @page { size: A4; margin: 0; }
+  @page { size: A4; margin: 15mm 7mm 7mm; }
 }
 
 .print-preview-window {
@@ -1017,6 +1061,18 @@ button.danger:hover {
   margin-bottom: 7px;
   padding: 7px 8px;
   border-radius: 7px;
+}
+
+.print-preview-window .gm-notes-section {
+  break-inside: auto;
+  page-break-inside: auto;
+  padding-top: 14px;
+}
+
+.print-preview-window .flowing-section {
+  break-inside: auto;
+  page-break-inside: auto;
+  padding-top: 14px;
 }
 
 .print-preview-window .sheet-title {
@@ -1050,6 +1106,7 @@ button.danger:hover {
 
 .print-preview-window .sheet-grid {
   gap: 5px 8px;
+  align-items: start;
 }
 
 .print-preview-window .sheet-list {
@@ -1089,6 +1146,11 @@ button.danger:hover {
   margin-top: 6px;
 }
 
+.print-preview-window .sheet-grid > .sheet-field,
+.print-preview-window .sheet-grid > .sheet-field + .sheet-field {
+  margin-top: 0;
+}
+
 .print-preview-window .sheet-field strong {
   margin-bottom: 1px;
   font-size: .6rem;
@@ -1119,7 +1181,8 @@ button.danger:hover {
 }
 
 .print-preview-window .print-columns {
-  gap: 6px;
+  display: block;
+  gap: 0;
 }
 
 .print-preview-window .empty {
@@ -1142,6 +1205,11 @@ button.danger:hover {
   padding: 0;
 }
 
+.stat-card-stack {
+  display: grid;
+  gap: 8mm;
+}
+
 .stat-card {
   --stat-red: #a31714;
   --stat-paper: #ffffff;
@@ -1156,6 +1224,7 @@ button.danger:hover {
   min-height: 198px;
   clip-path: polygon(var(--stat-cut) 0, 100% 0, 100% 100%, 0 100%, 0 var(--stat-cut));
   box-shadow: 0 0 0 1px rgba(0,0,0,.04);
+  width: 156mm;
   max-width: 156mm;
   margin: 0 auto;
 }
@@ -1240,6 +1309,12 @@ button.danger:hover {
   padding: 4px 6px;
 }
 
+.stat-strip-writing .stat-panel-body {
+  min-height: 18mm;
+  display: flex;
+  align-items: flex-start;
+}
+
 .stat-table {
   width: 100%;
   border-collapse: collapse;
@@ -1274,6 +1349,9 @@ button.danger:hover {
     margin-top: 0;
     padding: 0;
   }
+  .stat-card-stack {
+    gap: 6mm;
+  }
   .stat-card,
   .stat-card * {
     -webkit-print-color-adjust: exact;
@@ -1283,6 +1361,7 @@ button.danger:hover {
     border-width: 5px;
     --stat-cut: 12px;
     background: #fff !important;
+    width: 154mm;
     max-width: 154mm;
     margin: 0 auto;
   }
