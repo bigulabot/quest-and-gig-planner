@@ -6,6 +6,8 @@ const ids = [
 const AUTOSAVE_KEY = 'cprGigPlanner.autosave.v1';
 let autosaveTimer = null;
 let suppressAutosave = false;
+let pendingDrag = null;
+let activeDrag = null;
 
 function byId(id) { return document.getElementById(id); }
 
@@ -117,6 +119,144 @@ function bindAutoGrowField(field) {
   field.addEventListener('input', () => autosizeTextarea(field));
 }
 
+function getDragAfterElement(container, pointerY) {
+  const cards = [...container.querySelectorAll('.item-card:not(.is-drag-source)')];
+
+  return cards.reduce((closest, card) => {
+    const rect = card.getBoundingClientRect();
+    const offset = pointerY - rect.top - rect.height / 2;
+
+    if (offset < 0 && offset > closest.offset) {
+      return { offset, element: card };
+    }
+
+    return closest;
+  }, { offset: Number.NEGATIVE_INFINITY, element: null }).element;
+}
+
+function moveDragGhost(clientX, clientY) {
+  if (!activeDrag) return;
+  const { ghost, offsetX, offsetY } = activeDrag;
+  ghost.style.left = `${Math.round(clientX - offsetX)}px`;
+  ghost.style.top = `${Math.round(clientY - offsetY)}px`;
+}
+
+function updateDragPlaceholder(clientY) {
+  if (!activeDrag) return;
+  const { container, placeholder } = activeDrag;
+  const afterElement = getDragAfterElement(container, clientY);
+  if (!afterElement) {
+    container.appendChild(placeholder);
+  } else if (afterElement !== placeholder) {
+    container.insertBefore(placeholder, afterElement);
+  }
+}
+
+function finishCustomDrag(commitMove) {
+  if (!activeDrag) return;
+
+  const { card, placeholder, ghost } = activeDrag;
+  if (commitMove && placeholder.parentNode) {
+    placeholder.parentNode.insertBefore(card, placeholder);
+  }
+
+  card.classList.remove('is-drag-source');
+  card.style.display = '';
+  placeholder.remove();
+  ghost.remove();
+  activeDrag = null;
+  pendingDrag = null;
+  renderPreview();
+}
+
+function onGlobalPointerMove(event) {
+  if (activeDrag) {
+    event.preventDefault();
+    moveDragGhost(event.clientX, event.clientY);
+    updateDragPlaceholder(event.clientY);
+    return;
+  }
+
+  if (!pendingDrag) return;
+
+  const deltaX = event.clientX - pendingDrag.startX;
+  const deltaY = event.clientY - pendingDrag.startY;
+  if (Math.hypot(deltaX, deltaY) < 6) return;
+
+  const { card, container, startX, startY } = pendingDrag;
+  const rect = card.getBoundingClientRect();
+  const ghost = card.cloneNode(true);
+  ghost.classList.add('drag-ghost');
+  ghost.style.width = `${Math.round(rect.width)}px`;
+  ghost.style.height = `${Math.round(rect.height)}px`;
+  ghost.style.left = `${Math.round(rect.left)}px`;
+  ghost.style.top = `${Math.round(rect.top)}px`;
+  document.body.appendChild(ghost);
+
+  const placeholder = document.createElement('div');
+  placeholder.className = 'drag-placeholder';
+  placeholder.style.height = `${Math.round(rect.height)}px`;
+  container.insertBefore(placeholder, card.nextSibling);
+
+  card.classList.add('is-drag-source');
+  card.style.display = 'none';
+
+  activeDrag = {
+    card,
+    container,
+    ghost,
+    placeholder,
+    offsetX: startX - rect.left,
+    offsetY: startY - rect.top,
+  };
+
+  moveDragGhost(event.clientX, event.clientY);
+  updateDragPlaceholder(event.clientY);
+}
+
+function onGlobalPointerUp() {
+  if (activeDrag) {
+    finishCustomDrag(true);
+    return;
+  }
+
+  pendingDrag = null;
+}
+
+function setupSortableContainer(container) {
+  if (!container || container.dataset.sortableBound === 'true') return;
+  container.dataset.sortableBound = 'true';
+}
+
+function setupSortableCard(card, container) {
+  if (!container) return;
+
+  card.classList.add('drag-handle');
+
+  card.addEventListener('pointerdown', event => {
+    if (event.button !== 0) return;
+    if (event.target.closest('button, input, textarea, select, a, label, .type-menu-popup, .rich-editor')) return;
+
+    pendingDrag = {
+      card,
+      container,
+      startX: event.clientX,
+      startY: event.clientY,
+    };
+  });
+}
+
+function animateCardEntry(card) {
+  if (!card) return;
+  card.classList.remove('card-enter');
+  window.requestAnimationFrame(() => {
+    card.classList.add('card-enter');
+    window.setTimeout(() => {
+      card.classList.remove('card-enter');
+    }, 260);
+  });
+}
+
 function summarizeCard(card) {
   if (card.classList.contains('location-card')) {
     const name = card.querySelector('[data-field="name"]')?.value.trim();
@@ -188,6 +328,7 @@ function closeAllNpcStatBlocks(exceptCard = null) {
 
 function addLocation(data = {}, options = {}) {
   const { prepend = true } = options;
+  const container = byId('locations');
   const tpl = byId('locationTemplate').content.firstElementChild.cloneNode(true);
   tpl.querySelectorAll('[data-field]').forEach(input => {
     const key = input.dataset.field;
@@ -205,6 +346,8 @@ function addLocation(data = {}, options = {}) {
     renderPreview();
   });
   setupCollapsibleCard(tpl);
+  setupSortableContainer(container);
+  setupSortableCard(tpl, container);
   tpl.querySelectorAll('.type-menu').forEach(menuWrap => {
     const toggleButton = menuWrap.querySelector('.type-menu-toggle');
     const menu = menuWrap.querySelector('.type-menu-popup');
@@ -226,10 +369,11 @@ function addLocation(data = {}, options = {}) {
   });
   setComplicationTag(tpl, 'sceneStyle', '.location-style-toggle', data.sceneStyle || '', 'Scene style');
   if (prepend) {
-    byId('locations').prepend(tpl);
+    container.prepend(tpl);
   } else {
-    byId('locations').appendChild(tpl);
+    container.appendChild(tpl);
   }
+  animateCardEntry(tpl);
   refreshCardSummary(tpl);
   renderPreview();
 }
@@ -409,6 +553,7 @@ function setComplicationTag(card, fieldName, buttonSelector, type, placeholder) 
 
 function addComplication(data = {}, options = {}) {
   const { prepend = true } = options;
+  const container = byId('complicationsList');
   const tpl = byId('complicationTemplate').content.firstElementChild.cloneNode(true);
   tpl.querySelectorAll('[data-field]').forEach(input => {
     const key = input.dataset.field;
@@ -425,6 +570,8 @@ function addComplication(data = {}, options = {}) {
     renderPreview();
   });
   setupCollapsibleCard(tpl);
+  setupSortableContainer(container);
+  setupSortableCard(tpl, container);
   tpl.querySelectorAll('.type-menu').forEach(menuWrap => {
     const toggle = menuWrap.querySelector('.type-menu-toggle');
     const menu = menuWrap.querySelector('.type-menu-popup');
@@ -452,10 +599,11 @@ function addComplication(data = {}, options = {}) {
   setComplicationTag(tpl, 'revealType', '.complication-type-toggle', data.revealType || '', 'Choose complication type');
   setComplicationTag(tpl, 'dangerLevel', '.complication-danger-toggle', data.dangerLevel || '', 'Choose danger level');
   if (prepend) {
-    byId('complicationsList').prepend(tpl);
+    container.prepend(tpl);
   } else {
-    byId('complicationsList').appendChild(tpl);
+    container.appendChild(tpl);
   }
+  animateCardEntry(tpl);
   refreshCardSummary(tpl);
   updateComplicationNumbers();
   renderPreview();
@@ -463,6 +611,7 @@ function addComplication(data = {}, options = {}) {
 
 function addNpc(data = {}, options = {}) {
   const { prepend = true } = options;
+  const container = byId('npcs');
   const tpl = byId('npcTemplate').content.firstElementChild.cloneNode(true);
   tpl.querySelectorAll('[data-field]').forEach(input => {
     const key = input.dataset.field;
@@ -476,6 +625,8 @@ function addNpc(data = {}, options = {}) {
     }
   });
   setupCollapsibleCard(tpl);
+  setupSortableContainer(container);
+  setupSortableCard(tpl, container);
 
   const toggle = tpl.querySelector('[data-toggle="advanced"]');
   const advanced = tpl.querySelector('.npc-advanced');
@@ -550,10 +701,11 @@ function addNpc(data = {}, options = {}) {
   });
   setComplicationTag(tpl, 'npcType', '.npc-type-toggle', data.npcType || '', 'NPC type');
   if (prepend) {
-    byId('npcs').prepend(tpl);
+    container.prepend(tpl);
   } else {
-    byId('npcs').appendChild(tpl);
+    container.appendChild(tpl);
   }
+  animateCardEntry(tpl);
   refreshCardSummary(tpl);
   renderPreview();
 }
@@ -826,12 +978,12 @@ function buildPrintMarkup(data) {
     <div class="print-columns">
       <div>
         ${data.locations.length ? `<section class="sheet-section flowing-section">
-          <h4>Locations</h4>
+          <h4>Locations & SCENES</h4>
           ${locations}
         </section>` : ''}
 
         ${data.complications.length ? `<section class="sheet-section flowing-section">
-          <h4>Encounters / Complications</h4>
+          <h4>Encounters & Complications</h4>
           ${complications}
         </section>` : ''}
       </div>
@@ -1097,6 +1249,13 @@ byId('importJsonInput').addEventListener('change', event => {
 });
 window.addEventListener('resize', positionSectionJumpNav);
 window.addEventListener('pagehide', persistAutosaveNow);
+window.addEventListener('pointermove', onGlobalPointerMove);
+window.addEventListener('pointerup', onGlobalPointerUp);
+window.addEventListener('pointercancel', onGlobalPointerUp);
+window.addEventListener('blur', () => {
+  if (activeDrag) finishCustomDrag(false);
+  pendingDrag = null;
+});
 
 const autosavedData = loadAutosaveData();
 if (autosavedData) {

@@ -625,12 +625,41 @@ button.danger:hover {
   transition: transform .16s ease, box-shadow .16s ease, border-color .16s ease;
 }
 
+@keyframes cardEnter {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.item-card.card-enter {
+  animation: cardEnter .24s ease-out;
+}
+
 .item-card-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-bottom: 12px;
   gap: 10px;
+  transition: transform .16s ease, filter .16s ease;
+}
+
+.drag-handle {
+  cursor: grab;
+}
+
+.drag-handle:hover {
+  transform: translateY(-2px);
+  filter: brightness(1.05);
+}
+
+.drag-handle:active {
+  cursor: grabbing;
 }
 
 .item-card-header-left {
@@ -656,6 +685,59 @@ button.danger:hover {
   transform: translateY(-1px);
   border-color: rgba(223,42,33,.72);
   box-shadow: 0 0 0 2px rgba(223,42,33,.14);
+}
+
+.item-card.is-dragging {
+  opacity: .88;
+  transform: translateY(-6px) scale(1.01);
+  border-color: rgba(223,42,33,.85);
+  box-shadow: 0 18px 36px rgba(0,0,0,.28), 0 0 0 2px rgba(223,42,33,.18);
+  z-index: 2;
+}
+
+.item-card.is-drag-source {
+  opacity: 0;
+}
+
+.drag-placeholder {
+  margin-bottom: 12px;
+  border: 1px dashed rgba(223,42,33,.42);
+  border-radius: 14px;
+  background: rgba(223,42,33,.06);
+}
+
+.drag-ghost {
+  position: fixed;
+  z-index: 1000;
+  pointer-events: none;
+  margin: 0;
+  opacity: .96;
+  transform: rotate(-1deg);
+  box-shadow: 0 24px 42px rgba(0,0,0,.34), 0 0 0 2px rgba(223,42,33,.14);
+}
+
+.drag-ghost .item-card-header {
+  transform: none;
+  filter: none;
+}
+
+.drag-handle .item-card-header,
+.drag-handle .item-card-summary,
+.drag-handle .item-card-body {
+  cursor: grab;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.drag-handle input,
+.drag-handle textarea,
+.drag-handle select,
+.drag-handle button,
+.drag-handle a,
+.drag-handle label {
+  cursor: auto;
+  user-select: auto;
+  -webkit-user-select: auto;
 }
 
 .npc-statblock-details {
