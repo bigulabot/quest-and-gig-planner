@@ -766,6 +766,7 @@ button.danger:hover {
   height: 1rem;
   object-fit: contain;
   display: block;
+  filter: brightness(0) saturate(100%);
 }
 
 .npc-name-symbol {

@@ -775,7 +775,7 @@ function loadDemo() {
     newHook: 'One data fragment points to a clinic in Sector 12',
     gmNotes: 'Keep the actual culprit sympathetic. Let the crew choose between exposure and quiet leverage.',
     locations: [
-      { name: 'Burned Night Market Stall', what: 'Charred kiosk at the edge of the market.', why: 'Start point with physical clues and nervous witnesses.', obstacle: 'Crowd pressure and hidden camera blind spots.' },
+      { name: 'Burned Night Market Stall', what: 'A blackened kiosk sits at the edge of the market beneath a tangle of melted signage and scorched tarps, with nearby vendors already treating it like cursed ground. The smell of burned plastic still hangs in the air, and the stall is littered with warped cookware, soot-stained crates, and a few pieces of debris that suggest the fire was far too focused to be accidental.', sceneStyle: 'battle-map' },
       { name: 'Canal Service Tunnel', what: 'Smuggler route beneath the district.', why: 'Courier passed through here after the fire.', obstacle: 'Flooding and scavenger squatters.' }
     ],
     complications: [
@@ -804,7 +804,7 @@ function loadDemo() {
     newHook: 'One data fragment points to a clinic in Sector 12',
     gmNotes: 'Keep the actual culprit sympathetic. Let the crew choose between exposure and quiet leverage.',
     locations: [
-      { name: 'Burned Night Market Stall', what: 'Charred kiosk at the edge of the market.', why: 'Start point with physical clues and nervous witnesses.', obstacle: 'Crowd pressure and hidden camera blind spots.' },
+      { name: 'Burned Night Market Stall', what: 'A blackened kiosk sits at the edge of the market beneath a tangle of melted signage and scorched tarps, with nearby vendors already treating it like cursed ground. The smell of burned plastic still hangs in the air, and the stall is littered with warped cookware, soot-stained crates, and a few pieces of debris that suggest the fire was far too focused to be accidental.', sceneStyle: 'battle-map' },
       { name: 'Canal Service Tunnel', what: 'Smuggler route beneath the district.', why: 'Courier passed through here after the fire.', obstacle: 'Flooding and scavenger squatters.' }
     ],
     complications: [
