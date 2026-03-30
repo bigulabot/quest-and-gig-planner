@@ -1,0 +1,7 @@
+{
+  "name": "cpr-gig-planner",
+  "private": true,
+  "scripts": {
+    "dev": "node dev-server.js"
+  }
+}

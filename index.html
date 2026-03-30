@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CPR GIG PLANNER</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="app">
+    <section class="panel">
+      <div class="panel-header">
+        <div>
+          <h1>CPR GIG PLANNER</h1>
+          <div class="subtle header-subtitle">
+            <div class="header-copy">A modular, fillable gig-building tool for Cyberpunk RED, featuring dropdowns, expandable sections, and clean printable export, designed to quickly turn ideas into table-ready jobs. Created by bigulabot. <span class="header-donate">If you'd like to support the project, <a href="https://buymeacoffee.com/bigula" target="_blank" rel="noopener noreferrer">☕ buy me a coffee</a>.</span></div>
+            <div class="header-copy">
+              Inspired by the teachings of
+              <a href="https://www.youtube.com/@DeficientMaster" target="_blank" rel="noopener noreferrer">Deficient Master</a>, as well as
+              <a href="https://deckanddicegames.com/quartershots_retail/" target="_blank" rel="noopener noreferrer">Marcus Pascall's QuarterShots</a>,
+              and <a href="https://www.youtube.com/@CybernationUncensored" target="_blank" rel="noopener noreferrer">Rob Mulligan's Quick Campaign Builder</a>.
+            </div>
+          </div>
+        </div>
+        <div class="actions">
+          <button id="newQuestBtn">New gig</button>
+          <button id="loadDemoBtn">Load demo</button>
+          <button id="exportJsonBtn">Save plan</button>
+          <button id="importJsonBtn">Load plan</button>
+          <button class="primary" id="printBtn">Print / Export PDF</button>
+        </div>
+      </div>
+      <div class="content">
+        <div class="section">
+          <div class="section-title"><h3>Hook</h3></div>
+          <div class="grid grid-2">
+            <div>
+              <label for="title">Title</label>
+              <input id="title" placeholder="Neon Saints of Block 9" />
+            </div>
+            <div>
+              <label for="format">Gig Type</label>
+              <select id="format">
+                <option value=""></option>
+                <option>Assassination</option>
+                <option>Escort</option>
+                <option>Heist</option>
+                <option>Moral Quandary</option>
+                <option>Mystery</option>
+                <option>Puzzle</option>
+                <option>Sabotage</option>
+                <option>Sanctuary</option>
+                <option>Shop</option>
+                <option>Trap</option>
+                <option>Other</option>
+              </select>
+            </div>
+          </div>
+          <div style="margin-top:14px;">
+            <label for="corePitch">Setup</label>
+            <div class="rich-editor">
+              <div class="rich-toolbar-header">
+                <button type="button" class="toolbar-toggle-btn" id="corePitchToolbarToggle" aria-expanded="false" aria-controls="corePitchToolbar" title="Formatting" aria-label="Formatting">Aa</button>
+              </div>
+              <div class="rich-toolbar" id="corePitchToolbar" aria-label="Setup formatting tools" hidden>
+                <button type="button" class="toolbar-btn" data-command="bold"><strong>B</strong></button>
+                <button type="button" class="toolbar-btn" data-command="italic"><em>I</em></button>
+                <button type="button" class="toolbar-btn" data-command="underline"><u>U</u></button>
+                <button type="button" class="toolbar-btn" data-command="outdent">⇤</button>
+                <button type="button" class="toolbar-btn" data-command="indent">⇥</button>
+                <button type="button" class="toolbar-btn" data-command="insertUnorderedList">•</button>
+                <select id="corePitchSize" class="toolbar-select" aria-label="Brief setup text size">
+                  <option value="">Size</option>
+                  <option value="2">Small</option>
+                  <option value="3">Normal</option>
+                  <option value="4">Large</option>
+                  <option value="5">XL</option>
+                </select>
+              </div>
+              <div id="corePitch" class="rich-input" contenteditable="true" role="textbox" aria-multiline="true" data-placeholder="Brief setup of the gig."></div>
+            </div>
+          </div>
+          <div class="grid grid-3" style="margin-top:14px;">
+            <div>
+              <label for="contactRole">Who contacts them</label>
+              <input id="contactRole" placeholder="Fixer, friend, corp rep, neighbour..." />
+            </div>
+            <div>
+              <label for="job">What’s the job</label>
+              <input id="job" placeholder="Retrieve a stolen shard" />
+            </div>
+            <div>
+              <label for="pay">What’s the pay</label>
+              <input id="pay" placeholder="1,500 eb + favour" />
+            </div>
+          </div>
+          <div style="margin-top:14px;">
+            <label for="whyNow">Why now</label>
+            <input id="whyNow" placeholder="Window closes at dawn" />
+          </div>
+        </div>
+
+        <div class="section">
+          <div class="section-title">
+            <h3>Locations</h3>
+            <div class="actions"><button id="addLocationBtn">+ Add location</button></div>
+          </div>
+          <div id="locations"></div>
+        </div>
+
+        <div class="section">
+          <div class="section-title">
+            <h3>Encounters / Complications</h3>
+            <div class="actions"><button id="addComplicationBtn">+ Add complication</button></div>
+          </div>
+          <div id="complicationsList"></div>
+        </div>
+
+        <div class="section">
+          <div class="section-title">
+            <h3>Non-playable Characters</h3>
+            <div class="actions"><button id="addNpcBtn">+ Add NPC</button></div>
+          </div>
+          <div id="npcs"></div>
+        </div>
+
+        <div class="section">
+          <div class="section-title"><h3>Developments</h3></div>
+          <div class="grid grid-2">
+            <div>
+              <label for="benefits">Who benefits</label>
+              <input id="benefits" />
+            </div>
+            <div>
+              <label for="pissed">Who’s pissed</label>
+              <input id="pissed" />
+            </div>
+            <div>
+              <label for="escalates">What escalates</label>
+              <input id="escalates" />
+            </div>
+            <div>
+              <label for="newHook">New hook unlocked</label>
+              <input id="newHook" />
+            </div>
+          </div>
+        </div>
+
+        <div class="section">
+          <div class="section-title"><h3>GM Notes</h3></div>
+          <textarea id="gmNotes" placeholder="Improvised details, names, spare clues, stat notes..."></textarea>
+        </div>
+
+        <div class="section section-action">
+          <button class="primary wide-action-btn" id="printBtnBottom" type="button">Print / Export PDF</button>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <input id="importJsonInput" type="file" accept="application/json,.json" hidden />
+
+  <template id="locationTemplate">
+    <div class="item-card location-card">
+      <div class="item-card-header">
+        <div class="complication-tags">
+          <div class="type-menu">
+            <input type="hidden" data-field="sceneStyle" />
+            <button class="pill type-menu-toggle location-style-toggle" type="button">Scene style</button>
+            <div class="type-menu-popup" hidden>
+              <button type="button" class="type-option type-option-reset" data-field-name="sceneStyle" data-type="">
+                <span class="type-option-symbol">×</span>
+                <span class="type-option-copy">Reset to default</span>
+              </button>
+              <button type="button" class="type-option" data-field-name="sceneStyle" data-type="battle-map">
+                <span class="type-option-symbol">▦</span>
+                <span class="type-option-copy">Battle Map</span>
+              </button>
+              <button type="button" class="type-option" data-field-name="sceneStyle" data-type="totm">
+                <span class="type-option-symbol">☁</span>
+                <span class="type-option-copy">TOTM</span>
+              </button>
+              <button type="button" class="type-option" data-field-name="sceneStyle" data-type="hybrid">
+                <span class="type-option-symbol">◫</span>
+                <span class="type-option-copy">Hybrid</span>
+              </button>
+            </div>
+          </div>
+        </div>
+        <button class="danger remove-btn" type="button">Remove</button>
+      </div>
+      <div class="grid grid-2">
+        <div>
+          <label>Name</label>
+          <input data-field="name" placeholder="Afterlife-adjacent noodle market" />
+        </div>
+        <div>
+          <label>Obstacle</label>
+          <input data-field="obstacle" placeholder="Gang checkpoint, ICE, timer..." />
+        </div>
+      </div>
+      <div style="margin-top:14px;">
+        <label>What it is</label>
+        <textarea data-field="what"></textarea>
+      </div>
+      <div style="margin-top:14px;">
+        <label>Why it matters</label>
+        <textarea data-field="why"></textarea>
+      </div>
+    </div>
+  </template>
+
+  <template id="complicationTemplate">
+    <div class="item-card complication-card">
+      <div class="item-card-header">
+        <div class="complication-tags">
+          <div class="type-menu">
+            <input type="hidden" data-field="revealType" />
+            <button class="pill type-menu-toggle complication-type-toggle" type="button">Choose complication type</button>
+            <div class="type-menu-popup" hidden>
+              <button type="button" class="type-option type-option-reset" data-field-name="revealType" data-type="">
+                <span class="type-option-symbol">×</span>
+                <span class="type-option-copy">Reset to default</span>
+              </button>
+              <button type="button" class="type-option" data-field-name="revealType" data-type="apparent" data-symbol="➤">
+                <span class="type-option-symbol">➤</span>
+                <span class="type-option-copy">This information is either immediately or eventually apparent to the players, regardless of their actions or abilities.</span>
+              </button>
+              <button type="button" class="type-option" data-field-name="revealType" data-type="hidden" data-symbol="🔎">
+                <span class="type-option-symbol">🔎</span>
+                <span class="type-option-copy">This information is hidden from the players. PCs trying to investigate, having specific abilities or asking the right questions might earn this.</span>
+              </button>
+              <button type="button" class="type-option" data-field-name="revealType" data-type="conditional" data-symbol="?">
+                <span class="type-option-symbol">?</span>
+                <span class="type-option-copy">This information might become true depending on how the adventure progresses, or if the GM chooses to make it true.</span>
+              </button>
+            </div>
+          </div>
+          <div class="type-menu">
+            <input type="hidden" data-field="dangerLevel" />
+            <button class="pill type-menu-toggle complication-danger-toggle" type="button">Choose danger level</button>
+            <div class="type-menu-popup" hidden>
+              <button type="button" class="type-option type-option-reset" data-field-name="dangerLevel" data-type="">
+                <span class="type-option-symbol">×</span>
+                <span class="type-option-copy">Reset to default</span>
+              </button>
+              <button type="button" class="type-option" data-field-name="dangerLevel" data-type="routine" data-symbol="○">
+                <span class="type-option-symbol">○</span>
+                <span class="type-option-copy">Routine</span>
+              </button>
+              <button type="button" class="type-option" data-field-name="dangerLevel" data-type="risky" data-symbol="△">
+                <span class="type-option-symbol">△</span>
+                <span class="type-option-copy">Risky</span>
+              </button>
+              <button type="button" class="type-option" data-field-name="dangerLevel" data-type="dangerous" data-symbol="▲">
+                <span class="type-option-symbol">▲</span>
+                <span class="type-option-copy">Dangerous</span>
+              </button>
+              <button type="button" class="type-option" data-field-name="dangerLevel" data-type="deadly" data-symbol="☠">
+                <span class="type-option-symbol">☠</span>
+                <span class="type-option-copy">Deadly</span>
+              </button>
+            </div>
+          </div>
+        </div>
+        <button class="danger remove-btn" type="button">Remove</button>
+      </div>
+      <label>Complication</label>
+      <textarea data-field="text" placeholder="A twist, escalation, obstacle, deadline, betrayal..."></textarea>
+    </div>
+  </template>
+
+  <template id="npcTemplate">
+    <div class="item-card npc-card">
+      <div class="item-card-header">
+        <div class="complication-tags">
+          <div class="type-menu">
+            <input type="hidden" data-field="npcType" />
+            <button class="pill type-menu-toggle npc-type-toggle" type="button">NPC type</button>
+            <div class="type-menu-popup" hidden>
+              <button type="button" class="type-option type-option-reset" data-field-name="npcType" data-type="">
+                <span class="type-option-symbol">×</span>
+                <span class="type-option-copy">Reset to default</span>
+              </button>
+              <button type="button" class="type-option" data-field-name="npcType" data-type="friendly" data-symbol="+">
+                <span class="type-option-symbol">+</span>
+                <span class="type-option-copy">Friendly</span>
+              </button>
+              <button type="button" class="type-option" data-field-name="npcType" data-type="neutral" data-symbol="○">
+                <span class="type-option-symbol">○</span>
+                <span class="type-option-copy">Neutral</span>
+              </button>
+              <button type="button" class="type-option" data-field-name="npcType" data-type="enemy" data-symbol="!">
+                <span class="type-option-symbol">!</span>
+                <span class="type-option-copy">Enemy</span>
+              </button>
+              <button type="button" class="type-option" data-field-name="npcType" data-type="boss" data-symbol="★">
+                <span class="type-option-symbol">★</span>
+                <span class="type-option-copy">Boss</span>
+              </button>
+            </div>
+          </div>
+        </div>
+        <button class="danger remove-btn" type="button">Remove</button>
+      </div>
+      <div class="grid grid-3">
+        <div>
+          <label>Name</label>
+          <input data-field="name" placeholder="Boaty McBoatface" />
+        </div>
+        <div>
+          <label>Role</label>
+          <input data-field="role" placeholder="Fixer / witness / target" />
+        </div>
+        <div>
+          <label>Quirk / Vibe</label>
+          <input data-field="vibe" placeholder="How do they stand out? Paranoid, smooth, broken, visual appearance, mannerisms..."/>
+        </div>
+      </div>
+      <div style="margin-top:14px;">
+        <label>👍 Wants</label>
+        <input data-field="plus" placeholder="What are the NPC's immediate motivations. What are they likely to help with?" />
+      </div>
+      <div style="margin-top:14px;">
+        <label>👎 Doesn't Want</label>
+        <input data-field="minus" placeholder="What are the NPC's immediate disincentives. What are they likely to hinder?" />
+      </div>
+      <div style="margin-top:14px;">
+        <label style="display:flex;align-items:center;gap:8px;text-transform:none;letter-spacing:0;font-size:.9rem;color:var(--text);margin-bottom:10px;">
+          <input type="checkbox" class="styled-checkbox" data-toggle="advanced" />
+          Advanced NPC options
+        </label>
+        <div class="npc-advanced" style="display:none;">
+          <div>
+            <label>🤫 Secret</label>
+            <textarea data-field="secret" placeholder="Something that is revealed as players interact with the NPC over a prolonged period of time. Should also affect the 'Wants' and 'Don't Wants'."></textarea>
+          </div>
+          <div style="margin-top:14px;">
+            <label>🙃 Incongruency / contradiction</label>
+            <textarea data-field="incongruency" placeholder="Details that don't fit in with stereotypical tropes, e.g. bandits that are deeply religious, or a ruthless mercenary who refuses to kill animals."></textarea>
+          </div>
+        </div>
+      </div>
+    </div>
+  </template>
+
+  <script src="app.js"></script>
+</body>
+</html>
