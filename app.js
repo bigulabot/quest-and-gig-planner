@@ -351,6 +351,7 @@ function addNpc(data = {}, options = {}) {
     const key = input.dataset.field;
     if (input.tagName === 'INPUT' || input.tagName === 'TEXTAREA') {
       input.value = data[key] || '';
+      bindAutoGrowField(input);
       input.addEventListener('input', renderPreview);
     }
   });
@@ -367,8 +368,14 @@ function addNpc(data = {}, options = {}) {
   );
   toggle.checked = hasAdvanced;
   advanced.style.display = hasAdvanced ? 'block' : 'none';
+  if (hasAdvanced) {
+    advanced.querySelectorAll('textarea[data-autogrow="true"]').forEach(autosizeTextarea);
+  }
   toggle.addEventListener('change', () => {
     advanced.style.display = toggle.checked ? 'block' : 'none';
+    if (toggle.checked) {
+      advanced.querySelectorAll('textarea[data-autogrow="true"]').forEach(autosizeTextarea);
+    }
     if (!toggle.checked) {
       statDetails.style.display = 'none';
       statToggleButton.classList.remove('is-open');
@@ -882,6 +889,23 @@ function normalizeCorePitch() {
   }
 }
 
+function positionSectionJumpNav() {
+  const nav = document.querySelector('.section-jump-nav');
+  const toggle = byId('sectionJumpToggle');
+  const hookSection = byId('hook-section');
+  const panel = document.querySelector('.panel');
+  if (!nav || !toggle || !hookSection || !panel) return;
+
+  const hookRect = hookSection.getBoundingClientRect();
+  const panelRect = panel.getBoundingClientRect();
+  const topAtPageStart = hookRect.bottom + window.scrollY - toggle.offsetHeight - 8;
+  const maxTop = Math.max(24, window.innerHeight - toggle.offsetHeight - 24);
+  const computedTop = Math.min(Math.max(24, topAtPageStart), maxTop);
+  const computedLeft = Math.max(0, panelRect.left - nav.offsetWidth + 4);
+  nav.style.top = `${Math.round(computedTop)}px`;
+  nav.style.left = `${Math.round(computedLeft)}px`;
+}
+
 document.addEventListener('click', event => {
   if (!event.target.closest('.type-menu')) {
     document.querySelectorAll('.type-menu-popup').forEach(menu => {
@@ -934,5 +958,7 @@ byId('importJsonInput').addEventListener('change', event => {
   importJsonFile(event.target.files?.[0]);
   event.target.value = '';
 });
+window.addEventListener('resize', positionSectionJumpNav);
 
 clearForm();
+positionSectionJumpNav();

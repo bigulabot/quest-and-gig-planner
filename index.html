@@ -6,7 +6,19 @@
   <title>Cyberpunk RED GIG PLANNER</title>
   <link rel="stylesheet" href="styles.css" />
 </head>
-<body>
+<body id="page-top">
+  <nav class="section-jump-nav" aria-label="Jump to section">
+    <button type="button" class="section-jump-toggle" id="sectionJumpToggle" aria-controls="sectionJumpLinks"><span class="section-jump-toggle-label">Navigation</span></button>
+    <div class="section-jump-links" id="sectionJumpLinks">
+      <a href="#page-top" class="section-jump-link">Home</a>
+      <a href="#hook-section" class="section-jump-link">Hook</a>
+      <a href="#locations-section" class="section-jump-link">Locations</a>
+      <a href="#complications-section" class="section-jump-link">Encounters</a>
+      <a href="#npcs-section" class="section-jump-link">NPCs</a>
+      <a href="#developments-section" class="section-jump-link">Developments</a>
+      <a href="#gm-notes-section" class="section-jump-link">GM Notes</a>
+    </div>
+  </nav>
   <div class="app">
     <section class="panel">
       <div class="panel-header">
@@ -37,7 +49,7 @@
         </div>
       </div>
       <div class="content">
-        <div class="section">
+        <div class="section" id="hook-section">
           <div class="section-title"><h3>Hook</h3></div>
           <div class="grid grid-2">
             <div>
@@ -106,7 +118,7 @@
           </div>
         </div>
 
-        <div class="section">
+        <div class="section" id="locations-section">
           <div class="section-title">
             <h3>Locations / SCENES</h3>
             <div class="actions"><button id="addLocationBtn">+ Add location</button></div>
@@ -114,7 +126,7 @@
           <div id="locations"></div>
         </div>
 
-        <div class="section">
+        <div class="section" id="complications-section">
           <div class="section-title">
             <h3>Encounters / Complications</h3>
             <div class="actions"><button id="addComplicationBtn">+ Add complication</button></div>
@@ -122,7 +134,7 @@
           <div id="complicationsList"></div>
         </div>
 
-        <div class="section">
+        <div class="section" id="npcs-section">
           <div class="section-title">
             <h3>Non-playable Characters</h3>
             <div class="actions"><button id="addNpcBtn">+ Add NPC</button></div>
@@ -130,7 +142,7 @@
           <div id="npcs"></div>
         </div>
 
-        <div class="section">
+        <div class="section" id="developments-section">
           <div class="section-title"><h3>Developments</h3></div>
           <div class="grid grid-2">
             <div>
@@ -152,7 +164,7 @@
           </div>
         </div>
 
-        <div class="section">
+        <div class="section" id="gm-notes-section">
           <div class="section-title"><h3>GM Notes</h3></div>
           <textarea id="gmNotes" placeholder="Improvised details, names, spare clues, stat notes..."></textarea>
         </div>
@@ -323,11 +335,11 @@
       </div>
       <div style="margin-top:14px;">
         <label>👍 Wants</label>
-        <input data-field="plus" placeholder="What are the NPC's immediate motivations. What are they likely to help with?" />
+        <textarea data-field="plus" data-autogrow="true" placeholder="What are the NPC's immediate motivations. What are they likely to help with?"></textarea>
       </div>
       <div style="margin-top:14px;">
         <label>👎 Doesn't Want</label>
-        <input data-field="minus" placeholder="What are the NPC's immediate disincentives. What are they likely to hinder?" />
+        <textarea data-field="minus" data-autogrow="true" placeholder="What are the NPC's immediate disincentives. What are they likely to hinder?"></textarea>
       </div>
       <div style="margin-top:14px;">
         <label style="display:flex;align-items:center;gap:8px;text-transform:none;letter-spacing:0;font-size:.9rem;color:var(--text);margin-bottom:10px;">
@@ -337,11 +349,11 @@
         <div class="npc-advanced" style="display:none;">
           <div>
             <label>🤫 Secret</label>
-            <textarea data-field="secret" placeholder="Something that is revealed as players interact with the NPC over a prolonged period of time. Should also affect the 'Wants' and 'Don't Wants'."></textarea>
+            <textarea data-field="secret" data-autogrow="true" placeholder="Something that is revealed as players interact with the NPC over a prolonged period of time. Should also affect the 'Wants' and 'Don't Wants'."></textarea>
           </div>
           <div style="margin-top:14px;">
             <label>🙃 Incongruency / contradiction</label>
-            <textarea data-field="incongruency" placeholder="Details that don't fit in with stereotypical tropes, e.g. bandits that are deeply religious, or a ruthless mercenary who refuses to kill animals."></textarea>
+            <textarea data-field="incongruency" data-autogrow="true" placeholder="Details that don't fit in with stereotypical tropes, e.g. bandits that are deeply religious, or a ruthless mercenary who refuses to kill animals."></textarea>
           </div>
           <div style="margin-top:14px;">
             <button class="pill statblock-toggle" type="button">Stat block</button>

@@ -3,6 +3,7 @@
 :root {
   --bg: #1f2227;
   --panel: #2c3036;
+  --panel-shell: #2c3036;
   --panel-2: #373c44;
   --line: #df2a21;
   --text: #f3f3f3;
@@ -11,6 +12,10 @@
   --danger: #ff8787;
   --shadow: 0 16px 40px rgba(0,0,0,.38);
   --radius: 18px;
+}
+
+html {
+  scroll-behavior: smooth;
 }
 
 * { box-sizing: border-box; }
@@ -24,6 +29,109 @@ body {
   color: var(--text);
 }
 
+.section-jump-nav {
+  position: fixed;
+  top: 260px;
+  left: 0;
+  z-index: 30;
+  width: 44px;
+  display: block;
+}
+
+.section-jump-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  min-height: 144px;
+  padding: 12px 0;
+  border: 0;
+  border-radius: 14px 0 0 14px;
+  background: var(--panel-shell);
+  color: rgba(243,243,243,.74);
+  font-family: "Barlow Condensed", "Arial Narrow", sans-serif;
+  font-size: .88rem;
+  letter-spacing: .1em;
+  line-height: 1;
+  text-transform: uppercase;
+  text-align: center;
+  writing-mode: vertical-rl;
+  cursor: pointer;
+  transition: border-color .15s ease, box-shadow .15s ease, background .15s ease, color .15s ease;
+}
+
+.section-jump-toggle-label {
+  display: block;
+  transform: rotate(180deg);
+}
+
+.section-jump-toggle:hover,
+.section-jump-toggle:focus-visible,
+.section-jump-nav:hover .section-jump-toggle,
+.section-jump-nav:focus-within .section-jump-toggle {
+  background: #323740;
+  box-shadow: 0 10px 20px rgba(0,0,0,.14);
+  outline: none;
+  color: #fff;
+}
+
+.section-jump-links {
+  position: absolute;
+  top: 0;
+  left: calc(100% - 1px);
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  width: 154px;
+  padding: 10px 12px;
+  border: 0;
+  border-radius: 0 14px 14px 0;
+  background: #2c3036;
+  box-shadow: 0 16px 30px rgba(0,0,0,.24);
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transform: translateX(-12px);
+  transition: opacity .18s ease, transform .18s ease, visibility .18s ease;
+}
+
+.section-jump-nav:hover .section-jump-links,
+.section-jump-nav:focus-within .section-jump-links {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+  transform: translateX(0);
+}
+
+.section-jump-link {
+  display: block;
+  padding: 8px 0;
+  border: 0;
+  background: transparent;
+  color: rgba(243,243,243,.78);
+  text-decoration: none;
+  font-family: "Barlow Condensed", "Arial Narrow", sans-serif;
+  font-size: .94rem;
+  letter-spacing: .05em;
+  line-height: 1;
+  text-transform: uppercase;
+  transition: border-color .15s ease, box-shadow .15s ease, background .15s ease, color .15s ease;
+}
+
+.section-jump-link + .section-jump-link {
+  margin-top: 4px;
+  padding-top: 10px;
+  border-top: 1px solid rgba(255,255,255,.16);
+}
+
+.section-jump-link:hover,
+.section-jump-link:focus-visible {
+  color: #fff;
+  outline: none;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
 .app {
   max-width: 980px;
   margin: 0 auto;
@@ -32,7 +140,7 @@ body {
 }
 
 .panel {
-  background: linear-gradient(180deg, #2f3339, #25292f);
+  background: var(--panel-shell);
   border: 2px solid var(--line);
   border-radius: var(--radius);
   box-shadow: var(--shadow);
@@ -113,6 +221,7 @@ body {
   border-radius: 16px;
   background: var(--panel-2);
   margin-bottom: 18px;
+  scroll-margin-top: 22px;
 }
 
 .section-action {
@@ -187,6 +296,17 @@ textarea {
 textarea[data-autogrow="true"] {
   overflow: hidden;
   resize: none;
+}
+
+.npc-card textarea[data-field="plus"],
+.npc-card textarea[data-field="minus"],
+.npc-card textarea[data-field="secret"],
+.npc-card textarea[data-field="incongruency"] {
+  min-height: 44px;
+  height: 44px;
+  padding-top: 11px;
+  padding-bottom: 11px;
+  line-height: 1.2;
 }
 
 .npc-advanced > div > textarea {
@@ -885,7 +1005,7 @@ button.danger:hover {
   align-items: start;
 }
 
-@media (max-width: 1100px) {
+@media (max-width: 920px) {
   .app { grid-template-columns: 1fr; }
   .grid-3 { grid-template-columns: 1fr; }
   .print-columns { grid-template-columns: 1fr; }
@@ -894,9 +1014,15 @@ button.danger:hover {
   #printComplications.sheet-list {
     grid-template-columns: 1fr;
   }
+  .section-jump-nav {
+    display: none;
+  }
 }
 
 @media print {
+  .section-jump-nav {
+    display: none !important;
+  }
   html, body {
     background: #fff;
     font-size: 11px;
