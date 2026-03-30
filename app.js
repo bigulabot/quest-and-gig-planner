@@ -3,6 +3,10 @@ const ids = [
   'benefits', 'pissed', 'escalates', 'newHook', 'gmNotes'
 ];
 
+const AUTOSAVE_KEY = 'cprGigPlanner.autosave.v1';
+let autosaveTimer = null;
+let suppressAutosave = false;
+
 function byId(id) { return document.getElementById(id); }
 
 function escapeHtml(str) {
@@ -53,6 +57,53 @@ function printField(label, value) {
   return `<div class="sheet-field"><strong>${escapeHtml(label)}</strong><div>${escapeHtml(value)}</div></div>`;
 }
 
+function getAutosaveStorage() {
+  try {
+    return window.localStorage;
+  } catch (error) {
+    return null;
+  }
+}
+
+function persistAutosaveNow() {
+  if (suppressAutosave) return;
+  const storage = getAutosaveStorage();
+  if (!storage) return;
+
+  try {
+    storage.setItem(AUTOSAVE_KEY, JSON.stringify({
+      savedAt: new Date().toISOString(),
+      data: gatherData(),
+    }));
+  } catch (error) {
+    // Ignore storage failures silently so local editing still works.
+  }
+}
+
+function scheduleAutosave() {
+  if (suppressAutosave) return;
+  window.clearTimeout(autosaveTimer);
+  autosaveTimer = window.setTimeout(() => {
+    persistAutosaveNow();
+  }, 250);
+}
+
+function loadAutosaveData() {
+  const storage = getAutosaveStorage();
+  if (!storage) return null;
+
+  try {
+    const raw = storage.getItem(AUTOSAVE_KEY);
+    if (!raw) return null;
+    const parsed = JSON.parse(raw);
+    return parsed && typeof parsed === 'object' && parsed.data && typeof parsed.data === 'object'
+      ? parsed.data
+      : null;
+  } catch (error) {
+    return null;
+  }
+}
+
 function autosizeTextarea(textarea) {
   if (!textarea) return;
   const minHeight = parseFloat(window.getComputedStyle(textarea).minHeight) || 0;
@@ -64,6 +115,63 @@ function bindAutoGrowField(field) {
   if (!field || field.dataset.autogrow !== 'true') return;
   autosizeTextarea(field);
   field.addEventListener('input', () => autosizeTextarea(field));
+}
+
+function summarizeCard(card) {
+  if (card.classList.contains('location-card')) {
+    const name = card.querySelector('[data-field="name"]')?.value.trim();
+    const obstacle = card.querySelector('[data-field="obstacle"]')?.value.trim();
+    const what = card.querySelector('[data-field="what"]')?.value.trim();
+    return [name || 'Untitled location', obstacle, what].filter(Boolean).join(' | ');
+  }
+
+  if (card.classList.contains('complication-card')) {
+    const text = card.querySelector('[data-field="text"]')?.value.trim();
+    return text || 'Empty complication';
+  }
+
+  if (card.classList.contains('npc-card')) {
+    const name = card.querySelector('[data-field="name"]')?.value.trim();
+    const role = card.querySelector('[data-field="role"]')?.value.trim();
+    const vibe = card.querySelector('[data-field="vibe"]')?.value.trim();
+    return [name || 'Untitled NPC', role, vibe].filter(Boolean).join(' | ');
+  }
+
+  return '';
+}
+
+function refreshCardSummary(card) {
+  const summary = card.querySelector('.item-card-summary');
+  if (!summary) return;
+  summary.textContent = summarizeCard(card);
+}
+
+function setCardCollapsed(card, isCollapsed) {
+  const body = card.querySelector('.item-card-body');
+  const summary = card.querySelector('.item-card-summary');
+  if (!body || !summary) return;
+
+  card.classList.toggle('is-collapsed', isCollapsed);
+  body.hidden = isCollapsed;
+  refreshCardSummary(card);
+  summary.hidden = !isCollapsed;
+}
+
+function setupCollapsibleCard(card) {
+  card.addEventListener('dblclick', event => {
+    if (event.target.closest('input, textarea, select, button, a, label, .type-menu-popup')) return;
+    const isCollapsed = card.classList.contains('is-collapsed');
+    setCardCollapsed(card, !isCollapsed);
+    card.classList.remove('card-toggle-flash');
+    window.requestAnimationFrame(() => {
+      card.classList.add('card-toggle-flash');
+      window.setTimeout(() => {
+        card.classList.remove('card-toggle-flash');
+      }, 180);
+    });
+  });
+
+  setCardCollapsed(card, false);
 }
 
 function closeAllNpcStatBlocks(exceptCard = null) {
@@ -86,13 +194,17 @@ function addLocation(data = {}, options = {}) {
     if (input.tagName === 'INPUT' || input.tagName === 'TEXTAREA') {
       input.value = data[key] || '';
       bindAutoGrowField(input);
-      input.addEventListener('input', renderPreview);
+      input.addEventListener('input', () => {
+        refreshCardSummary(tpl);
+        renderPreview();
+      });
     }
   });
   tpl.querySelector('.remove-btn').addEventListener('click', () => {
     tpl.remove();
     renderPreview();
   });
+  setupCollapsibleCard(tpl);
   tpl.querySelectorAll('.type-menu').forEach(menuWrap => {
     const toggleButton = menuWrap.querySelector('.type-menu-toggle');
     const menu = menuWrap.querySelector('.type-menu-popup');
@@ -118,6 +230,7 @@ function addLocation(data = {}, options = {}) {
   } else {
     byId('locations').appendChild(tpl);
   }
+  refreshCardSummary(tpl);
   renderPreview();
 }
 
@@ -129,7 +242,7 @@ function getSceneStyleMeta(style) {
     },
     totm: {
       symbol: '☁',
-      label: 'TOTM',
+      label: 'ToTM',
     },
     hybrid: {
       symbol: '◫',
@@ -208,7 +321,7 @@ function getNpcTypeMeta(type) {
 function getSceneStyleMeta(style) {
   const map = {
     'battle-map': { icon: 'assets/icons/battlemap.webp', label: 'Battlemap' },
-    totm: { icon: 'assets/icons/TOTM.webp', label: 'TOTM' },
+    totm: { icon: 'assets/icons/TOTM.webp', label: 'ToTM' },
   };
   return map[style] || null;
 }
@@ -225,7 +338,6 @@ function getComplicationTypeMeta(type) {
 function getDangerLevelMeta(level) {
   const map = {
     routine: { icon: 'assets/icons/routine.webp', label: 'Routine' },
-    risky: { icon: 'assets/icons/risky.webp', label: 'Risky' },
     dangerous: { icon: 'assets/icons/dangerous.webp', label: 'Dangerous' },
     deadly: { icon: 'assets/icons/deadly.webp', label: 'Deadly' },
   };
@@ -302,13 +414,17 @@ function addComplication(data = {}, options = {}) {
     const key = input.dataset.field;
     input.value = data[key] || '';
     bindAutoGrowField(input);
-    input.addEventListener('input', renderPreview);
+    input.addEventListener('input', () => {
+      refreshCardSummary(tpl);
+      renderPreview();
+    });
   });
   tpl.querySelector('.remove-btn').addEventListener('click', () => {
     tpl.remove();
     updateComplicationNumbers();
     renderPreview();
   });
+  setupCollapsibleCard(tpl);
   tpl.querySelectorAll('.type-menu').forEach(menuWrap => {
     const toggle = menuWrap.querySelector('.type-menu-toggle');
     const menu = menuWrap.querySelector('.type-menu-popup');
@@ -340,6 +456,7 @@ function addComplication(data = {}, options = {}) {
   } else {
     byId('complicationsList').appendChild(tpl);
   }
+  refreshCardSummary(tpl);
   updateComplicationNumbers();
   renderPreview();
 }
@@ -352,9 +469,13 @@ function addNpc(data = {}, options = {}) {
     if (input.tagName === 'INPUT' || input.tagName === 'TEXTAREA') {
       input.value = data[key] || '';
       bindAutoGrowField(input);
-      input.addEventListener('input', renderPreview);
+      input.addEventListener('input', () => {
+        refreshCardSummary(tpl);
+        renderPreview();
+      });
     }
   });
+  setupCollapsibleCard(tpl);
 
   const toggle = tpl.querySelector('[data-toggle="advanced"]');
   const advanced = tpl.querySelector('.npc-advanced');
@@ -381,6 +502,7 @@ function addNpc(data = {}, options = {}) {
       statToggleButton.classList.remove('is-open');
       statToggleButton.textContent = 'Stat block';
     }
+    refreshCardSummary(tpl);
     renderPreview();
   });
   statDetails.style.display = 'none';
@@ -432,6 +554,7 @@ function addNpc(data = {}, options = {}) {
   } else {
     byId('npcs').appendChild(tpl);
   }
+  refreshCardSummary(tpl);
   renderPreview();
 }
 
@@ -468,7 +591,9 @@ function gatherData() {
 }
 
 function renderPreview() {
-  return gatherData();
+  const data = gatherData();
+  scheduleAutosave();
+  return data;
 }
 
 function buildPrintList(items, renderItem, emptyText, listId = '') {
@@ -752,43 +877,55 @@ function printSheet() {
 }
 
 function clearForm() {
-  ids.forEach(id => {
-    const el = byId(id);
-    if (el) el.value = '';
-  });
-  byId('corePitch').innerHTML = '';
-  byId('locations').innerHTML = '';
-  byId('complicationsList').innerHTML = '';
-  byId('npcs').innerHTML = '';
-  addLocation();
-  addComplication();
-  addNpc();
+  suppressAutosave = true;
+  try {
+    ids.forEach(id => {
+      const el = byId(id);
+      if (el) el.value = '';
+    });
+    byId('corePitch').innerHTML = '';
+    byId('locations').innerHTML = '';
+    byId('complicationsList').innerHTML = '';
+    byId('npcs').innerHTML = '';
+    addLocation();
+    addComplication();
+    addNpc();
+  } finally {
+    suppressAutosave = false;
+  }
   renderPreview();
+  persistAutosaveNow();
 }
 
 function populateForm(data = {}) {
-  ids.forEach(id => {
-    const el = byId(id);
-    if (el) el.value = typeof data[id] === 'string' ? data[id] : '';
-  });
+  suppressAutosave = true;
+  try {
+    ids.forEach(id => {
+      const el = byId(id);
+      if (el) el.value = typeof data[id] === 'string' ? data[id] : '';
+    });
 
-  byId('corePitch').innerHTML = sanitizeRichText(data.corePitch || '');
-  byId('locations').innerHTML = '';
-  byId('complicationsList').innerHTML = '';
-  byId('npcs').innerHTML = '';
+    byId('corePitch').innerHTML = sanitizeRichText(data.corePitch || '');
+    byId('locations').innerHTML = '';
+    byId('complicationsList').innerHTML = '';
+    byId('npcs').innerHTML = '';
 
-  const locations = Array.isArray(data.locations) && data.locations.length ? data.locations : [{}];
-  const complications = Array.isArray(data.complications) && data.complications.length ? data.complications : [{}];
-  const npcs = Array.isArray(data.npcs) && data.npcs.length ? data.npcs : [{}];
+    const locations = Array.isArray(data.locations) && data.locations.length ? data.locations : [{}];
+    const complications = Array.isArray(data.complications) && data.complications.length ? data.complications : [{}];
+    const npcs = Array.isArray(data.npcs) && data.npcs.length ? data.npcs : [{}];
 
-  locations.forEach(item => addLocation(item || {}, { prepend: false }));
-  complications.forEach(item => {
-    const normalized = typeof item === 'string' ? { text: item } : (item || {});
-    addComplication(normalized, { prepend: false });
-  });
-  npcs.forEach(item => addNpc(item || {}, { prepend: false }));
+    locations.forEach(item => addLocation(item || {}, { prepend: false }));
+    complications.forEach(item => {
+      const normalized = typeof item === 'string' ? { text: item } : (item || {});
+      addComplication(normalized, { prepend: false });
+    });
+    npcs.forEach(item => addNpc(item || {}, { prepend: false }));
+  } finally {
+    suppressAutosave = false;
+  }
 
   renderPreview();
+  persistAutosaveNow();
 }
 
 function loadDemo() {
@@ -959,6 +1096,12 @@ byId('importJsonInput').addEventListener('change', event => {
   event.target.value = '';
 });
 window.addEventListener('resize', positionSectionJumpNav);
+window.addEventListener('pagehide', persistAutosaveNow);
 
-clearForm();
+const autosavedData = loadAutosaveData();
+if (autosavedData) {
+  populateForm(autosavedData);
+} else {
+  clearForm();
+}
 positionSectionJumpNav();

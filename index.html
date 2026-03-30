@@ -23,7 +23,7 @@
     <section class="panel">
       <div class="panel-header">
         <div>
-          <h1>Cyberpunk RED GIG PLANNER</h1>
+          <h1>Cyberpunk RED <span class="title-lockup">GIG PLANNER</span></h1>
           <div class="subtle header-subtitle">
             <div class="header-copy">A modular Cyberpunk RED gig planner with expandable sections, structured NPC and encounter tools, optional printable stat blocks, save/load support, and clean export formatting, built to turn rough ideas into table-ready jobs fast.</div>
             <div class="header-copy">
@@ -120,7 +120,10 @@
 
         <div class="section" id="locations-section">
           <div class="section-title">
-            <h3>Locations / SCENES</h3>
+            <div>
+              <h3>Locations / SCENES</h3>
+              <div class="section-hint">Double-click a card to collapse or expand it.</div>
+            </div>
             <div class="actions"><button id="addLocationBtn">+ Add location</button></div>
           </div>
           <div id="locations"></div>
@@ -128,7 +131,10 @@
 
         <div class="section" id="complications-section">
           <div class="section-title">
-            <h3>Encounters / Complications</h3>
+            <div>
+              <h3>Encounters / Complications</h3>
+              <div class="section-hint">Double-click a card to collapse or expand it.</div>
+            </div>
             <div class="actions"><button id="addComplicationBtn">+ Add complication</button></div>
           </div>
           <div id="complicationsList"></div>
@@ -136,7 +142,10 @@
 
         <div class="section" id="npcs-section">
           <div class="section-title">
-            <h3>Non-playable Characters</h3>
+            <div>
+              <h3>Non-playable Characters</h3>
+              <div class="section-hint">Double-click a card to collapse or expand it.</div>
+            </div>
             <div class="actions"><button id="addNpcBtn">+ Add NPC</button></div>
           </div>
           <div id="npcs"></div>
@@ -183,7 +192,7 @@
   <template id="locationTemplate">
     <div class="item-card location-card">
       <div class="item-card-header">
-        <div class="complication-tags">
+        <div class="item-card-header-left">
           <div class="type-menu">
             <input type="hidden" data-field="sceneStyle" />
             <button class="pill type-menu-toggle location-style-toggle" type="button">Scene style</button>
@@ -198,30 +207,33 @@
               </button>
               <button type="button" class="type-option" data-field-name="sceneStyle" data-type="totm">
                 <span class="type-option-symbol">☁</span>
-                <span class="type-option-copy">TOTM</span>
+                <span class="type-option-copy">ToTM</span>
               </button>
             </div>
           </div>
         </div>
         <button class="danger remove-btn" type="button" aria-label="Remove">X</button>
       </div>
-      <div class="grid grid-2">
-        <div>
-          <label>Name</label>
-          <input data-field="name" placeholder="Afterlife-adjacent noodle market" />
+      <div class="item-card-summary" hidden></div>
+      <div class="item-card-body">
+        <div class="grid grid-2">
+          <div>
+            <label>Name</label>
+            <input data-field="name" placeholder="Afterlife-adjacent noodle market" />
+          </div>
+          <div>
+            <label>Obstacle</label>
+            <input data-field="obstacle" placeholder="Gang checkpoint, ICE, timer..." />
+          </div>
         </div>
-        <div>
-          <label>Obstacle</label>
-          <input data-field="obstacle" placeholder="Gang checkpoint, ICE, timer..." />
+        <div style="margin-top:14px;">
+          <label>What it is</label>
+          <textarea data-field="what" data-autogrow="true"></textarea>
         </div>
-      </div>
-      <div style="margin-top:14px;">
-        <label>What it is</label>
-        <textarea data-field="what" data-autogrow="true"></textarea>
-      </div>
-      <div style="margin-top:14px;">
-        <label>Why it matters</label>
-        <textarea data-field="why" data-autogrow="true"></textarea>
+        <div style="margin-top:14px;">
+          <label>Why it matters</label>
+          <textarea data-field="why" data-autogrow="true"></textarea>
+        </div>
       </div>
     </div>
   </template>
@@ -229,7 +241,7 @@
   <template id="complicationTemplate">
     <div class="item-card complication-card">
       <div class="item-card-header">
-        <div class="complication-tags">
+        <div class="item-card-header-left complication-tags">
           <div class="type-menu">
             <input type="hidden" data-field="revealType" />
             <button class="pill type-menu-toggle complication-type-toggle" type="button">Choose complication type</button>
@@ -240,11 +252,11 @@
               </button>
               <button type="button" class="type-option" data-field-name="revealType" data-type="apparent" data-symbol="➤">
                 <span class="type-option-symbol">➤</span>
-                <span class="type-option-copy"><strong>Open Info</strong><br />This is immediately apparent to the players or quickly becomes obvious through normal play.</span>
+                <span class="type-option-copy"><strong>Open Info</strong><br />This is immediately apparent to the PCs or quickly becomes obvious through normal play.</span>
               </button>
               <button type="button" class="type-option" data-field-name="revealType" data-type="hidden" data-symbol="🔎">
                 <span class="type-option-symbol">🔎</span>
-                <span class="type-option-copy"><strong>Hidden Info</strong><br />This is not visible upfront. Players can uncover it through investigation, abilities, or the right questions.</span>
+                <span class="type-option-copy"><strong>Hidden Info</strong><br />This is not visible upfront. PCs can uncover it through investigation, abilities, or the right questions.</span>
               </button>
               <button type="button" class="type-option" data-field-name="revealType" data-type="conditional" data-symbol="?">
                 <span class="type-option-symbol">?</span>
@@ -264,10 +276,6 @@
                 <span class="type-option-symbol">○</span>
                 <span class="type-option-copy">Routine</span>
               </button>
-              <button type="button" class="type-option" data-field-name="dangerLevel" data-type="risky" data-symbol="△">
-                <span class="type-option-symbol">△</span>
-                <span class="type-option-copy">Risky</span>
-              </button>
               <button type="button" class="type-option" data-field-name="dangerLevel" data-type="dangerous" data-symbol="▲">
                 <span class="type-option-symbol">▲</span>
                 <span class="type-option-copy">Dangerous</span>
@@ -281,15 +289,18 @@
         </div>
         <button class="danger remove-btn" type="button" aria-label="Remove">X</button>
       </div>
-      <label>Complication</label>
-      <textarea data-field="text" data-autogrow="true" placeholder="A twist, escalation, obstacle, deadline, betrayal..."></textarea>
+      <div class="item-card-summary" hidden></div>
+      <div class="item-card-body">
+        <label>Complication</label>
+        <textarea data-field="text" data-autogrow="true" placeholder="A twist, escalation, obstacle, deadline, betrayal..."></textarea>
+      </div>
     </div>
   </template>
 
   <template id="npcTemplate">
     <div class="item-card npc-card">
       <div class="item-card-header">
-        <div class="complication-tags">
+        <div class="item-card-header-left complication-tags">
           <div class="type-menu">
             <input type="hidden" data-field="npcType" />
             <button class="pill type-menu-toggle npc-type-toggle" type="button">NPC type</button>
@@ -319,45 +330,47 @@
         </div>
         <button class="danger remove-btn" type="button" aria-label="Remove">X</button>
       </div>
-      <div class="grid grid-3">
-        <div>
-          <label>Name</label>
-          <input data-field="name" placeholder="Boaty McBoatface" />
-        </div>
-        <div>
-          <label>Role</label>
-          <input data-field="role" placeholder="Fixer / witness / target" />
-        </div>
-        <div>
-          <label>Quirk / Vibe</label>
-          <input data-field="vibe" placeholder="How do they stand out? Paranoid, smooth, broken, visual appearance, mannerisms..."/>
-        </div>
-      </div>
-      <div style="margin-top:14px;">
-        <label>👍 Wants</label>
-        <textarea data-field="plus" data-autogrow="true" placeholder="What are the NPC's immediate motivations. What are they likely to help with?"></textarea>
-      </div>
-      <div style="margin-top:14px;">
-        <label>👎 Doesn't Want</label>
-        <textarea data-field="minus" data-autogrow="true" placeholder="What are the NPC's immediate disincentives. What are they likely to hinder?"></textarea>
-      </div>
-      <div style="margin-top:14px;">
-        <label style="display:flex;align-items:center;gap:8px;text-transform:none;letter-spacing:0;font-size:.9rem;color:var(--text);margin-bottom:10px;">
-          <input type="checkbox" class="styled-checkbox" data-toggle="advanced" />
-          Advanced NPC options
-        </label>
-        <div class="npc-advanced" style="display:none;">
+      <div class="item-card-summary" hidden></div>
+      <div class="item-card-body">
+        <div class="grid grid-3">
           <div>
-            <label>🤫 Secret</label>
-            <textarea data-field="secret" data-autogrow="true" placeholder="Something that is revealed as players interact with the NPC over a prolonged period of time. Should also affect the 'Wants' and 'Don't Wants'."></textarea>
+            <label>Name</label>
+            <input data-field="name" placeholder="Boaty McBoatface" />
           </div>
-          <div style="margin-top:14px;">
-            <label>🙃 Incongruency / contradiction</label>
-            <textarea data-field="incongruency" data-autogrow="true" placeholder="Details that don't fit in with stereotypical tropes, e.g. bandits that are deeply religious, or a ruthless mercenary who refuses to kill animals."></textarea>
+          <div>
+            <label>Role</label>
+            <input data-field="role" placeholder="Fixer / witness / target" />
           </div>
-          <div style="margin-top:14px;">
-            <button class="pill statblock-toggle" type="button">Stat block</button>
-            <div class="npc-statblock-details" style="display:none;">
+          <div>
+            <label>Quirk / Vibe</label>
+            <input data-field="vibe" placeholder="How do they stand out? Paranoid, smooth, broken, visual appearance, mannerisms..."/>
+          </div>
+        </div>
+        <div style="margin-top:14px;">
+          <label>👍 Wants</label>
+          <textarea data-field="plus" data-autogrow="true" placeholder="What are the NPC's immediate motivations. What are they likely to help with?"></textarea>
+        </div>
+        <div style="margin-top:14px;">
+          <label>👎 Doesn't Want</label>
+          <textarea data-field="minus" data-autogrow="true" placeholder="What are the NPC's immediate disincentives. What are they likely to hinder?"></textarea>
+        </div>
+        <div style="margin-top:14px;">
+          <label style="display:flex;align-items:center;gap:8px;text-transform:none;letter-spacing:0;font-size:.9rem;color:var(--text);margin-bottom:10px;">
+            <input type="checkbox" class="styled-checkbox" data-toggle="advanced" />
+            Advanced NPC options
+          </label>
+          <div class="npc-advanced" style="display:none;">
+            <div>
+              <label>🤫 Secret</label>
+              <textarea data-field="secret" data-autogrow="true" placeholder="Something that is revealed as players interact with the NPC over a prolonged period of time. Should also affect the 'Wants' and 'Don't Wants'."></textarea>
+            </div>
+            <div style="margin-top:14px;">
+              <label>🙃 Incongruency / contradiction</label>
+              <textarea data-field="incongruency" data-autogrow="true" placeholder="Details that don't fit in with stereotypical tropes, e.g. bandits that are deeply religious, or a ruthless mercenary who refuses to kill animals."></textarea>
+            </div>
+            <div style="margin-top:14px;">
+              <button class="pill statblock-toggle" type="button">Stat block</button>
+              <div class="npc-statblock-details" style="display:none;">
               <div class="compact-stat-grid" style="margin-top:14px;">
                 <label class="compact-stat-field"><span>INT</span><input data-field="statInt" /></label>
                 <label class="compact-stat-field"><span>REF</span><input data-field="statRef" /></label>
