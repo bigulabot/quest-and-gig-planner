@@ -119,6 +119,11 @@ function bindAutoGrowField(field) {
   field.addEventListener('input', () => autosizeTextarea(field));
 }
 
+function autosizeCardFields(scope) {
+  if (!scope) return;
+  scope.querySelectorAll('textarea[data-autogrow="true"]').forEach(autosizeTextarea);
+}
+
 function getDragAfterElement(container, pointerY) {
   const cards = [...container.querySelectorAll('.item-card:not(.is-drag-source)')];
 
@@ -297,6 +302,17 @@ function setCardCollapsed(card, isCollapsed) {
   summary.hidden = !isCollapsed;
 }
 
+function toggleSectionCards(sectionId, cardSelector) {
+  const section = byId(sectionId);
+  if (!section) return;
+
+  const cards = [...section.querySelectorAll(cardSelector)];
+  if (!cards.length) return;
+
+  const shouldCollapse = cards.some(card => !card.classList.contains('is-collapsed'));
+  cards.forEach(card => setCardCollapsed(card, shouldCollapse));
+}
+
 function setupCollapsibleCard(card) {
   card.addEventListener('dblclick', event => {
     if (event.target.closest('input, textarea, select, button, a, label, .type-menu-popup')) return;
@@ -312,6 +328,19 @@ function setupCollapsibleCard(card) {
   });
 
   setCardCollapsed(card, false);
+}
+
+function setupSectionCollapseShortcut(sectionId, cardSelector) {
+  const section = byId(sectionId);
+  const title = section?.querySelector('.section-title');
+  if (!section || !title || title.dataset.bulkCollapseBound === 'true') return;
+
+  title.addEventListener('dblclick', event => {
+    if (event.target.closest('button, a, input, textarea, select, label')) return;
+    toggleSectionCards(sectionId, cardSelector);
+  });
+
+  title.dataset.bulkCollapseBound = 'true';
 }
 
 function closeAllNpcStatBlocks(exceptCard = null) {
@@ -373,6 +402,7 @@ function addLocation(data = {}, options = {}) {
   } else {
     container.appendChild(tpl);
   }
+  autosizeCardFields(tpl);
   animateCardEntry(tpl);
   refreshCardSummary(tpl);
   renderPreview();
@@ -603,6 +633,7 @@ function addComplication(data = {}, options = {}) {
   } else {
     container.appendChild(tpl);
   }
+  autosizeCardFields(tpl);
   animateCardEntry(tpl);
   refreshCardSummary(tpl);
   updateComplicationNumbers();
@@ -705,6 +736,7 @@ function addNpc(data = {}, options = {}) {
   } else {
     container.appendChild(tpl);
   }
+  autosizeCardFields(tpl);
   animateCardEntry(tpl);
   refreshCardSummary(tpl);
   renderPreview();
@@ -966,9 +998,8 @@ function buildPrintMarkup(data) {
 </head>
 <body class="print-preview-window">
   <article class="print-sheet">
-    <div class="print-credit">Created with CPR Gig Planner</div>
     <h1 class="sheet-title">${title}</h1>
-    <div class="sheet-subtitle">${pitch}</div>
+    <div class="sheet-subtitle setup-intro">${pitch}</div>
 
     ${hookFields ? `<section class="sheet-section">
       <h4>Hook</h4>
@@ -1247,6 +1278,9 @@ byId('importJsonInput').addEventListener('change', event => {
   importJsonFile(event.target.files?.[0]);
   event.target.value = '';
 });
+setupSectionCollapseShortcut('locations-section', '.location-card');
+setupSectionCollapseShortcut('complications-section', '.complication-card');
+setupSectionCollapseShortcut('npcs-section', '.npc-card');
 window.addEventListener('resize', positionSectionJumpNav);
 window.addEventListener('pagehide', persistAutosaveNow);
 window.addEventListener('pointermove', onGlobalPointerMove);
