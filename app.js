@@ -3,13 +3,753 @@ const ids = [
   'benefits', 'pissed', 'escalates', 'newHook', 'gmNotes'
 ];
 
+const plannerModes = {
+  cyberpunk: {
+    id: 'cyberpunk',
+    label: 'Cyberpunk RED',
+    themeClass: 'theme-cyberpunk',
+    plannerTitle: 'Cyberpunk RED <span class="title-lockup">GIG PLANNER</span>',
+    subtitle: 'A modular Cyberpunk RED gig planner with expandable sections, structured NPC and encounter tools, optional printable stat blocks, save/load support, and clean export formatting, built to turn rough ideas into table-ready jobs fast.',
+    buttons: {
+      newGig: 'New',
+      saveGig: 'Save',
+      demoGig: 'Demo',
+      loadGig: 'Load',
+      printGig: 'Print / Export PDF*',
+    },
+    labels: {
+      home: 'Home',
+      hook: 'Hook',
+      locations: 'Locations',
+      encounters: 'Encounters',
+      npcs: 'NPCs',
+      developments: 'Developments',
+      gmNotes: 'GM Notes',
+      gigType: 'Gig Type',
+      whoContacts: 'Who contacts them',
+      whatJob: "What's the job",
+      whatPay: "What's the pay",
+      whyNow: 'Why now',
+      whoBenefits: 'Who benefits',
+      whosPissed: "Who's pissed",
+      whatEscalates: 'What escalates',
+      newHook: 'New hook unlocked',
+      whatItIs: 'What it is',
+      whyItMatters: 'Why it matters',
+      obstacle: 'Obstacle',
+      quirkVibe: 'Quirk / Vibe',
+      wants: 'Wants',
+      doesntWant: "Doesn't Want",
+      secret: 'Secret',
+      incongruency: 'Incongruency / contradiction',
+    },
+    placeholders: {
+      title: 'Neon Saints of Block 9',
+      corePitch: 'Brief setup of the gig',
+      contactRole: 'Fixer, friend, corp rep, neighbour...',
+      job: 'Retrieve a stolen shard',
+      pay: '1,500 eb + favour',
+      whyNow: 'Window closes at dawn',
+      gmNotes: 'Improvised details, names, spare clues, stat notes...',
+      locationName: 'Afterlife-adjacent noodle market',
+      locationObstacle: 'Gang checkpoint, ICE, timer...',
+      complicationText: 'A twist, escalation, obstacle, deadline, betrayal...',
+      npcName: 'Boaty McBoatface',
+      npcRole: 'Fixer / witness / target',
+      npcVibe: 'How do they stand out?',
+      npcPlus: 'What are the NPC\'s immediate motivations. What are they likely to help with?',
+      npcMinus: 'What are the NPC\'s immediate disincentives. What are they likely to hinder?',
+      npcSecret: 'Something that is revealed as players interact with the NPC over a prolonged period of time. Should also affect the \'Wants\' and \'Don\'t Wants\'.',
+      npcIncongruency: 'Details that don\'t fit in with stereotypical tropes, e.g. bandits that are deeply religious, or a ruthless mercenary who refuses to kill animals.',
+    },
+    emptyStates: {
+      untitledPrint: 'Untitled Side Quest',
+      untitledLocation: 'Untitled location',
+      untitledNpc: 'Untitled NPC',
+      emptyComplication: 'Empty complication',
+      noComplications: 'No complications yet.',
+      noLocations: 'No locations yet.',
+      noNpcs: 'No NPCs yet.',
+      fallbackNpcTitle: 'NPC',
+    },
+    statBlock: {
+      layout: 'cyberpunk',
+      toggle: 'Stat block',
+      hide: 'Hide stat block',
+      role: 'Role',
+      weapons: 'Weapons',
+      armor: 'Armor',
+      armorHead: 'Head',
+      armorBody: 'Body',
+      skills: 'Skill Bases',
+      gear: 'Cyberware & Special Equipment',
+      editorRows: [
+        ['statInt', 'statRef', 'statDex', 'statTech', 'statCool', 'statWill', 'statLuck', 'statMove', 'statBody', 'statEmp'],
+        ['statHp', 'statSeriouslyWounded', 'statDeathSave'],
+        ['statArmorHead', 'statArmorBody'],
+      ],
+      printRows: [
+        ['statInt', 'statRef', 'statDex', 'statTech', 'statCool'],
+        ['statWill', 'statLuck', 'statMove', 'statBody', 'statEmp'],
+        ['statHp', 'statSeriouslyWounded', 'statDeathSave'],
+      ],
+      fields: [
+        { key: 'statInt', label: 'INT' },
+        { key: 'statRef', label: 'REF' },
+        { key: 'statDex', label: 'DEX' },
+        { key: 'statTech', label: 'TECH' },
+        { key: 'statCool', label: 'COOL' },
+        { key: 'statWill', label: 'WILL' },
+        { key: 'statLuck', label: 'LUCK' },
+        { key: 'statMove', label: 'MOVE' },
+        { key: 'statBody', label: 'BODY' },
+        { key: 'statEmp', label: 'EMP' },
+        { key: 'statHp', label: 'HP' },
+        { key: 'statSeriouslyWounded', label: 'Seriously Wounded' },
+        { key: 'statDeathSave', label: 'Death Save' },
+        { key: 'statArmorHead', label: 'Armor Head', placeholder: '7 SP' },
+        { key: 'statArmorBody', label: 'Armor Body', placeholder: '7 SP' },
+        { key: 'statWeapon1', label: 'Weapon 1', placeholder: 'Very Heavy Pistol' },
+        { key: 'statWeapon1Damage', label: 'Weapon 1 Damage', placeholder: '4d6' },
+        { key: 'statWeapon2', label: 'Weapon 2', placeholder: 'Poor Quality Shotgun' },
+        { key: 'statWeapon2Damage', label: 'Weapon 2 Damage', placeholder: '5d6' },
+        { key: 'statWeapon3', label: 'Weapon 3', placeholder: 'Baton' },
+        { key: 'statWeapon3Damage', label: 'Weapon 3 Damage', placeholder: '2d6' },
+        { key: 'statSkills', label: 'Skill Bases', placeholder: 'Athletics 9, Brawling 11, Evasion 7...' },
+        { key: 'statGear', label: 'Cyberware & Equipment', placeholder: 'Radio communicator, kevlar, shotgun shells...' },
+      ],
+    },
+    formatOptions: [
+      'Assassination', 'Escort', 'Heist', 'Moral Quandary', 'Mystery',
+      'Puzzle', 'Sabotage', 'Sanctuary', 'Shop', 'Trap', 'Other',
+    ],
+  },
+  fantasy: {
+    id: 'fantasy',
+    label: 'Fantasy',
+    themeClass: 'theme-fantasy',
+    plannerTitle: 'Fantasy SIDE QUEST<br /><span class="title-lockup">PLANNER</span>',
+    subtitle: 'A modular fantasy adventure planner with expandable sections, structured NPC and encounter tools, optional printable stat blocks, save/load support, and clean export formatting, built to turn rough ideas into table-ready jobs fast.',
+    buttons: {
+      newGig: 'New',
+      saveGig: 'Save',
+      demoGig: 'Demo',
+      loadGig: 'Load',
+      printGig: 'Print / Export PDF*',
+    },
+    labels: {
+      home: 'Home',
+      hook: 'Hook',
+      locations: 'Locations',
+      encounters: 'Encounters',
+      npcs: 'NPCs',
+      developments: 'Developments',
+      gmNotes: 'GM Notes',
+      gigType: 'Quest Type',
+      whoContacts: 'Who contacts them',
+      whatJob: 'What is the quest',
+      whatPay: 'What is the reward',
+      whyNow: 'Why now',
+      whoBenefits: 'Who benefits',
+      whosPissed: "Who's angered",
+      whatEscalates: 'What escalates',
+      newHook: 'New hook unlocked',
+      whatItIs: 'What it is',
+      whyItMatters: 'Why it matters',
+      obstacle: 'Obstacle',
+      quirkVibe: 'Quirk / Vibe',
+      wants: 'Wants',
+      doesntWant: "Doesn't Want",
+      secret: 'Secret',
+      incongruency: 'Incongruency / contradiction',
+    },
+    placeholders: {
+      title: 'Ashes at the Moonfair',
+      corePitch: 'Brief setup of the sidequest',
+      contactRole: 'Reeve, guild steward, priest, innkeeper...',
+      job: 'Recover a stolen relic',
+      pay: '120 gold + the baron\'s favour',
+      whyNow: 'The trail goes cold at dawn',
+      gmNotes: 'Rumours, names, clues, creature notes...',
+      locationName: 'Lantern market square',
+      locationObstacle: 'Locked gate, hostile sentries, failing ritual...',
+      complicationText: 'A twist, omen, betrayal, curse, deadline...',
+      npcName: 'Sir Boaty of Boatface',
+      npcRole: 'Warden / witness / patron',
+      npcVibe: 'Visual appearance, mannerisms - how do they stand out?',
+      npcPlus: 'What are the NPC\'s immediate motivations? What are they likely to help with?',
+      npcMinus: 'What are the NPC\'s immediate disincentives? What are they likely to hinder?',
+      npcSecret: 'Something revealed only after time spent with the NPC. It should also affect their Wants and Doesn\'t Want.',
+      npcIncongruency: 'A detail that breaks the expected trope, e.g. a feared knight who apologises before every duel.',
+    },
+    emptyStates: {
+      untitledPrint: 'Untitled Side Quest',
+      untitledLocation: 'Untitled location',
+      untitledNpc: 'Untitled NPC',
+      emptyComplication: 'Empty complication',
+      noComplications: 'No complications yet.',
+      noLocations: 'No locations yet.',
+      noNpcs: 'No NPCs yet.',
+      fallbackNpcTitle: 'NPC',
+    },
+    statBlock: {
+      layout: 'fantasy',
+      toggle: 'Stat block',
+      hide: 'Hide stat block',
+      role: 'Role',
+      creatureType: 'Creature Type / Alignment',
+      traits: 'Traits',
+      actions: 'Actions',
+      reactions: 'Reactions',
+      editorRows: [
+        ['statArmorClass', 'statHitPoints', 'statSpeed'],
+        ['statStr', 'statDex', 'statCon', 'statInt', 'statWis', 'statCha'],
+        ['statSavingThrows', 'statSenses'],
+        ['statLanguages', 'statChallenge'],
+      ],
+      printRows: [
+        ['statArmorClass', 'statHitPoints', 'statSpeed'],
+        ['statStr', 'statDex', 'statCon', 'statInt', 'statWis', 'statCha'],
+      ],
+      fields: [
+        { key: 'statCreatureType', label: 'Creature Type / Alignment', placeholder: 'Medium humanoid, lawful neutral' },
+        { key: 'statArmorClass', label: 'Armor Class', placeholder: '18 (chain mail, shield)' },
+        { key: 'statHitPoints', label: 'Hit Points', placeholder: '32 (5d8 + 10)' },
+        { key: 'statSpeed', label: 'Speed', placeholder: '30 ft.' },
+        { key: 'statStr', label: 'STR', placeholder: '16 (+3)' },
+        { key: 'statDex', label: 'DEX', placeholder: '10 (+0)' },
+        { key: 'statCon', label: 'CON', placeholder: '14 (+2)' },
+        { key: 'statInt', label: 'INT', placeholder: '10 (+0)' },
+        { key: 'statWis', label: 'WIS', placeholder: '11 (+0)' },
+        { key: 'statCha', label: 'CHA', placeholder: '16 (+3)' },
+        { key: 'statSavingThrows', label: 'Saving Throws', placeholder: 'Con +4, Wis +2' },
+        { key: 'statSenses', label: 'Senses', placeholder: 'passive Perception 10' },
+        { key: 'statLanguages', label: 'Languages', placeholder: 'Common, Elvish' },
+        { key: 'statChallenge', label: 'Challenge', placeholder: '1 (200 XP)' },
+        { key: 'statTraits', label: 'Traits', placeholder: 'Brave. The knight has advantage on saving throws against being frightened.' },
+        { key: 'statActions', label: 'Actions', placeholder: 'Longsword. Melee Weapon Attack: +5 to hit, reach 5 ft., one target.' },
+        { key: 'statReactions', label: 'Reactions', placeholder: 'Parry. The knight adds 2 to its AC against one melee attack that would hit it.' },
+      ],
+    },
+    formatOptions: [
+      'Escort', 'Heist', 'Investigation', 'Monster Hunt', 'Mystery',
+      'Rescue', 'Sabotage', 'Sanctuary', 'Trade', 'Travel', 'Other',
+    ],
+  },
+};
+
+const DEFAULT_MODE = 'cyberpunk';
+const tagMeta = {
+  sceneStyle: {
+    'battle-map': { icon: 'assets/icons/battlemap.webp', label: 'Battlemap' },
+    totm: { icon: 'assets/icons/TOTM.webp', label: 'ToTM' },
+  },
+  complicationType: {
+    apparent: { icon: 'assets/icons/open-info.webp', label: 'Open Info' },
+    hidden: { icon: 'assets/icons/hidden-info.webp', label: 'Hidden Info' },
+    conditional: { icon: 'assets/icons/flexible.webp', label: 'Flexible Info' },
+  },
+  dangerLevel: {
+    routine: { icon: 'assets/icons/routine.webp', label: 'Routine' },
+    dangerous: { icon: 'assets/icons/dangerous.webp', label: 'Dangerous' },
+    deadly: { icon: 'assets/icons/deadly.webp', label: 'Deadly' },
+  },
+  npcType: {
+    friendly: { icon: 'assets/icons/friendly.webp', label: 'Friendly' },
+    neutral: { icon: 'assets/icons/neutral.webp', label: 'Neutral' },
+    enemy: { icon: 'assets/icons/enemy.webp', label: 'Enemy' },
+    boss: { icon: 'assets/icons/boss.webp', label: 'Boss' },
+  },
+};
+
+const demoDataByMode = {
+  cyberpunk: {
+    mode: 'cyberpunk',
+    title: 'Ashes at the Night Market',
+    format: 'Mystery',
+    corePitch: '<p>A burned stall, a missing courier, and a memory shard that should not exist. The crew is pulled into the aftermath before the market can decide whether this was random violence or a deliberate hit.</p><p>Every witness has only part of the truth, and sunrise will bring outside interests who would rather bury the whole thing than let anyone learn what the courier was carrying. The air is thick with smoke, nerves, and the sense that one wrong question could set the whole block off.</p>',
+    contactRole: 'Neighbourhood organiser',
+    job: 'Find the courier and the shard',
+    pay: '1,200 eb plus future protection',
+    whyNow: 'A corp retrieval team arrives at sunrise',
+    benefits: 'Mira and the market vendors',
+    pissed: 'PetroChem subcontractors and a local booster crew',
+    escalates: 'Block-wide tensions and surveillance',
+    newHook: 'One data fragment points to a clinic in Sector 12',
+    gmNotes: 'Keep the actual culprit sympathetic. Let the crew choose between exposure and quiet leverage.',
+    locations: [
+      {
+        name: 'Burned Night Market Stall',
+        what: 'A blackened kiosk sits at the edge of the market beneath a tangle of melted signage and scorched tarps, with nearby vendors already treating it like cursed ground. The smell of burned plastic still hangs in the air, and the stall is littered with warped cookware, soot-stained crates, and a few pieces of debris that suggest the fire was far too focused to be accidental.',
+        sceneStyle: 'battle-map',
+      },
+      {
+        name: 'Canal Service Tunnel',
+        what: 'A narrow maintenance tunnel beneath the market, slick with runoff and lit by dying utility strips. Old service hatches, tagged concrete, and stacked scavenger junk make it easy to hide, ambush, or lose someone in the dark.',
+        why: 'It offers a hidden route, a dumping point for evidence, and a place to corner the wrong suspect out of sight.',
+        obstacle: 'Flooding and scavenger squatters.',
+        sceneStyle: 'totm',
+      },
+    ],
+    complications: [
+      { text: 'The shard is damaged but still active.', revealType: 'hidden' },
+      { text: 'A local gang is protecting the wrong suspect. They are convinced the courier sold them out, and they are already roughing up bystanders, locking down exits, and warning everyone in the market not to talk. If the crew pushes too hard or misidentifies the gang’s protector in public, the gang may escalate from intimidation to outright violence before anyone realizes they are hunting the wrong person.', revealType: 'conditional', dangerLevel: 'dangerous' },
+    ],
+    npcs: [
+      {
+        name: 'Mira Velez',
+        role: 'Local Fixer',
+        vibe: 'Tired but composed',
+        plus: 'Keep the market calm and steer the crew toward useful witnesses.',
+        minus: 'Corp attention, public violence, or anyone digging too closely into her involvement.',
+        secret: 'She keeps a private ranking of every noodle stall in the market.',
+        incongruency: 'Despite her fixer instincts, she speaks like a community mediator and always pushes de-escalation first.',
+        npcType: 'neutral',
+        statInt: '7',
+        statRef: '6',
+        statDex: '6',
+        statTech: '4',
+        statCool: '8',
+        statWill: '7',
+        statLuck: '5',
+        statMove: '5',
+        statBody: '4',
+        statEmp: '6',
+        statHp: '35',
+        statSeriouslyWounded: '18',
+        statDeathSave: '6',
+        statArmorHead: '4 SP',
+        statArmorBody: '7 SP',
+        statWeapon1: 'Very Heavy Pistol',
+        statWeapon1Damage: '4d6',
+        statSkills: 'Human Perception 9, Persuasion 10, Local Expert 8, Handgun 8, Wardrobe & Style 6',
+        statGear: 'Agent, encrypted shard, budget pistol, very heavy pistol ammo x24',
+      },
+      {
+        name: 'Talon',
+        role: 'Booster lieutenant',
+        vibe: 'Aggressive, performative',
+        plus: 'Find the supposed traitor fast and look strong in front of the gang.',
+        minus: 'Being embarrassed in public or admitting his crew grabbed the wrong target.',
+        incongruency: 'Despite the swagger, he is obsessive about keeping his jacket spotless.',
+        npcType: 'enemy',
+      },
+      {
+        name: 'Brick',
+        role: 'Hired muscle',
+        vibe: 'Silent, watchful',
+        plus: 'Keep the client alive and end trouble quickly.',
+        minus: 'Drawn-out arguments, surprises, or getting pinned in a tight space.',
+        npcType: 'friendly',
+        statRef: '5',
+        statDex: '5',
+        statTech: '1',
+        statCool: '5',
+        statWill: '6',
+        statLuck: '6',
+        statMove: '5',
+        statBody: '8',
+        statHp: '40',
+        statSeriouslyWounded: '20',
+        statDeathSave: '8',
+      },
+    ],
+  },
+  fantasy: {
+    mode: 'fantasy',
+    title: 'Ashes at the Moonfair',
+    format: 'Mystery',
+    corePitch: '<p>A burned stall, a missing courier, and a memory crystal that should not exist. The party is pulled into the aftermath before the fair elders can decide whether this was random violence or a deliberate strike.</p><p>Every witness holds only part of the truth, and dawn will bring outside interests who would rather bury the whole affair than let anyone learn what the courier was carrying. Smoke, ash, and hushed suspicion hang over the fair, and every whispered rumour feels one heartbeat away from panic.</p>',
+    contactRole: 'Guild steward',
+    job: 'Find the courier and crystal',
+    pay: 'Silver and the reeve’s favour',
+    whyNow: 'A royal retrieval party arrives at dawn',
+    benefits: 'Mara and the fair merchants',
+    pissed: 'House retainers and a local bandit crew',
+    escalates: 'Fairground panic and watchful patrols',
+    newHook: 'A fragment of the crystal points toward a forgotten shrine beneath the old abbey',
+    gmNotes: 'Keep the true culprit sympathetic. Let the party choose between exposure, leverage, or quiet mercy once they understand why the courier was targeted.',
+    locations: [
+      {
+        name: 'Burned Moonfair Stall',
+        what: 'A blackened market stall sits at the edge of the fair beneath scorched bunting and warped lantern frames, with nearby traders already treating it like cursed ground. The smell of pitch and burned cloth still hangs in the air, and the wreckage is littered with cracked cookware, ash-soaked crates, and a few suspicious fragments that suggest the fire burned far hotter and narrower than an ordinary accident.',
+        sceneStyle: 'battle-map',
+      },
+    ],
+    complications: [
+      { text: 'The crystal is damaged but still active.', revealType: 'hidden' },
+      { text: 'A local company of sellswords is protecting the wrong suspect, convinced the courier betrayed them. They have already locked down half the fair road, threatened stallholders into silence, and are treating every delay as proof someone is helping the real culprit escape.', revealType: 'conditional', dangerLevel: 'dangerous' },
+    ],
+    npcs: [
+      {
+        name: 'Mara Voss',
+        role: 'Guild steward',
+        vibe: 'Tired but composed',
+        plus: 'Keep travellers alive and preserve the road’s peace.',
+        minus: 'Lordly interference, public violence, or anyone digging too closely into her involvement.',
+        secret: 'She keeps a private ranking of every pie stall at the fair.',
+        incongruency: 'Despite her fixer instincts, she speaks like a patient mediator and always pushes de-escalation first.',
+        npcType: 'friendly',
+        statCreatureType: 'Medium humanoid (human), lawful good',
+        statArmorClass: '18 (chain mail, shield)',
+        statHitPoints: '32 (5d8 + 10)',
+        statSpeed: '30 ft.',
+        statStr: '16 (+3)',
+        statDex: '10 (+0)',
+        statCon: '14 (+2)',
+        statInt: '10 (+0)',
+        statWis: '11 (+0)',
+        statCha: '16 (+3)',
+        statSavingThrows: 'Con +4, Wis +2',
+        statSenses: 'passive Perception 10',
+        statLanguages: 'Common',
+        statChallenge: '1 (200 XP)',
+        statTraits: 'Brave. Mara has advantage on saving throws against being frightened.',
+        statActions: 'Multiattack. Mara makes two melee attacks.\nLongsword. Melee Weapon Attack: +5 to hit, reach 5 ft., one target. Hit: 7 (1d8 + 3) slashing damage.',
+        statReactions: 'Protective Interpose. When a creature Mara can see within 5 feet is hit, she imposes disadvantage on the attack by stepping into the blow.',
+      },
+      {
+        name: 'Talon Reed',
+        role: 'Mercenary lieutenant',
+        vibe: 'Aggressive, performative',
+        plus: 'Find the supposed traitor quickly and look strong in front of his crew.',
+        minus: 'Being embarrassed in public or admitting his company seized the wrong suspect.',
+        incongruency: 'Despite the swagger, he is obsessive about keeping his tabard spotless.',
+        npcType: 'enemy',
+      },
+      {
+        name: 'Sister Elira',
+        role: 'Shrine keeper',
+        vibe: 'Gentle, watchful',
+        plus: 'Keep the frightened fairgoers calm and stop bloodshed before it spreads.',
+        minus: 'Drunken bravado, desecration, or anyone using the chaos as cover for cruelty.',
+        npcType: 'neutral',
+        statCreatureType: 'Medium humanoid (elf), neutral good',
+        statArmorClass: '11',
+        statHitPoints: '9 (2d8)',
+        statSpeed: '30 ft.',
+        statStr: '8 (-1)',
+        statDex: '12 (+1)',
+        statCon: '10 (+0)',
+        statInt: '11 (+0)',
+        statWis: '14 (+2)',
+        statCha: '13 (+1)',
+        statSenses: 'passive Perception 12',
+        statLanguages: 'Common, Elvish',
+        statChallenge: '1/8 (25 XP)',
+        statTraits: 'Calming Presence. Elira has advantage on checks made to soothe frightened or panicked commoners.',
+        statActions: 'Staff. Melee Weapon Attack: +3 to hit, reach 5 ft., one target. Hit: 3 (1d6) bludgeoning damage.',
+      },
+    ],
+  },
+};
+
 const AUTOSAVE_KEY = 'cprGigPlanner.autosave.v1';
 let autosaveTimer = null;
 let suppressAutosave = false;
 let pendingDrag = null;
 let activeDrag = null;
+let currentMode = DEFAULT_MODE;
 
 function byId(id) { return document.getElementById(id); }
+
+function getModeConfig(modeId) {
+  return plannerModes[modeId] || plannerModes[DEFAULT_MODE];
+}
+
+function getStatBlockConfig(modeId = currentMode) {
+  return getModeConfig(modeId).statBlock;
+}
+
+function getStatFieldDefs(modeId = currentMode) {
+  return getStatBlockConfig(modeId).fields || [];
+}
+
+function applyModePlaceholders(modeId = currentMode, scope = document) {
+  const placeholders = getModeConfig(modeId).placeholders || {};
+  const topLevelMap = {
+    title: placeholders.title,
+    contactRole: placeholders.contactRole,
+    job: placeholders.job,
+    pay: placeholders.pay,
+    whyNow: placeholders.whyNow,
+    gmNotes: placeholders.gmNotes,
+  };
+
+  Object.entries(topLevelMap).forEach(([id, value]) => {
+    if (!value) return;
+    const element = scope.getElementById ? scope.getElementById(id) : scope.querySelector?.(`#${id}`);
+    if (element) element.setAttribute('placeholder', value);
+  });
+
+  const corePitch = scope.getElementById ? scope.getElementById('corePitch') : scope.querySelector?.('#corePitch');
+  if (corePitch && placeholders.corePitch) {
+    corePitch.setAttribute('data-placeholder', placeholders.corePitch);
+  }
+
+  const scopedFields = [
+    { selector: '.location-card [data-field="name"]', placeholder: placeholders.locationName },
+    { selector: '.location-card [data-field="obstacle"]', placeholder: placeholders.locationObstacle },
+    { selector: '.complication-card [data-field="text"]', placeholder: placeholders.complicationText },
+    { selector: '.npc-card [data-field="name"]', placeholder: placeholders.npcName },
+    { selector: '.npc-card [data-field="role"]', placeholder: placeholders.npcRole },
+    { selector: '.npc-card [data-field="vibe"]', placeholder: placeholders.npcVibe },
+    { selector: '.npc-card [data-field="plus"]', placeholder: placeholders.npcPlus },
+    { selector: '.npc-card [data-field="minus"]', placeholder: placeholders.npcMinus },
+    { selector: '.npc-card [data-field="secret"]', placeholder: placeholders.npcSecret },
+    { selector: '.npc-card [data-field="incongruency"]', placeholder: placeholders.npcIncongruency },
+  ];
+
+  scopedFields.forEach(({ selector, placeholder }) => {
+    if (!placeholder) return;
+    scope.querySelectorAll?.(selector).forEach(element => {
+      element.setAttribute('placeholder', placeholder);
+    });
+  });
+
+  const templateFields = [
+    { root: byId('locationTemplate')?.content, selector: '[data-field="name"]', placeholder: placeholders.locationName },
+    { root: byId('locationTemplate')?.content, selector: '[data-field="obstacle"]', placeholder: placeholders.locationObstacle },
+    { root: byId('complicationTemplate')?.content, selector: '[data-field="text"]', placeholder: placeholders.complicationText },
+    { root: byId('npcTemplate')?.content, selector: '[data-field="name"]', placeholder: placeholders.npcName },
+    { root: byId('npcTemplate')?.content, selector: '[data-field="role"]', placeholder: placeholders.npcRole },
+    { root: byId('npcTemplate')?.content, selector: '[data-field="vibe"]', placeholder: placeholders.npcVibe },
+    { root: byId('npcTemplate')?.content, selector: '[data-field="plus"]', placeholder: placeholders.npcPlus },
+    { root: byId('npcTemplate')?.content, selector: '[data-field="minus"]', placeholder: placeholders.npcMinus },
+    { root: byId('npcTemplate')?.content, selector: '[data-field="secret"]', placeholder: placeholders.npcSecret },
+    { root: byId('npcTemplate')?.content, selector: '[data-field="incongruency"]', placeholder: placeholders.npcIncongruency },
+  ];
+
+  templateFields.forEach(({ root, selector, placeholder }) => {
+    if (!root || !placeholder) return;
+    root.querySelectorAll(selector).forEach(element => {
+      element.setAttribute('placeholder', placeholder);
+    });
+  });
+}
+
+function applyStatBlockUi(modeId = currentMode, scope = document) {
+  const statBlock = getStatBlockConfig(modeId);
+  const fieldMap = Object.fromEntries(getStatFieldDefs(modeId).map(field => [field.key, field]));
+
+  scope.querySelectorAll('[data-stat-label]').forEach(node => {
+    const field = fieldMap[node.dataset.statLabel];
+    if (field) node.textContent = field.label;
+  });
+
+  scope.querySelectorAll('[data-stat-placeholder]').forEach(node => {
+    const field = fieldMap[node.dataset.statPlaceholder];
+    if (field?.placeholder) {
+      node.setAttribute('placeholder', field.placeholder);
+    } else {
+      node.removeAttribute('placeholder');
+    }
+  });
+
+  scope.querySelectorAll('.statblock-toggle').forEach(button => {
+    button.textContent = button.classList.contains('is-open') ? statBlock.hide : statBlock.toggle;
+  });
+}
+
+function getStatFieldMetaMap(modeId = currentMode) {
+  return Object.fromEntries(getStatFieldDefs(modeId).map(field => [field.key, field]));
+}
+
+function getEditorRowClass(fields) {
+  if (fields.length === 10) return 'compact-stat-grid';
+  if (fields.length === 6) return 'compact-stat-grid compact-stat-grid-6';
+  if (fields.length === 4) return 'compact-stat-grid compact-stat-grid-4';
+  if (fields.length === 3) return 'compact-stat-grid compact-stat-grid-wide';
+  if (fields.length === 2) return 'compact-stat-grid compact-stat-grid-armor';
+  return 'compact-stat-grid';
+}
+
+function buildFantasyStatEditorMarkup(modeId = currentMode) {
+  const statBlock = getStatBlockConfig(modeId);
+  const fieldMap = getStatFieldMetaMap(modeId);
+  const statRows = statBlock.editorRows.map((fields, index) => `
+    <div class="${getEditorRowClass(fields)}" style="margin-top:${index === 0 ? '14px' : '14px'};">
+      ${fields.map(key => {
+        const field = fieldMap[key];
+        return `<label class="compact-stat-field"><span>${escapeHtml(field.label)}</span><input data-field="${escapeHtml(key)}"${field.placeholder ? ` placeholder="${escapeHtml(field.placeholder)}"` : ''} /></label>`;
+      }).join('')}
+    </div>
+  `).join('');
+
+  return `
+    <div style="margin-top:14px;">
+      <label>${escapeHtml(fieldMap.statCreatureType.label)}</label>
+      <input data-field="statCreatureType"${fieldMap.statCreatureType.placeholder ? ` placeholder="${escapeHtml(fieldMap.statCreatureType.placeholder)}"` : ''} />
+    </div>
+    ${statRows}
+    <div style="margin-top:14px;">
+      <label>${escapeHtml(fieldMap.statTraits.label)}</label>
+      <textarea data-field="statTraits" data-autogrow="true"${fieldMap.statTraits.placeholder ? ` placeholder="${escapeHtml(fieldMap.statTraits.placeholder)}"` : ''}></textarea>
+    </div>
+    <div style="margin-top:14px;">
+      <label>${escapeHtml(fieldMap.statActions.label)}</label>
+      <textarea data-field="statActions" data-autogrow="true"${fieldMap.statActions.placeholder ? ` placeholder="${escapeHtml(fieldMap.statActions.placeholder)}"` : ''}></textarea>
+    </div>
+    <div style="margin-top:14px;">
+      <label>${escapeHtml(fieldMap.statReactions.label)}</label>
+      <textarea data-field="statReactions" data-autogrow="true"${fieldMap.statReactions.placeholder ? ` placeholder="${escapeHtml(fieldMap.statReactions.placeholder)}"` : ''}></textarea>
+    </div>
+  `;
+}
+
+function buildStatEditorMarkup(modeId = currentMode) {
+  const statBlock = getStatBlockConfig(modeId);
+  if (statBlock.layout === 'fantasy') return buildFantasyStatEditorMarkup(modeId);
+  const fieldMap = getStatFieldMetaMap(modeId);
+  const statRows = statBlock.editorRows.map((fields, index) => `
+    <div class="${getEditorRowClass(fields)}" style="margin-top:${index === 0 ? '14px' : '14px'};">
+      ${fields.map(key => {
+        const field = fieldMap[key];
+        return `<label class="compact-stat-field"><span>${escapeHtml(field.label)}</span><input data-field="${escapeHtml(key)}"${field.placeholder ? ` placeholder="${escapeHtml(field.placeholder)}"` : ''} /></label>`;
+      }).join('')}
+    </div>
+  `).join('');
+
+  const weaponFields = ['statWeapon1', 'statWeapon2', 'statWeapon3'].map(key => {
+    const field = fieldMap[key];
+    const damageField = fieldMap[`${key}Damage`];
+    return `
+      <div style="margin-top:14px;">
+        <label>${escapeHtml(field.label)}</label>
+        <div class="grid grid-2">
+          <input data-field="${escapeHtml(key)}"${field.placeholder ? ` placeholder="${escapeHtml(field.placeholder)}"` : ''} />
+          <input data-field="${escapeHtml(`${key}Damage`)}"${damageField?.placeholder ? ` placeholder="${escapeHtml(damageField.placeholder)}"` : ''} />
+        </div>
+      </div>
+    `;
+  }).join('');
+
+  return `
+    ${statRows}
+    ${weaponFields}
+    <div style="margin-top:14px;">
+      <label>${escapeHtml(fieldMap.statSkills.label)}</label>
+      <textarea data-field="statSkills"${fieldMap.statSkills.placeholder ? ` placeholder="${escapeHtml(fieldMap.statSkills.placeholder)}"` : ''}></textarea>
+    </div>
+    <div style="margin-top:14px;">
+      <label>${escapeHtml(fieldMap.statGear.label)}</label>
+      <textarea data-field="statGear"${fieldMap.statGear.placeholder ? ` placeholder="${escapeHtml(fieldMap.statGear.placeholder)}"` : ''}></textarea>
+    </div>
+  `;
+}
+
+function bindNpcStatBlockFields(card, data = {}) {
+  const details = card.querySelector('.npc-statblock-details');
+  if (!details) return;
+
+  details.querySelectorAll('[data-field]').forEach(input => {
+    const key = input.dataset.field;
+    input.value = data[key] || '';
+    bindAutoGrowField(input);
+    input.addEventListener('input', () => {
+      refreshCardSummary(card);
+      renderPreview();
+    });
+  });
+}
+
+function renderNpcStatBlockEditor(card, data = {}) {
+  const details = card.querySelector('.npc-statblock-details');
+  if (!details) return;
+  details.innerHTML = buildStatEditorMarkup(currentMode);
+  bindNpcStatBlockFields(card, data);
+}
+
+function rerenderNpcStatBlockEditors() {
+  document.querySelectorAll('.npc-card').forEach(card => {
+    const details = card.querySelector('.npc-statblock-details');
+    const button = card.querySelector('.statblock-toggle');
+    if (!details || !button) return;
+
+    const currentData = {};
+    details.querySelectorAll('[data-field]').forEach(input => {
+      currentData[input.dataset.field] = input.value;
+    });
+    const isOpen = details.style.display !== 'none';
+
+    renderNpcStatBlockEditor(card, currentData);
+    details.style.display = isOpen ? 'block' : 'none';
+    button.classList.toggle('is-open', isOpen);
+  });
+  applyStatBlockUi(currentMode);
+}
+
+function applyMode(modeId, options = {}) {
+  const { persist = true } = options;
+  const mode = getModeConfig(modeId);
+  currentMode = mode.id;
+
+  document.body.classList.remove(...Object.values(plannerModes).map(item => item.themeClass));
+  document.body.classList.add(mode.themeClass);
+
+  const plannerTitle = byId('plannerTitle');
+  const plannerSubtitle = byId('plannerSubtitle');
+  if (plannerTitle) plannerTitle.innerHTML = mode.plannerTitle;
+  if (plannerSubtitle) plannerSubtitle.textContent = mode.subtitle;
+  const formatSelect = byId('format');
+  const previousFormat = formatSelect?.value || '';
+  document.title = `${mode.label} Planner`;
+
+  if (formatSelect) {
+    formatSelect.innerHTML = ['<option value=""></option>', ...mode.formatOptions.map(option => `<option>${escapeHtml(option)}</option>`)].join('');
+    if (mode.formatOptions.includes(previousFormat)) {
+      formatSelect.value = previousFormat;
+    }
+  }
+
+  const labelMap = {
+    navHomeLink: mode.labels.home,
+    navHookLink: mode.labels.hook,
+    navLocationsLink: mode.labels.locations,
+    navEncountersLink: mode.labels.encounters,
+    navNpcsLink: mode.labels.npcs,
+    navDevelopmentsLink: mode.labels.developments,
+    navGmNotesLink: mode.labels.gmNotes,
+    hookSectionTitle: mode.labels.hook,
+    locationsSectionTitle: mode.labels.locations,
+    encountersSectionTitle: mode.labels.encounters,
+    npcsSectionTitle: mode.labels.npcs,
+    developmentsSectionTitle: mode.labels.developments,
+    gmNotesSectionTitle: mode.labels.gmNotes,
+    formatLabel: mode.labels.gigType,
+    newQuestBtn: mode.buttons.newGig,
+    exportJsonBtn: mode.buttons.saveGig,
+    loadDemoBtn: mode.buttons.demoGig,
+    importJsonBtn: mode.buttons.loadGig,
+    printBtn: mode.buttons.printGig,
+    printBtnBottom: mode.buttons.printGig,
+  };
+
+  Object.entries(labelMap).forEach(([id, value]) => {
+    const element = byId(id);
+    if (element) element.textContent = value;
+  });
+
+  applyModePlaceholders(mode.id);
+  rerenderNpcStatBlockEditors();
+  applyStatBlockUi(mode.id);
+
+  document.querySelectorAll('.mode-tab').forEach(button => {
+    const isActive = button.dataset.mode === mode.id;
+    button.classList.toggle('is-active', isActive);
+    button.setAttribute('aria-selected', String(isActive));
+  });
+
+  if (persist) renderPreview();
+}
+
+function cloneData(value) {
+  return JSON.parse(JSON.stringify(value));
+}
+
+function getDemoData(modeId = currentMode) {
+  return cloneData(demoDataByMode[modeId] || demoDataByMode[DEFAULT_MODE]);
+}
 
 function escapeHtml(str) {
   return String(str || '')
@@ -241,6 +981,8 @@ function setupSortableCard(card, container) {
   card.addEventListener('pointerdown', event => {
     if (event.button !== 0) return;
     if (event.target.closest('button, input, textarea, select, a, label, .type-menu-popup, .rich-editor')) return;
+    event.preventDefault();
+    window.getSelection?.().removeAllRanges();
 
     pendingDrag = {
       card,
@@ -263,23 +1005,24 @@ function animateCardEntry(card) {
 }
 
 function summarizeCard(card) {
+  const emptyStates = getModeConfig(currentMode).emptyStates;
   if (card.classList.contains('location-card')) {
     const name = card.querySelector('[data-field="name"]')?.value.trim();
     const obstacle = card.querySelector('[data-field="obstacle"]')?.value.trim();
     const what = card.querySelector('[data-field="what"]')?.value.trim();
-    return [name || 'Untitled location', obstacle, what].filter(Boolean).join(' | ');
+    return [name || emptyStates.untitledLocation, obstacle, what].filter(Boolean).join(' | ');
   }
 
   if (card.classList.contains('complication-card')) {
     const text = card.querySelector('[data-field="text"]')?.value.trim();
-    return text || 'Empty complication';
+    return text || emptyStates.emptyComplication;
   }
 
   if (card.classList.contains('npc-card')) {
     const name = card.querySelector('[data-field="name"]')?.value.trim();
     const role = card.querySelector('[data-field="role"]')?.value.trim();
     const vibe = card.querySelector('[data-field="vibe"]')?.value.trim();
-    return [name || 'Untitled NPC', role, vibe].filter(Boolean).join(' | ');
+    return [name || emptyStates.untitledNpc, role, vibe].filter(Boolean).join(' | ');
   }
 
   return '';
@@ -316,8 +1059,10 @@ function toggleSectionCards(sectionId, cardSelector) {
 function setupCollapsibleCard(card) {
   card.addEventListener('dblclick', event => {
     if (event.target.closest('input, textarea, select, button, a, label, .type-menu-popup')) return;
+    event.preventDefault();
     const isCollapsed = card.classList.contains('is-collapsed');
     setCardCollapsed(card, !isCollapsed);
+    window.getSelection?.().removeAllRanges();
     card.classList.remove('card-toggle-flash');
     window.requestAnimationFrame(() => {
       card.classList.add('card-toggle-flash');
@@ -337,13 +1082,16 @@ function setupSectionCollapseShortcut(sectionId, cardSelector) {
 
   title.addEventListener('dblclick', event => {
     if (event.target.closest('button, a, input, textarea, select, label')) return;
+    event.preventDefault();
     toggleSectionCards(sectionId, cardSelector);
+    window.getSelection?.().removeAllRanges();
   });
 
   title.dataset.bulkCollapseBound = 'true';
 }
 
 function closeAllNpcStatBlocks(exceptCard = null) {
+  const statBlock = getStatBlockConfig();
   document.querySelectorAll('.npc-card').forEach(card => {
     if (exceptCard && card === exceptCard) return;
     const details = card.querySelector('.npc-statblock-details');
@@ -351,7 +1099,7 @@ function closeAllNpcStatBlocks(exceptCard = null) {
     if (!details || !button) return;
     details.style.display = 'none';
     button.classList.remove('is-open');
-    button.textContent = 'Stat block';
+    button.textContent = statBlock.toggle;
   });
 }
 
@@ -408,124 +1156,24 @@ function addLocation(data = {}, options = {}) {
   renderPreview();
 }
 
-function getSceneStyleMeta(style) {
-  const map = {
-    'battle-map': {
-      symbol: '▦',
-      label: 'Battle Map',
-    },
-    totm: {
-      symbol: '☁',
-      label: 'ToTM',
-    },
-    hybrid: {
-      symbol: '◫',
-      label: 'Hybrid',
-    },
-  };
-  return map[style] || null;
-}
-
 function updateComplicationNumbers() {
   return document.querySelectorAll('.complication-card').length;
 }
 
-function getComplicationTypeMeta(type) {
-  const map = {
-    apparent: {
-      symbol: '🔺',
-      label: 'Open Info',
-    },
-    hidden: {
-      symbol: '🔒',
-      label: 'Hidden Info',
-    },
-    conditional: {
-      symbol: '❓',
-      label: 'Flexible Info',
-    },
-  };
-  return map[type] || null;
-}
-
-function getDangerLevelMeta(level) {
-  const map = {
-    routine: {
-      symbol: '○',
-      label: 'Routine',
-    },
-    risky: {
-      symbol: '△',
-      label: 'Risky',
-    },
-    dangerous: {
-      symbol: '▲',
-      label: 'Dangerous',
-    },
-    deadly: {
-      symbol: '☠',
-      label: 'Deadly',
-    },
-  };
-  return map[level] || null;
-}
-
-function getNpcTypeMeta(type) {
-  const map = {
-    friendly: {
-      symbol: '+',
-      label: 'Friendly',
-    },
-    neutral: {
-      symbol: '○',
-      label: 'Neutral',
-    },
-    enemy: {
-      symbol: '!',
-      label: 'Enemy',
-    },
-    boss: {
-      symbol: '★',
-      label: 'Boss',
-    },
-  };
-  return map[type] || null;
-}
-
 function getSceneStyleMeta(style) {
-  const map = {
-    'battle-map': { icon: 'assets/icons/battlemap.webp', label: 'Battlemap' },
-    totm: { icon: 'assets/icons/TOTM.webp', label: 'ToTM' },
-  };
-  return map[style] || null;
+  return tagMeta.sceneStyle[style] || null;
 }
 
 function getComplicationTypeMeta(type) {
-  const map = {
-    apparent: { icon: 'assets/icons/open-info.webp', label: 'Open Info' },
-    hidden: { icon: 'assets/icons/hidden-info.webp', label: 'Hidden Info' },
-    conditional: { icon: 'assets/icons/flexible.webp', label: 'Flexible Info' },
-  };
-  return map[type] || null;
+  return tagMeta.complicationType[type] || null;
 }
 
 function getDangerLevelMeta(level) {
-  const map = {
-    routine: { icon: 'assets/icons/routine.webp', label: 'Routine' },
-    dangerous: { icon: 'assets/icons/dangerous.webp', label: 'Dangerous' },
-    deadly: { icon: 'assets/icons/deadly.webp', label: 'Deadly' },
-  };
-  return map[level] || null;
+  return tagMeta.dangerLevel[level] || null;
 }
 
 function getNpcTypeMeta(type) {
-  const map = {
-    friendly: { icon: 'assets/icons/friendly.webp', label: 'Friendly' },
-    neutral: { icon: 'assets/icons/neutral.webp', label: 'Neutral' },
-    enemy: { icon: 'assets/icons/enemy.webp', label: 'Enemy' },
-    boss: { icon: 'assets/icons/boss.webp', label: 'Boss' },
-  };
-  return map[type] || null;
+  return tagMeta.npcType[type] || null;
 }
 
 function getTagMeta(fieldName, type) {
@@ -556,18 +1204,8 @@ function hydrateTypeOptionIcons(scope) {
   });
 }
 
-function npcHasStatBlockData(npc) {
-  const keys = [
-    'statInt', 'statRef', 'statDex', 'statTech', 'statCool',
-    'statWill', 'statLuck', 'statMove', 'statBody', 'statEmp',
-    'statHp', 'statSeriouslyWounded', 'statDeathSave',
-    'statArmorHead', 'statArmorBody',
-    'statWeapon1', 'statWeapon1Damage',
-    'statWeapon2', 'statWeapon2Damage',
-    'statWeapon3', 'statWeapon3Damage',
-    'statSkills', 'statGear'
-  ];
-  return keys.some(key => hasMeaningfulValue(npc[key]));
+function npcHasStatBlockData(npc, modeId = currentMode) {
+  return getStatFieldDefs(modeId).some(field => hasMeaningfulValue(npc[field.key]));
 }
 
 function setComplicationTag(card, fieldName, buttonSelector, type, placeholder) {
@@ -579,6 +1217,13 @@ function setComplicationTag(card, fieldName, buttonSelector, type, placeholder) 
   button.classList.toggle('is-placeholder', !meta);
   button.innerHTML = meta?.icon ? renderIconImage(meta.icon, meta.label) : escapeHtml(placeholder);
   button.title = meta ? meta.label : placeholder;
+}
+
+function updateTypeMenuState() {
+  document.body.classList.toggle(
+    'type-menu-open',
+    Boolean(document.querySelector('.type-menu-popup:not([hidden])'))
+  );
 }
 
 function addComplication(data = {}, options = {}) {
@@ -611,6 +1256,7 @@ function addComplication(data = {}, options = {}) {
         if (otherMenu !== menu) otherMenu.hidden = true;
       });
       menu.hidden = !menu.hidden;
+      updateTypeMenuState();
     });
   });
   hydrateTypeOptionIcons(tpl);
@@ -623,6 +1269,7 @@ function addComplication(data = {}, options = {}) {
         setComplicationTag(tpl, 'revealType', '.complication-type-toggle', option.dataset.type, 'Choose complication type');
       }
       option.closest('.type-menu-popup').hidden = true;
+      updateTypeMenuState();
       renderPreview();
     });
   });
@@ -663,6 +1310,8 @@ function addNpc(data = {}, options = {}) {
   const advanced = tpl.querySelector('.npc-advanced');
   const statDetails = tpl.querySelector('.npc-statblock-details');
   const statToggleButton = tpl.querySelector('.statblock-toggle');
+  const statBlock = getStatBlockConfig();
+  renderNpcStatBlockEditor(tpl, data);
   const hasStatBlock = npcHasStatBlockData(data);
   const hasAdvanced = Boolean(
     (data.secret && data.secret.trim()) ||
@@ -682,7 +1331,7 @@ function addNpc(data = {}, options = {}) {
     if (!toggle.checked) {
       statDetails.style.display = 'none';
       statToggleButton.classList.remove('is-open');
-      statToggleButton.textContent = 'Stat block';
+      statToggleButton.textContent = statBlock.toggle;
     }
     refreshCardSummary(tpl);
     renderPreview();
@@ -697,12 +1346,12 @@ function addNpc(data = {}, options = {}) {
     if (isOpen) {
       statDetails.style.display = 'none';
       statToggleButton.classList.remove('is-open');
-      statToggleButton.textContent = 'Stat block';
+      statToggleButton.textContent = statBlock.toggle;
     } else {
       closeAllNpcStatBlocks(tpl);
       statDetails.style.display = 'block';
       statToggleButton.classList.add('is-open');
-      statToggleButton.textContent = 'Hide stat block';
+      statToggleButton.textContent = statBlock.hide;
     }
     renderPreview();
   });
@@ -720,6 +1369,7 @@ function addNpc(data = {}, options = {}) {
         if (otherMenu !== menu) otherMenu.hidden = true;
       });
       menu.hidden = !menu.hidden;
+      updateTypeMenuState();
     });
   });
   hydrateTypeOptionIcons(tpl);
@@ -727,6 +1377,7 @@ function addNpc(data = {}, options = {}) {
     option.addEventListener('click', () => {
       setComplicationTag(tpl, 'npcType', '.npc-type-toggle', option.dataset.type, 'NPC type');
       option.closest('.type-menu-popup').hidden = true;
+      updateTypeMenuState();
       renderPreview();
     });
   });
@@ -736,6 +1387,7 @@ function addNpc(data = {}, options = {}) {
   } else {
     container.appendChild(tpl);
   }
+  applyStatBlockUi(currentMode, tpl);
   autosizeCardFields(tpl);
   animateCardEntry(tpl);
   refreshCardSummary(tpl);
@@ -763,6 +1415,7 @@ function collectRepeating(selector) {
 
 function gatherData() {
   const data = {};
+  data.mode = currentMode;
   ids.forEach(id => {
     const el = byId(id);
     data[id] = el ? el.value.trim() : '';
@@ -772,6 +1425,43 @@ function gatherData() {
   data.complications = collectRepeating('.complication-card').filter(item => item.text);
   data.npcs = collectRepeating('.npc-card');
   return data;
+}
+
+function hasCurrentModeStatBlockData() {
+  return gatherData().npcs.some(npc => npcHasStatBlockData(npc, currentMode));
+}
+
+function clearCurrentModeStatBlockData() {
+  const statKeys = new Set(getStatFieldDefs(currentMode).map(field => field.key));
+  const statBlock = getStatBlockConfig(currentMode);
+
+  document.querySelectorAll('.npc-card').forEach(card => {
+    card.querySelectorAll('.npc-statblock-details [data-field]').forEach(field => {
+      if (!statKeys.has(field.dataset.field)) return;
+      field.value = '';
+      if (field.tagName === 'TEXTAREA') autosizeTextarea(field);
+    });
+
+    const details = card.querySelector('.npc-statblock-details');
+    const button = card.querySelector('.statblock-toggle');
+    if (details && button) {
+      details.style.display = 'none';
+      button.classList.remove('is-open');
+      button.textContent = statBlock.toggle;
+    }
+
+    refreshCardSummary(card);
+  });
+}
+
+function requestModeSwitch(modeId) {
+  if (modeId === currentMode) return;
+  if (hasCurrentModeStatBlockData()) {
+    const confirmed = window.confirm('Switching modes will delete all existing NPC stat block data in this planner. Continue?');
+    if (!confirmed) return;
+    clearCurrentModeStatBlockData();
+  }
+  applyMode(modeId);
 }
 
 function renderPreview() {
@@ -804,7 +1494,7 @@ function buildStatBox(label, value) {
   `;
 }
 
-function buildStatWeapons(npc) {
+function buildStatWeapons(npc, statLabels) {
   const rows = [
     [npc.statWeapon1, npc.statWeapon1Damage],
     [npc.statWeapon2, npc.statWeapon2Damage],
@@ -813,7 +1503,7 @@ function buildStatWeapons(npc) {
 
   return `
     <div class="stat-panel">
-      <div class="stat-panel-head">Weapons</div>
+      <div class="stat-panel-head">${escapeHtml(statLabels.weapons)}</div>
       <div class="stat-panel-body">
         <table class="stat-table">
           ${rows.map(([name, dmg]) => `<tr><td>${escapeHtml(name || '-')}</td><td>${escapeHtml(dmg || '-')}</td></tr>`).join('')}
@@ -823,14 +1513,14 @@ function buildStatWeapons(npc) {
   `;
 }
 
-function buildStatArmor(npc) {
+function buildStatArmor(npc, statLabels) {
   return `
     <div class="stat-panel">
-      <div class="stat-panel-head">Armor</div>
+      <div class="stat-panel-head">${escapeHtml(statLabels.armor)}</div>
       <div class="stat-panel-body">
         <table class="stat-table">
-          <tr><td>Head</td><td>${escapeHtml(npc.statArmorHead || '-')}</td></tr>
-          <tr><td>Body</td><td>${escapeHtml(npc.statArmorBody || '-')}</td></tr>
+          <tr><td>${escapeHtml(statLabels.armorHead)}</td><td>${escapeHtml(npc.statArmorHead || '-')}</td></tr>
+          <tr><td>${escapeHtml(statLabels.armorBody)}</td><td>${escapeHtml(npc.statArmorBody || '-')}</td></tr>
         </table>
       </div>
     </div>
@@ -846,9 +1536,101 @@ function buildStatStrip(label, value) {
   `;
 }
 
-function buildNpcStatPages(npcs) {
+function getStatPrintRowClass(fields) {
+  return `stat-row-${fields.length}`;
+}
+
+function buildStatPrintRow(fields, npc, fieldMap) {
+  return `
+    <div class="${getStatPrintRowClass(fields)}">
+      ${fields.map(key => buildStatBox(fieldMap[key]?.label || key, npc[key])).join('')}
+    </div>
+  `;
+}
+
+function buildFantasyStatLine(label, value) {
+  return `
+    <div class="fantasy-stat-line">
+      <strong>${escapeHtml(label)}</strong>
+      <span>${hasMeaningfulValue(value) ? escapeHtml(value) : '&nbsp;'}</span>
+    </div>
+  `;
+}
+
+function buildFantasyAbilityRow(fields, npc, fieldMap) {
+  return `
+    <div class="fantasy-stat-abilities">
+      ${fields.map(key => `
+        <div class="fantasy-stat-ability">
+          <strong>${escapeHtml(fieldMap[key]?.label || key)}</strong>
+          <span>${hasMeaningfulValue(npc[key]) ? escapeHtml(npc[key]) : '&nbsp;'}</span>
+        </div>
+      `).join('')}
+    </div>
+  `;
+}
+
+function buildFantasyStatSection(label, value) {
+  return `
+    <section class="fantasy-stat-section">
+      <h5>${escapeHtml(label)}</h5>
+      <div class="fantasy-stat-section-body">${hasMeaningfulValue(value) ? escapeHtml(value).replace(/\n/g, '<br />') : '&nbsp;'}</div>
+    </section>
+  `;
+}
+
+function buildFantasyNpcStatPages(npcs, mode) {
+  const statNpcs = npcs.filter(npc => npcHasStatBlockData(npc, mode.id));
+  if (!statNpcs.length) return '';
+  const fieldMap = getStatFieldMetaMap(mode.id);
+  const pages = [];
+  for (let index = 0; index < statNpcs.length; index += 4) {
+    pages.push(statNpcs.slice(index, index + 4));
+  }
+
+  return pages.map(pageNpcs => `
+    <article class="print-sheet stat-card-page fantasy-stat-page">
+      <div class="stat-card-stack fantasy-stat-stack">
+        ${pageNpcs.map(npc => `
+          <div class="fantasy-stat-card">
+            <div class="fantasy-stat-header">
+              <div class="fantasy-stat-title">${escapeHtml(npc.name || mode.emptyStates.fallbackNpcTitle)}</div>
+              ${npc.role ? `<div class="fantasy-stat-role">${escapeHtml(npc.role)}</div>` : ''}
+              <div class="fantasy-stat-type">${hasMeaningfulValue(npc.statCreatureType) ? escapeHtml(npc.statCreatureType) : '&nbsp;'}</div>
+            </div>
+            <div class="fantasy-stat-divider"></div>
+            <div class="fantasy-stat-summary">
+              ${buildFantasyStatLine(fieldMap.statArmorClass.label, npc.statArmorClass)}
+              ${buildFantasyStatLine(fieldMap.statHitPoints.label, npc.statHitPoints)}
+              ${buildFantasyStatLine(fieldMap.statSpeed.label, npc.statSpeed)}
+            </div>
+            <div class="fantasy-stat-divider"></div>
+            ${buildFantasyAbilityRow(mode.statBlock.printRows[1], npc, fieldMap)}
+            <div class="fantasy-stat-divider"></div>
+            <div class="fantasy-stat-detail-grid">
+              ${buildFantasyStatLine(fieldMap.statSavingThrows.label, npc.statSavingThrows)}
+              ${buildFantasyStatLine(fieldMap.statSenses.label, npc.statSenses)}
+              ${buildFantasyStatLine(fieldMap.statLanguages.label, npc.statLanguages)}
+              ${buildFantasyStatLine(fieldMap.statChallenge.label, npc.statChallenge)}
+            </div>
+            ${buildFantasyStatSection(fieldMap.statTraits.label, npc.statTraits)}
+            ${buildFantasyStatSection(fieldMap.statActions.label, npc.statActions)}
+            ${buildFantasyStatSection(fieldMap.statReactions.label, npc.statReactions)}
+          </div>
+        `).join('')}
+      </div>
+    </article>
+  `).join('');
+}
+
+function buildNpcStatPages(npcs, mode) {
+  if (mode.statBlock.layout === 'fantasy') {
+    return buildFantasyNpcStatPages(npcs, mode);
+  }
   const statNpcs = npcs.filter(npc => npcHasStatBlockData(npc));
   if (!statNpcs.length) return '';
+  const { statBlock: statLabels, emptyStates } = mode;
+  const fieldMap = getStatFieldMetaMap(mode.id);
 
   const pages = [];
   for (let index = 0; index < statNpcs.length; index += 2) {
@@ -859,36 +1641,18 @@ function buildNpcStatPages(npcs) {
     <article class="print-sheet stat-card-page">
       <div class="stat-card-stack">
         ${pageNpcs.map(npc => {
-          const title = npc.name || 'NPC';
+          const title = npc.name || emptyStates.fallbackNpcTitle;
           const roleTag = npc.role || '';
-          const weaponsPanel = buildStatWeapons(npc);
-          const armorPanel = buildStatArmor(npc);
-          const skillsStrip = buildStatStrip('Skill Bases', npc.statSkills);
-          const gearStrip = buildStatStrip('Cyberware & Special Equipment', npc.statGear);
+          const weaponsPanel = buildStatWeapons(npc, statLabels);
+          const armorPanel = buildStatArmor(npc, statLabels);
+          const skillsStrip = buildStatStrip(statLabels.skills, npc.statSkills);
+          const gearStrip = buildStatStrip(statLabels.gear, npc.statGear);
           return `
             <div class="stat-card">
               <div class="stat-card-side">${escapeHtml(title)}</div>
               <div class="stat-card-main">
-                ${roleTag ? `<div class="stat-strip"><div class="stat-strip-label">Role</div><div class="stat-panel-body stat-text">${escapeHtml(roleTag)}</div></div>` : ''}
-                <div class="stat-row-5">
-                  ${buildStatBox('INT', npc.statInt)}
-                  ${buildStatBox('REF', npc.statRef)}
-                  ${buildStatBox('DEX', npc.statDex)}
-                  ${buildStatBox('TECH', npc.statTech)}
-                  ${buildStatBox('COOL', npc.statCool)}
-                </div>
-                <div class="stat-row-5">
-                  ${buildStatBox('WILL', npc.statWill)}
-                  ${buildStatBox('LUCK', npc.statLuck)}
-                  ${buildStatBox('MOVE', npc.statMove)}
-                  ${buildStatBox('BODY', npc.statBody)}
-                  ${buildStatBox('EMP', npc.statEmp)}
-                </div>
-                <div class="stat-row-3">
-                  ${buildStatBox('Hit Points', npc.statHp)}
-                  ${buildStatBox('Seriously Wounded', npc.statSeriouslyWounded)}
-                  ${buildStatBox('Death Save', npc.statDeathSave)}
-                </div>
+                ${roleTag ? `<div class="stat-strip"><div class="stat-strip-label">${escapeHtml(statLabels.role)}</div><div class="stat-panel-body stat-text">${escapeHtml(roleTag)}</div></div>` : ''}
+                ${statLabels.printRows.map(fields => buildStatPrintRow(fields, npc, fieldMap)).join('')}
                 <div class="stat-row-2">
                   ${weaponsPanel}
                   ${armorPanel}
@@ -905,7 +1669,10 @@ function buildNpcStatPages(npcs) {
 }
 
 function buildPrintMarkup(data) {
-  const title = escapeHtml(data.title || 'Untitled Side Quest');
+  const mode = getModeConfig(data.mode);
+  const labels = mode.labels;
+  const emptyStates = mode.emptyStates;
+  const title = escapeHtml(data.title || emptyStates.untitledPrint);
   const pitch = richTextOrFallback(data.corePitch);
   const complications = data.complications.length
     ? buildPrintList(
@@ -921,7 +1688,7 @@ function buildPrintMarkup(data) {
           </div>
         `;
       },
-      'No complications yet.',
+      emptyStates.noComplications,
       'printComplications'
     )
     : '<span class="empty">-</span>';
@@ -932,18 +1699,18 @@ function buildPrintMarkup(data) {
       const sceneMeta = getSceneStyleMeta(loc.sceneStyle);
       const sceneSymbols = formatPrintSymbols([sceneMeta]);
       const locationFields = [
-        printField('What it is', loc.what),
-        printField('Why it matters', loc.why),
-        printField('Obstacle', loc.obstacle),
+        printField(labels.whatItIs, loc.what),
+        printField(labels.whyItMatters, loc.why),
+        printField(labels.obstacle, loc.obstacle),
       ].filter(Boolean).join('');
       return `
       <div class="sheet-item">
-        <div class="sheet-item-title sheet-item-title-row"><span class="sheet-item-name">${escapeHtml(loc.name || `Location ${index + 1}`)}</span>${sceneSymbols ? `<span class="inline-print-symbols location-title-icon">${sceneSymbols}</span>` : ''}</div>
+        <div class="sheet-item-title sheet-item-title-row"><span class="sheet-item-name">${escapeHtml(loc.name || `${emptyStates.untitledLocation} ${index + 1}`)}</span>${sceneSymbols ? `<span class="inline-print-symbols location-title-icon">${sceneSymbols}</span>` : ''}</div>
         ${locationFields}
       </div>
     `;
     },
-    'No locations yet.',
+    emptyStates.noLocations,
     'previewLocations'
   );
 
@@ -954,39 +1721,39 @@ function buildPrintMarkup(data) {
       const npcSymbol = npcTypeMeta ? `<span class="inline-print-symbols npc-title-icon"><span class="print-tag-symbol npc-name-symbol">${renderIconImage(absoluteAssetUrl(npcTypeMeta.icon), npcTypeMeta.label, 'print-tag-icon')}</span></span>` : '';
       const npcRole = npc.role ? `<span class="sheet-item-role">- ${escapeHtml(npc.role)}</span>` : '';
       const npcFields = [
-        printField('Quirk / Vibe', npc.vibe),
-        printField('Wants', npc.plus),
-        printField("Doesn't Want", npc.minus),
-        printField('Secret', npc.secret),
-        printField('Incongruency / contradiction', npc.incongruency),
+        printField(labels.quirkVibe, npc.vibe),
+        printField(labels.wants, npc.plus),
+        printField(labels.doesntWant, npc.minus),
+        printField(labels.secret, npc.secret),
+        printField(labels.incongruency, npc.incongruency),
       ].filter(Boolean).join('');
       return `
       <div class="sheet-item">
-        <div class="sheet-item-title sheet-item-title-row"><span class="sheet-item-name">${escapeHtml(npc.name || `NPC ${index + 1}`)}</span>${npcRole}${npcSymbol}</div>
+        <div class="sheet-item-title sheet-item-title-row"><span class="sheet-item-name">${escapeHtml(npc.name || `${emptyStates.untitledNpc} ${index + 1}`)}</span>${npcRole}${npcSymbol}</div>
         ${npcFields}
       </div>
     `;
     },
-    'No NPCs yet.',
+    emptyStates.noNpcs,
     'previewNpcs'
   );
 
   const hookFields = [
-    printField('Who contacts them', data.contactRole),
-    printField('Gig Type', data.format),
-    printField("What's the job", data.job),
-    printField("What's the pay", data.pay),
-    printField('Why now', data.whyNow),
+    printField(labels.whoContacts, data.contactRole),
+    printField(labels.gigType, data.format),
+    printField(labels.whatJob, data.job),
+    printField(labels.whatPay, data.pay),
+    printField(labels.whyNow, data.whyNow),
   ].filter(Boolean).join('');
 
   const developmentFields = [
-    printField('Who benefits', data.benefits),
-    printField("Who's pissed", data.pissed),
-    printField('What escalates', data.escalates),
-    printField('New hook unlocked', data.newHook),
+    printField(labels.whoBenefits, data.benefits),
+    printField(labels.whosPissed, data.pissed),
+    printField(labels.whatEscalates, data.escalates),
+    printField(labels.newHook, data.newHook),
   ].filter(Boolean).join('');
 
-  const statPages = buildNpcStatPages(data.npcs);
+  const statPages = buildNpcStatPages(data.npcs, mode);
 
   return `<!DOCTYPE html>
 <html lang="en">
@@ -996,42 +1763,42 @@ function buildPrintMarkup(data) {
   <title>${title}</title>
   <link rel="stylesheet" href="${new URL('styles.css', window.location.href).href}" />
 </head>
-<body class="print-preview-window">
+<body class="print-preview-window ${escapeHtml(mode.themeClass)}">
   <article class="print-sheet">
     <h1 class="sheet-title">${title}</h1>
     <div class="sheet-subtitle setup-intro">${pitch}</div>
 
     ${hookFields ? `<section class="sheet-section">
-      <h4>Hook</h4>
+      <h4>${escapeHtml(labels.hook)}</h4>
       <div class="sheet-grid">${hookFields}</div>
     </section>` : ''}
 
     <div class="print-columns">
       <div>
         ${data.locations.length ? `<section class="sheet-section flowing-section">
-          <h4>Locations & SCENES</h4>
+          <h4>${escapeHtml(labels.locations)}</h4>
           ${locations}
         </section>` : ''}
 
         ${data.complications.length ? `<section class="sheet-section flowing-section">
-          <h4>Encounters & Complications</h4>
+          <h4>${escapeHtml(labels.encounters)}</h4>
           ${complications}
         </section>` : ''}
       </div>
 
       <div>
         ${data.npcs.length ? `<section class="sheet-section flowing-section">
-          <h4>Non-playable Characters</h4>
+          <h4>${escapeHtml(labels.npcs)}</h4>
           ${npcs}
         </section>` : ''}
 
         ${developmentFields ? `<section class="sheet-section">
-          <h4>Developments</h4>
+          <h4>${escapeHtml(labels.developments)}</h4>
           <div class="sheet-grid">${developmentFields}</div>
         </section>` : ''}
 
         ${hasMeaningfulValue(data.gmNotes) ? `<section class="sheet-section gm-notes-section">
-          <h4>GM Notes</h4>
+          <h4>${escapeHtml(labels.gmNotes)}</h4>
           <div>${escapeHtml(data.gmNotes)}</div>
         </section>` : ''}
       </div>
@@ -1070,6 +1837,7 @@ function clearForm() {
     byId('locations').innerHTML = '';
     byId('complicationsList').innerHTML = '';
     byId('npcs').innerHTML = '';
+    applyMode(currentMode, { persist: false });
     addLocation();
     addComplication();
     addNpc();
@@ -1083,6 +1851,7 @@ function clearForm() {
 function populateForm(data = {}) {
   suppressAutosave = true;
   try {
+    applyMode(data.mode || currentMode, { persist: false });
     ids.forEach(id => {
       const el = byId(id);
       if (el) el.value = typeof data[id] === 'string' ? data[id] : '';
@@ -1112,63 +1881,7 @@ function populateForm(data = {}) {
 }
 
 function loadDemo() {
-  populateForm({
-    title: 'Ashes at the Night Market',
-    format: 'Mystery',
-    corePitch: '<p>A burned stall, a missing courier, and a memory shard that should not exist. The crew is pulled into the aftermath before the market can decide whether this was random violence or a deliberate hit.</p><p>Every witness has only part of the truth, and sunrise will bring outside interests who would rather bury the whole thing than let anyone learn what the courier was carrying.</p>',
-    contactRole: 'Neighbourhood organiser',
-    job: 'Find the courier and the shard',
-    pay: '1,200 eb plus future protection',
-    whyNow: 'A corp retrieval team arrives at sunrise',
-    benefits: 'Mira and the market vendors',
-    pissed: 'PetroChem subcontractors and a local booster crew',
-    escalates: 'Block-wide tensions and surveillance',
-    newHook: 'One data fragment points to a clinic in Sector 12',
-    gmNotes: 'Keep the actual culprit sympathetic. Let the crew choose between exposure and quiet leverage.',
-    locations: [
-      { name: 'Burned Night Market Stall', what: 'A blackened kiosk sits at the edge of the market beneath a tangle of melted signage and scorched tarps, with nearby vendors already treating it like cursed ground. The smell of burned plastic still hangs in the air, and the stall is littered with warped cookware, soot-stained crates, and a few pieces of debris that suggest the fire was far too focused to be accidental.', sceneStyle: 'battle-map' },
-      { name: 'Canal Service Tunnel', what: 'Smuggler route beneath the district.', why: 'Courier passed through here after the fire.', obstacle: 'Flooding and scavenger squatters.' }
-    ],
-    complications: [
-      { text: 'The shard is damaged but still active.', revealType: 'hidden' },
-      { text: 'A local gang is protecting the wrong suspect. They are convinced the courier sold them out, and they are already roughing up bystanders, locking down exits, and warning everyone in the market not to talk. If the crew pushes too hard or asks the wrong questions in public, the gang may escalate from intimidation to outright violence before anyone realises they are hunting the wrong person.', revealType: 'conditional', dangerLevel: 'dangerous' },
-      { text: 'The courier left the shard with a child vendor for safekeeping.', revealType: 'apparent' }
-    ],
-    npcs: [
-      { name: 'Mira Kovač', role: 'Organiser', vibe: 'Tired but composed', plus: 'Knows who still talks.', minus: 'Hiding how much she already knows.', secret: 'She asked the courier to move the shard in the first place.', incongruency: 'Acts like a bystander but is already deeply involved.', statInt: '7', statRef: '6', statDex: '6', statTech: '4', statCool: '8', statWill: '7', statLuck: '5', statMove: '5', statBody: '4', statEmp: '6', statHp: '35', statSeriouslyWounded: '18', statDeathSave: '6', statArmorHead: '4 SP', statArmorBody: '7 SP', statWeapon1: 'Very Heavy Pistol', statWeapon1Damage: '4d6', statSkills: 'Conversation 10, Human Perception 9, Persuasion 10, Local Expert 8, Handgun 8, Wardrobe & Style 9', statGear: 'Agent, encrypted shard, budget bribes, very heavy pistol ammo x24' },
-      { name: 'Talon', role: 'Booster lieutenant', vibe: 'Aggressive, performative', plus: 'Saw the getaway vehicle.', minus: 'Will lie if challenged in public.', incongruency: 'Was paid to chase the wrong person.', npcType: 'enemy' }
-    ]
-  });
-}
-
-function loadDemo() {
-  populateForm({
-    title: 'Ashes at the Night Market',
-    format: 'Mystery',
-    corePitch: '<p>A burned stall, a missing courier, and a memory shard that should not exist. The crew is pulled into the aftermath before the market can decide whether this was random violence or a deliberate hit.</p><p>Every witness has only part of the truth, and sunrise will bring outside interests who would rather bury the whole thing than let anyone learn what the courier was carrying.</p>',
-    contactRole: 'Neighbourhood organiser',
-    job: 'Find the courier and the shard',
-    pay: '1,200 eb plus future protection',
-    whyNow: 'A corp retrieval team arrives at sunrise',
-    benefits: 'Mira and the market vendors',
-    pissed: 'PetroChem subcontractors and a local booster crew',
-    escalates: 'Block-wide tensions and surveillance',
-    newHook: 'One data fragment points to a clinic in Sector 12',
-    gmNotes: 'Keep the actual culprit sympathetic. Let the crew choose between exposure and quiet leverage.',
-    locations: [
-      { name: 'Burned Night Market Stall', what: 'A blackened kiosk sits at the edge of the market beneath a tangle of melted signage and scorched tarps, with nearby vendors already treating it like cursed ground. The smell of burned plastic still hangs in the air, and the stall is littered with warped cookware, soot-stained crates, and a few pieces of debris that suggest the fire was far too focused to be accidental.', sceneStyle: 'battle-map' },
-      { name: 'Canal Service Tunnel', what: 'Smuggler route beneath the district.', why: 'Courier passed through here after the fire.', obstacle: 'Flooding and scavenger squatters.' }
-    ],
-    complications: [
-      { text: 'The shard is damaged but still active.', revealType: 'hidden' },
-      { text: 'A local gang is protecting the wrong suspect. They are convinced the courier sold them out, and they are already roughing up bystanders, locking down exits, and warning everyone in the market not to talk. If the crew pushes too hard or asks the wrong questions in public, the gang may escalate from intimidation to outright violence before anyone realises they are hunting the wrong person.', revealType: 'conditional', dangerLevel: 'dangerous' }
-    ],
-    npcs: [
-      { name: 'Mira Kovac', role: 'Organiser', vibe: 'Tired but composed', plus: 'Keep the market calm and steer the crew toward useful witnesses.', minus: 'Corp attention, public violence, or anyone digging too closely into her involvement.', secret: 'She keeps a private ranking of every noodle stall in the market.', incongruency: 'Despite her fixer instincts, she speaks like a community mediator and always pushes de-escalation first.', statInt: '7', statRef: '6', statDex: '6', statTech: '4', statCool: '8', statWill: '7', statLuck: '5', statMove: '5', statBody: '4', statEmp: '6', statHp: '35', statSeriouslyWounded: '18', statDeathSave: '6', statArmorHead: '4 SP', statArmorBody: '7 SP', statWeapon1: 'Very Heavy Pistol', statWeapon1Damage: '4d6', statSkills: 'Conversation 10, Human Perception 9, Persuasion 10, Local Expert 8, Handgun 8, Wardrobe & Style 9', statGear: 'Agent, encrypted shard, budget bribes, very heavy pistol ammo x24' },
-      { name: 'Talon', role: 'Booster lieutenant', vibe: 'Aggressive, performative', plus: 'Find the supposed traitor fast and look strong in front of the gang.', minus: 'Being embarrassed in public or admitting his crew grabbed the wrong target.', incongruency: 'Despite the swagger, he is obsessive about keeping his jacket spotless.', npcType: 'enemy' },
-      { name: 'Brick', role: 'Hired muscle', vibe: 'Silent, watchful', plus: 'Keep the client alive and end trouble quickly.', minus: 'Drawn-out arguments, surprises, or getting pinned in a tight space.', npcType: 'friendly', statRef: '6', statDex: '5', statCool: '5', statWill: '6', statMove: '5', statBody: '8', statHp: '40', statSeriouslyWounded: '20', statDeathSave: '8' }
-    ]
-  });
+  populateForm(getDemoData(currentMode));
 }
 
 function exportJson() {
@@ -1231,6 +1944,7 @@ document.addEventListener('click', event => {
     document.querySelectorAll('.type-menu-popup').forEach(menu => {
       menu.hidden = true;
     });
+    updateTypeMenuState();
   }
 });
 
@@ -1238,11 +1952,15 @@ ids.forEach(id => {
   const el = byId(id);
   if (el) el.addEventListener('input', renderPreview);
 });
+document.querySelectorAll('.mode-tab').forEach(button => {
+  button.addEventListener('click', () => requestModeSwitch(button.dataset.mode));
+});
 byId('corePitch').addEventListener('input', () => {
   normalizeCorePitch();
   renderPreview();
 });
-byId('corePitchToolbarToggle').addEventListener('click', () => {
+byId('corePitchToolbarToggle').addEventListener('click', event => {
+  event.stopPropagation();
   const toolbar = byId('corePitchToolbar');
   const shouldOpen = toolbar.hasAttribute('hidden');
   if (shouldOpen) {
@@ -1251,6 +1969,9 @@ byId('corePitchToolbarToggle').addEventListener('click', () => {
     toolbar.setAttribute('hidden', '');
   }
   byId('corePitchToolbarToggle').setAttribute('aria-expanded', String(shouldOpen));
+});
+byId('corePitchToolbar').addEventListener('click', event => {
+  event.stopPropagation();
 });
 document.querySelectorAll('.toolbar-btn').forEach(button => {
   button.addEventListener('click', () => {
@@ -1295,6 +2016,8 @@ const autosavedData = loadAutosaveData();
 if (autosavedData) {
   populateForm(autosavedData);
 } else {
+  applyMode(DEFAULT_MODE, { persist: false });
   clearForm();
 }
 positionSectionJumpNav();
+

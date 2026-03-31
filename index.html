@@ -10,22 +10,26 @@
   <nav class="section-jump-nav" aria-label="Jump to section">
     <button type="button" class="section-jump-toggle" id="sectionJumpToggle" aria-controls="sectionJumpLinks"><span class="section-jump-toggle-label">Navigation</span></button>
     <div class="section-jump-links" id="sectionJumpLinks">
-      <a href="#page-top" class="section-jump-link">Home</a>
-      <a href="#hook-section" class="section-jump-link">Hook</a>
-      <a href="#locations-section" class="section-jump-link">Locations</a>
-      <a href="#complications-section" class="section-jump-link">Encounters</a>
-      <a href="#npcs-section" class="section-jump-link">NPCs</a>
-      <a href="#developments-section" class="section-jump-link">Developments</a>
-      <a href="#gm-notes-section" class="section-jump-link">GM Notes</a>
+      <a href="#page-top" class="section-jump-link" id="navHomeLink">Home</a>
+      <a href="#hook-section" class="section-jump-link" id="navHookLink">Hook</a>
+      <a href="#locations-section" class="section-jump-link" id="navLocationsLink">Locations</a>
+      <a href="#complications-section" class="section-jump-link" id="navEncountersLink">Encounters</a>
+      <a href="#npcs-section" class="section-jump-link" id="navNpcsLink">NPCs</a>
+      <a href="#developments-section" class="section-jump-link" id="navDevelopmentsLink">Developments</a>
+      <a href="#gm-notes-section" class="section-jump-link" id="navGmNotesLink">GM Notes</a>
     </div>
   </nav>
   <div class="app">
     <section class="panel">
+      <div class="mode-tabs" id="plannerModeTabs" role="tablist" aria-label="Planner mode">
+        <button type="button" class="mode-tab is-active" data-mode="cyberpunk" role="tab" aria-selected="true">Cyberpunk RED</button>
+        <button type="button" class="mode-tab" data-mode="fantasy" role="tab" aria-selected="false">Fantasy</button>
+      </div>
       <div class="panel-header">
-        <div>
-          <h1>Cyberpunk RED <span class="title-lockup">GIG PLANNER</span></h1>
+        <div class="panel-header-main">
+          <h1 id="plannerTitle">Cyberpunk RED <span class="title-lockup">GIG PLANNER</span></h1>
           <div class="subtle header-subtitle">
-            <div class="header-copy">A modular Cyberpunk RED gig planner with expandable sections, structured NPC and encounter tools, optional printable stat blocks, save/load support, and clean export formatting, built to turn rough ideas into table-ready jobs fast.</div>
+            <div class="header-copy" id="plannerSubtitle">A modular Cyberpunk RED gig planner with expandable sections, structured NPC and encounter tools, optional printable stat blocks, save/load support, and clean export formatting, built to turn rough ideas into table-ready jobs fast.</div>
             <div class="header-copy">
               Inspired by the teachings of
               <a href="https://www.youtube.com/@DeficientMaster" target="_blank" rel="noopener noreferrer">Deficient Master</a>, as well as
@@ -50,37 +54,22 @@
       </div>
       <div class="content">
         <div class="section" id="hook-section">
-          <div class="section-title"><h3>Hook</h3></div>
+          <div class="section-title"><h3 id="hookSectionTitle">Hook</h3></div>
           <div class="grid grid-2">
             <div>
               <label for="title">Title</label>
               <input id="title" placeholder="Neon Saints of Block 9" />
             </div>
             <div>
-              <label for="format">Gig Type</label>
-              <select id="format">
-                <option value=""></option>
-                <option>Assassination</option>
-                <option>Escort</option>
-                <option>Heist</option>
-                <option>Moral Quandary</option>
-                <option>Mystery</option>
-                <option>Puzzle</option>
-                <option>Sabotage</option>
-                <option>Sanctuary</option>
-                <option>Shop</option>
-                <option>Trap</option>
-                <option>Other</option>
-              </select>
+              <label for="format" id="formatLabel">Gig Type</label>
+              <select id="format"></select>
             </div>
           </div>
           <div style="margin-top:14px;">
             <label for="corePitch">Setup</label>
             <div class="rich-editor">
               <div class="rich-toolbar-header">
-                <button type="button" class="toolbar-toggle-btn" id="corePitchToolbarToggle" aria-expanded="false" aria-controls="corePitchToolbar" title="Formatting" aria-label="Formatting">Aa</button>
-              </div>
-              <div class="rich-toolbar" id="corePitchToolbar" aria-label="Setup formatting tools" hidden>
+                <div class="rich-toolbar" id="corePitchToolbar" aria-label="Setup formatting tools" hidden>
                 <button type="button" class="toolbar-btn" data-command="bold"><strong>B</strong></button>
                 <button type="button" class="toolbar-btn" data-command="italic"><em>I</em></button>
                 <button type="button" class="toolbar-btn" data-command="underline"><u>U</u></button>
@@ -94,6 +83,8 @@
                   <option value="4">Large</option>
                   <option value="5">XL</option>
                 </select>
+                </div>
+                <button type="button" class="toolbar-toggle-btn" id="corePitchToolbarToggle" aria-expanded="false" aria-controls="corePitchToolbar" title="Formatting" aria-label="Formatting">Aa</button>
               </div>
               <div id="corePitch" class="rich-input" contenteditable="true" role="textbox" aria-multiline="true" data-placeholder="Brief setup of the gig"></div>
             </div>
@@ -121,8 +112,8 @@
         <div class="section" id="locations-section">
           <div class="section-title">
             <div>
-              <h3>Locations & SCENES</h3>
-              <div class="section-hint">Double-click a card to collapse or expand it.<br />Click and drag a card to reorder it.</div>
+              <h3 id="locationsSectionTitle">Locations & SCENES</h3>
+              <div class="section-hint">Double-click a card to collapse/expand, or double-click the section heading to toggle all.<br />Click and drag a card to reorder it.</div>
             </div>
             <div class="actions"><button id="addLocationBtn">+ Add location</button></div>
           </div>
@@ -132,8 +123,8 @@
         <div class="section" id="complications-section">
           <div class="section-title">
             <div>
-              <h3>Encounters & Complications</h3>
-              <div class="section-hint">Double-click a card to collapse or expand it.<br />Click and drag a card to reorder it.</div>
+              <h3 id="encountersSectionTitle">Encounters & Complications</h3>
+              <div class="section-hint">Double-click a card to collapse/expand, or double-click the section heading to toggle all.<br />Click and drag a card to reorder it.</div>
             </div>
             <div class="actions"><button id="addComplicationBtn">+ Add complication</button></div>
           </div>
@@ -143,8 +134,8 @@
         <div class="section" id="npcs-section">
           <div class="section-title">
             <div>
-              <h3>Non-playable Characters</h3>
-              <div class="section-hint">Double-click a card to collapse or expand it.<br />Click and drag a card to reorder it.</div>
+              <h3 id="npcsSectionTitle">Non-playable Characters</h3>
+              <div class="section-hint">Double-click a card to collapse/expand, or double-click the section heading to toggle all.<br />Click and drag a card to reorder it.</div>
             </div>
             <div class="actions"><button id="addNpcBtn">+ Add NPC</button></div>
           </div>
@@ -152,7 +143,7 @@
         </div>
 
         <div class="section" id="developments-section">
-          <div class="section-title"><h3>Developments</h3></div>
+          <div class="section-title"><h3 id="developmentsSectionTitle">Developments</h3></div>
           <div class="grid grid-2">
             <div>
               <label for="benefits">Who benefits</label>
@@ -174,7 +165,7 @@
         </div>
 
         <div class="section" id="gm-notes-section">
-          <div class="section-title"><h3>GM Notes</h3></div>
+          <div class="section-title"><h3 id="gmNotesSectionTitle">GM Notes</h3></div>
           <textarea id="gmNotes" placeholder="Improvised details, names, spare clues, stat notes..."></textarea>
         </div>
 
@@ -370,57 +361,8 @@
             </div>
             <div style="margin-top:14px;">
               <button class="pill statblock-toggle" type="button">Stat block</button>
-              <div class="npc-statblock-details" style="display:none;">
-              <div class="compact-stat-grid" style="margin-top:14px;">
-                <label class="compact-stat-field"><span>INT</span><input data-field="statInt" /></label>
-                <label class="compact-stat-field"><span>REF</span><input data-field="statRef" /></label>
-                <label class="compact-stat-field"><span>DEX</span><input data-field="statDex" /></label>
-                <label class="compact-stat-field"><span>TECH</span><input data-field="statTech" /></label>
-                <label class="compact-stat-field"><span>COOL</span><input data-field="statCool" /></label>
-                <label class="compact-stat-field"><span>WILL</span><input data-field="statWill" /></label>
-                <label class="compact-stat-field"><span>LUCK</span><input data-field="statLuck" /></label>
-                <label class="compact-stat-field"><span>MOVE</span><input data-field="statMove" /></label>
-                <label class="compact-stat-field"><span>BODY</span><input data-field="statBody" /></label>
-                <label class="compact-stat-field"><span>EMP</span><input data-field="statEmp" /></label>
-              </div>
-              <div class="compact-stat-grid compact-stat-grid-wide" style="margin-top:14px;">
-                <label class="compact-stat-field"><span>HP</span><input data-field="statHp" /></label>
-                <label class="compact-stat-field"><span>Seriously Wounded</span><input data-field="statSeriouslyWounded" /></label>
-                <label class="compact-stat-field"><span>Death Save</span><input data-field="statDeathSave" /></label>
-              </div>
-              <div class="compact-stat-grid compact-stat-grid-armor" style="margin-top:14px;">
-                <label class="compact-stat-field"><span>Armor Head</span><input data-field="statArmorHead" placeholder="7 SP" /></label>
-                <label class="compact-stat-field"><span>Armor Body</span><input data-field="statArmorBody" placeholder="7 SP" /></label>
-              </div>
-              <div style="margin-top:14px;">
-                <label>Weapon 1</label>
-                <div class="grid grid-2">
-                  <input data-field="statWeapon1" placeholder="Very Heavy Pistol" />
-                  <input data-field="statWeapon1Damage" placeholder="4d6" />
-                </div>
-              </div>
-              <div style="margin-top:14px;">
-                <label>Weapon 2</label>
-                <div class="grid grid-2">
-                  <input data-field="statWeapon2" placeholder="Poor Quality Shotgun" />
-                  <input data-field="statWeapon2Damage" placeholder="5d6" />
-                </div>
-              </div>
-              <div style="margin-top:14px;">
-                <label>Weapon 3</label>
-                <div class="grid grid-2">
-                  <input data-field="statWeapon3" placeholder="Baton" />
-                  <input data-field="statWeapon3Damage" placeholder="2d6" />
-                </div>
-              </div>
-              <div style="margin-top:14px;">
-                <label>Skill Bases</label>
-                <textarea data-field="statSkills" placeholder="Athletics 9, Brawling 11, Evasion 7..."></textarea>
-              </div>
-              <div style="margin-top:14px;">
-                <label>Cyberware & Equipment</label>
-                <textarea data-field="statGear" placeholder="Radio communicator, kevlar, shotgun shells..."></textarea>
-              </div>
+              <div class="npc-statblock-details" style="display:none;"></div>
+            </div>
             </div>
           </div>
         </div>
