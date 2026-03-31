@@ -7,6 +7,7 @@ const plannerModes = {
   cyberpunk: {
     id: 'cyberpunk',
     label: 'Cyberpunk RED',
+    browserTitle: 'Cyberpunk RED Gig Planner',
     themeClass: 'theme-cyberpunk',
     plannerTitle: 'Cyberpunk RED <span class="title-lockup">GIG PLANNER</span>',
     subtitle: 'A modular Cyberpunk RED gig planner with expandable sections, structured NPC and encounter tools, optional printable stat blocks, save/load support, and clean export formatting, built to turn rough ideas into table-ready jobs fast.',
@@ -126,9 +127,10 @@ const plannerModes = {
   },
   fantasy: {
     id: 'fantasy',
-    label: 'Fantasy',
+    label: 'Fantasy RPG',
+    browserTitle: 'Fantasy RPG Side Quest Planner',
     themeClass: 'theme-fantasy',
-    plannerTitle: 'Fantasy SIDE QUEST<br /><span class="title-lockup">PLANNER</span>',
+    plannerTitle: 'Fantasy RPG SIDE QUEST<br /><span class="title-lockup">PLANNER</span>',
     subtitle: 'A modular fantasy adventure planner with expandable sections, structured NPC and encounter tools, optional printable stat blocks, save/load support, and clean export formatting, built to turn rough ideas into table-ready jobs fast.',
     buttons: {
       newGig: 'New',
@@ -693,7 +695,7 @@ function applyMode(modeId, options = {}) {
   if (plannerSubtitle) plannerSubtitle.textContent = mode.subtitle;
   const formatSelect = byId('format');
   const previousFormat = formatSelect?.value || '';
-  document.title = `${mode.label} Planner`;
+  document.title = mode.browserTitle || `${mode.label} Planner`;
 
   if (formatSelect) {
     formatSelect.innerHTML = ['<option value=""></option>', ...mode.formatOptions.map(option => `<option>${escapeHtml(option)}</option>`)].join('');
