@@ -131,7 +131,7 @@ const plannerModes = {
     browserTitle: 'Fantasy RPG Side Quest Planner',
     themeClass: 'theme-fantasy',
     plannerTitle: 'Fantasy RPG SIDE QUEST<br /><span class="title-lockup">PLANNER</span>',
-    subtitle: 'A modular fantasy adventure planner with expandable sections, structured NPC and encounter tools, optional printable stat blocks, save/load support, and clean export formatting, built to turn rough ideas into table-ready jobs fast.',
+    subtitle: 'A modular fantasy RPG adventure planner with expandable sections, structured NPC and encounter tools, optional printable stat blocks, save/load support, and clean export formatting, built to turn rough ideas into table-ready jobs fast.',
     buttons: {
       newGig: 'New',
       saveGig: 'Save',
@@ -729,7 +729,13 @@ function applyMode(modeId, options = {}) {
 
   Object.entries(labelMap).forEach(([id, value]) => {
     const element = byId(id);
-    if (element) element.textContent = value;
+    if (!element) return;
+    if (id === 'printBtn' || id === 'printBtnBottom') {
+      const safeLabel = escapeHtml(value || '').replace(/\*$/, '<span class="button-note-mark" aria-hidden="true">*</span>');
+      element.innerHTML = `<span class="button-label">${safeLabel}</span>`;
+      return;
+    }
+    element.textContent = value;
   });
 
   applyModePlaceholders(mode.id);
