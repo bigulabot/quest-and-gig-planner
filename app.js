@@ -383,6 +383,11 @@ const demoDataByMode = {
         what: 'A blackened market stall sits at the edge of the fair beneath scorched bunting and warped lantern frames, with nearby traders already treating it like cursed ground. The smell of pitch and burned cloth still hangs in the air, and the wreckage is littered with cracked cookware, ash-soaked crates, and a few suspicious fragments that suggest the fire burned far hotter and narrower than an ordinary accident.',
         sceneStyle: 'battle-map',
       },
+      {
+        name: 'Bell Tower Stairs',
+        what: 'A narrow stone stair above the fair, slick with soot and half-hidden footprints.',
+        sceneStyle: 'totm',
+      },
     ],
     complications: [
       { text: 'The crystal is damaged but still active.', revealType: 'hidden' },
@@ -396,7 +401,7 @@ const demoDataByMode = {
         plus: 'Keep travellers alive and preserve the road’s peace.',
         minus: 'Lordly interference, public violence, or anyone digging too closely into her involvement.',
         secret: 'She keeps a private ranking of every pie stall at the fair.',
-        incongruency: 'Despite her fixer instincts, she speaks like a patient mediator and always pushes de-escalation first.',
+        incongruency: 'Despite her trader instincts, she is willing to sacrifice profit in order to de-escalate.',
         npcType: 'friendly',
         statCreatureType: 'Medium humanoid (human), lawful good',
         statArmorClass: '18 (chain mail, shield)',
