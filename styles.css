@@ -2117,8 +2117,24 @@ body.theme-fantasy .drag-placeholder {
 
 .print-preview-window .sheet-subtitle {
   margin-bottom: 2px;
-  font-size: .92rem;
+  font-size: 1rem;
   line-height: 1.32;
+}
+
+.print-preview-window .sheet-subtitle font[size="2"] {
+  font-size: .92rem;
+}
+
+.print-preview-window .sheet-subtitle font[size="3"] {
+  font-size: 1rem;
+}
+
+.print-preview-window .sheet-subtitle font[size="4"] {
+  font-size: 1.12rem;
+}
+
+.print-preview-window .sheet-subtitle font[size="5"] {
+  font-size: 1.28rem;
 }
 
 .print-preview-window .print-hero-section {
