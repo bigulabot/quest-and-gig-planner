@@ -2158,7 +2158,9 @@ function buildPrintMarkup(data) {
   const labels = mode.labels;
   const emptyStates = mode.emptyStates;
   const title = escapeHtml(data.title || emptyStates.untitledPrint);
-  const pitch = richTextOrFallback(data.corePitch);
+  const sanitizedHook = sanitizeRichText(data.corePitch);
+  const hasHookText = Boolean(sanitizedHook.replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').trim());
+  const pitch = hasHookText ? sanitizedHook : '';
   const complications = data.complications.length
     ? buildPrintList(
       data.complications,
@@ -2224,8 +2226,8 @@ function buildPrintMarkup(data) {
   );
 
   const hookFields = [
-    printField(labels.whoContacts, data.contactRole),
     printField(labels.gigType, data.format),
+    printField(labels.whoContacts, data.contactRole),
     printField(labels.whatJob, data.job),
     printField(labels.whatPay, data.pay),
     printField(labels.whyNow, data.whyNow),
@@ -2251,11 +2253,14 @@ function buildPrintMarkup(data) {
 <body class="print-preview-window ${escapeHtml(mode.themeClass)}">
   <article class="print-sheet">
     <h1 class="sheet-title">${title}</h1>
-    <div class="sheet-subtitle setup-intro">${pitch}</div>
-
-    ${hookFields ? `<section class="sheet-section">
-      <h4>${escapeHtml(labels.hook)}</h4>
-      <div class="sheet-grid">${hookFields}</div>
+    ${(hasHookText || hookFields) ? `<section class="sheet-section print-hero-section${hasHookText ? '' : ' print-hero-section-no-hook'}">
+      <div class="print-hero-layout">
+        ${hasHookText ? `<div class="sheet-subtitle setup-intro">
+          <h4>${escapeHtml(labels.hook)}</h4>
+          ${pitch}
+        </div>` : ''}
+        ${hookFields ? `<div class="print-hero-sidebar">${hookFields}</div>` : ''}
+      </div>
     </section>` : ''}
 
     <div class="print-columns">

@@ -166,7 +166,7 @@ body.theme-fantasy #printBtnBottom:focus-visible {
 }
 
 body.theme-fantasy .section {
-  background: linear-gradient(180deg, rgba(131,153,88,.18), rgba(16,86,102,.08));
+  background: linear-gradient(180deg, rgba(58,63,71,.96), rgba(48,53,60,.96));
   border-color: #839958;
   box-shadow: inset 0 1px 0 rgba(247,244,213,.05);
 }
@@ -1922,8 +1922,8 @@ body.theme-fantasy .drag-placeholder {
     border-radius: 0;
   }
   .panel-header { display: none; }
-  .preview-shell { padding: 0; background: #fff; }
-  .print-sheet {
+  body:not(.print-preview-window) .preview-shell { padding: 0; background: #fff; }
+  body:not(.print-preview-window) .print-sheet {
     box-shadow: none;
     margin: 0;
     max-width: none;
@@ -1932,12 +1932,12 @@ body.theme-fantasy .drag-placeholder {
     font-size: 11px;
     border: 0;
   }
-  .print-sheet,
-  .print-sheet * {
+  body:not(.print-preview-window) .print-sheet,
+  body:not(.print-preview-window) .print-sheet * {
     -webkit-print-color-adjust: exact;
     print-color-adjust: exact;
   }
-  .sheet-section {
+  body:not(.print-preview-window) .sheet-section {
     break-inside: avoid;
     page-break-inside: avoid;
     margin-bottom: 7px;
@@ -1945,17 +1945,17 @@ body.theme-fantasy .drag-placeholder {
     border-radius: 7px;
     background: #f0f0f0 !important;
   }
-  .gm-notes-section {
+  body:not(.print-preview-window) .gm-notes-section {
     break-inside: auto;
     page-break-inside: auto;
     padding-top: 7px;
   }
-  .flowing-section {
+  body:not(.print-preview-window) .flowing-section {
     break-inside: auto;
     page-break-inside: auto;
     padding-top: 7px;
   }
-  .sheet-title {
+  body:not(.print-preview-window) .sheet-title {
     margin: 0 0 3px;
     font-size: 1.2rem;
     font-family: "Orbitron", "Barlow Condensed", "Arial Narrow", sans-serif;
@@ -1963,117 +1963,127 @@ body.theme-fantasy .drag-placeholder {
     line-height: 1.05;
     padding-bottom: 2px;
   }
-  .sheet-subtitle {
+  body:not(.print-preview-window) .sheet-subtitle {
     margin-bottom: 2px;
     font-size: .92rem;
     line-height: 1.32;
   }
-  .setup-intro {
+  body:not(.print-preview-window) .setup-intro {
     padding: 5px 7px;
     margin-bottom: 7px;
     border-radius: 6px;
   }
-  .sheet-subtitle p,
-  .sheet-subtitle ul {
+  body:not(.print-preview-window) .sheet-subtitle p,
+  body:not(.print-preview-window) .sheet-subtitle ul {
     margin: 0;
   }
-  .sheet-section h4 {
+  body:not(.print-preview-window) .sheet-section h4 {
     margin: 0 0 5px;
     font-size: .72rem;
     letter-spacing: .04em;
   }
-  .sheet-grid {
+  body:not(.print-preview-window) .sheet-grid {
     gap: 5px 8px;
   }
-  .sheet-list {
+  body:not(.print-preview-window) .sheet-list {
     gap: 5px;
   }
-  #previewLocations.sheet-list,
-  #previewNpcs.sheet-list {
+  body:not(.print-preview-window) #previewLocations.sheet-list,
+  body:not(.print-preview-window) #previewNpcs.sheet-list {
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 5px 6px;
   }
-  #printComplications.sheet-list {
+  body:not(.print-preview-window) #printComplications.sheet-list {
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 5px 6px;
   }
-  .sheet-item {
+  body:not(.print-preview-window) .sheet-item {
     padding: 5px 6px;
     border-radius: 5px;
     background: #fff !important;
   }
-  .sheet-item-title {
+  body:not(.print-preview-window) .sheet-item-title {
     margin-bottom: 2px;
     font-size: .82rem;
   }
-  .sheet-item-title-row {
+  body:not(.print-preview-window) .sheet-item-title-row {
     gap: 5px;
   }
-  .sheet-field {
+  body:not(.print-preview-window) .sheet-field {
     line-height: 1.2;
   }
-  .sheet-field + .sheet-field {
+  body:not(.print-preview-window) .sheet-field + .sheet-field {
     margin-top: 4px;
   }
-  .sheet-grid > .sheet-field,
-  .sheet-grid > .sheet-field + .sheet-field {
+  body:not(.print-preview-window) .sheet-grid > .sheet-field,
+  body:not(.print-preview-window) .sheet-grid > .sheet-field + .sheet-field {
     margin-top: 0;
   }
-  .sheet-field strong {
+  body:not(.print-preview-window) .sheet-field strong {
     margin-bottom: 0;
     font-size: .6rem;
   }
-  .print-tag-symbol {
+  body:not(.print-preview-window) .print-tag-symbol {
     font-size: 1.08rem;
     vertical-align: middle;
   }
-  .print-tag-icon {
+  body:not(.print-preview-window) .print-tag-icon {
     width: 1.08rem;
     height: 1.08rem;
   }
-  .npc-name-symbol {
+  body:not(.print-preview-window) .npc-name-symbol {
     vertical-align: middle;
   }
-  .print-tag-separator {
+  body:not(.print-preview-window) .print-tag-separator {
     margin: 0 5px;
     font-size: .95rem;
   }
-  .small {
+  body:not(.print-preview-window) .small {
     font-size: .72rem;
     line-height: 1.15;
   }
-  .print-columns {
+  body:not(.print-preview-window) .print-columns {
     display: block;
     gap: 0;
   }
-  .empty {
+  body:not(.print-preview-window) .empty {
     line-height: 1.15;
   }
-  #previewLocations .empty,
-  #previewNpcs .empty {
+  body:not(.print-preview-window) #previewLocations .empty,
+  body:not(.print-preview-window) #previewNpcs .empty {
     grid-column: 1 / -1;
   }
-  #printComplications .empty {
+  body:not(.print-preview-window) #printComplications .empty {
     grid-column: 1 / -1;
   }
-  @page { size: A4; margin: 5mm 2mm 3mm; }
+  @page { size: A4; margin: 0; }
 }
 
 .print-preview-window {
-  background: #fff;
+  background: #d7d7d7;
   font-size: 11px;
   line-height: 1.25;
   margin: 0;
+  padding: 12px;
+  box-sizing: border-box;
 }
 
 .print-preview-window .print-sheet {
   box-shadow: none;
-  margin: 0;
-  max-width: none;
-  width: 100%;
-  padding: 1.5mm 7mm 6mm;
+  margin: 0 auto;
+  max-width: 210mm;
+  width: min(210mm, calc(100vw - 24px));
+  padding: 3mm 2mm 3mm;
   font-size: 11px;
+  box-sizing: border-box;
   border: 0;
+  background: #fff;
+}
+
+.print-preview-window .print-sheet,
+.print-preview-window .print-sheet * {
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
 }
 
 .print-preview-window .sheet-section {
@@ -2111,12 +2121,62 @@ body.theme-fantasy .drag-placeholder {
   line-height: 1.32;
 }
 
+.print-preview-window .print-hero-section {
+  padding: 7px 8px;
+}
+
+.print-preview-window .print-hero-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(160px, 21%);
+  align-items: start;
+  gap: 8px;
+}
+
 .print-preview-window .setup-intro {
+  min-width: 0;
+  padding: 7px 9px 8px;
+  margin-bottom: 0;
+  background: inherit;
+  border: 0;
+  border-radius: 0;
+}
+
+.print-preview-window .setup-intro h4 {
+  margin: 0 0 4px;
+  font-size: .72rem;
+  letter-spacing: .04em;
+  color: #7c1717;
+}
+
+.print-preview-window .print-hero-sidebar {
+  width: 100%;
+  min-width: 0;
+  max-width: none;
   padding: 5px 7px;
-  margin-bottom: 7px;
   background: #f5f5f5;
   border-radius: 6px;
   color: #111;
+}
+
+.print-preview-window .print-hero-sidebar .sheet-field + .sheet-field {
+  margin-top: 6px;
+}
+
+.print-preview-window .print-hero-section-no-hook .print-hero-layout {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.print-preview-window .print-hero-section-no-hook .print-hero-sidebar {
+  min-width: 0;
+  max-width: none;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 8px 12px;
+}
+
+.print-preview-window .print-hero-section-no-hook .print-hero-sidebar .sheet-field,
+.print-preview-window .print-hero-section-no-hook .print-hero-sidebar .sheet-field + .sheet-field {
+  margin-top: 0;
 }
 
 .print-preview-window .sheet-subtitle p,
@@ -2215,6 +2275,17 @@ body.theme-fantasy .drag-placeholder {
   line-height: 1.15;
 }
 
+@media (max-width: 720px) {
+  .print-preview-window .print-hero-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .print-preview-window .print-hero-sidebar {
+    min-width: 0;
+    max-width: none;
+  }
+}
+
 .print-preview-window #previewLocations .empty,
 .print-preview-window #previewNpcs .empty {
   grid-column: 1 / -1;
@@ -2242,6 +2313,14 @@ body.theme-fantasy .drag-placeholder {
 .theme-fantasy .setup-intro {
   background: #fbf8e8;
   border: 1px solid #c9d1af;
+  border-radius: 8px;
+}
+
+.print-preview-window.theme-cyberpunk .setup-intro {
+  background: #fff;
+  border: 1px solid #e5e5e5;
+  border-radius: 8px;
+  color: #111;
 }
 
 .theme-fantasy .sheet-section {
