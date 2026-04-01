@@ -16,7 +16,7 @@ const plannerModes = {
       saveGig: 'Save',
       demoGig: 'Demo',
       loadGig: 'Load',
-      printGig: 'Print / Export PDF*',
+      printGig: 'Export as PDF*',
     },
     labels: {
       home: 'Home',
@@ -141,7 +141,7 @@ const plannerModes = {
       saveGig: 'Save',
       demoGig: 'Demo',
       loadGig: 'Load',
-      printGig: 'Print / Export PDF*',
+      printGig: 'Export as PDF*',
     },
     labels: {
       home: 'Home',

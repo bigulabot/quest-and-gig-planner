@@ -2122,7 +2122,7 @@ body.theme-fantasy .drag-placeholder {
 }
 
 .print-preview-window .sheet-subtitle font[size="2"] {
-  font-size: .92rem;
+  font-size: 1rem;
 }
 
 .print-preview-window .sheet-subtitle font[size="3"] {
