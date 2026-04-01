@@ -1220,6 +1220,7 @@ function setupSortableCard(card, container) {
 
   card.addEventListener('pointerdown', event => {
     if (event.button !== 0) return;
+    if (document.body.classList.contains('type-menu-open')) return;
     if (event.target.closest('button, input, textarea, select, a, label, .type-menu-popup, .rich-editor')) return;
     event.preventDefault();
     window.getSelection?.().removeAllRanges();
@@ -1374,6 +1375,7 @@ function addLocation(data = {}, options = {}) {
         if (otherMenu !== menu) otherMenu.hidden = true;
       });
       menu.hidden = !menu.hidden;
+      updateTypeMenuState();
     });
   });
   hydrateTypeOptionIcons(tpl);
@@ -1381,6 +1383,7 @@ function addLocation(data = {}, options = {}) {
     option.addEventListener('click', () => {
       setComplicationTag(tpl, 'sceneStyle', '.location-style-toggle', option.dataset.type, 'Scene style');
       option.closest('.type-menu-popup').hidden = true;
+      updateTypeMenuState();
       renderPreview();
     });
   });
@@ -1493,10 +1496,15 @@ function setComplicationTag(card, fieldName, buttonSelector, type, placeholder) 
 }
 
 function updateTypeMenuState() {
-  document.body.classList.toggle(
-    'type-menu-open',
-    Boolean(document.querySelector('.type-menu-popup:not([hidden])'))
-  );
+  const openMenus = [...document.querySelectorAll('.type-menu-popup:not([hidden])')];
+  const openCards = new Set(openMenus.map(menu => menu.closest('.item-card')).filter(Boolean));
+
+  document.querySelectorAll('.item-card.has-open-type-menu').forEach(card => {
+    if (!openCards.has(card)) card.classList.remove('has-open-type-menu');
+  });
+  openCards.forEach(card => card.classList.add('has-open-type-menu'));
+
+  document.body.classList.toggle('type-menu-open', openMenus.length > 0);
 }
 
 function addComplication(data = {}, options = {}) {

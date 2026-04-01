@@ -1089,6 +1089,7 @@ button.danger:hover {
   border-radius: 14px;
   background: #2b2f35;
   margin-bottom: 12px;
+  position: relative;
   transition: transform .16s ease, box-shadow .16s ease, border-color .16s ease;
 }
 
@@ -1130,6 +1131,14 @@ button.danger:hover {
 body.type-menu-open .drag-handle:hover {
   transform: none;
   filter: none;
+}
+
+body.type-menu-open .drag-handle {
+  cursor: default;
+}
+
+.item-card.has-open-type-menu {
+  z-index: 6;
 }
 
 .drag-handle:active {
