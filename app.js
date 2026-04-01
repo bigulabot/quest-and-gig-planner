@@ -1,6 +1,6 @@
 const ids = [
   'title', 'format', 'contactRole', 'job', 'pay', 'whyNow',
-  'benefits', 'pissed', 'escalates', 'newHook', 'gmNotes'
+  'benefits', 'pissed', 'escalates', 'newHook', 'gmNotes', 'fantasyNpcSystem'
 ];
 
 const plannerModes = {
@@ -78,7 +78,7 @@ const plannerModes = {
     },
     statBlock: {
       layout: 'cyberpunk',
-      toggle: 'Stat block',
+      toggle: 'Show stat block',
       hide: 'Hide stat block',
       role: 'Role',
       weapons: 'Weapons',
@@ -124,8 +124,9 @@ const plannerModes = {
       ],
     },
     formatOptions: [
-      'Assassination', 'Escort', 'Heist', 'Moral Quandary', 'Mystery',
-      'Puzzle', 'Sabotage', 'Sanctuary', 'Shop', 'Trap', 'Other',
+      'Assassination', 'Escort', 'Heist', 'Investigation', 'Moral Quandary',
+      'Mystery', 'Rescue', 'Sabotage', 'Sanctuary', 'Trade', 'Travel',
+      'Data Theft', 'Smuggling', 'Other',
     ],
   },
   fantasy: {
@@ -134,7 +135,7 @@ const plannerModes = {
     browserTitle: 'Fantasy RPG Side Quest Planner',
     themeClass: 'theme-fantasy',
     plannerTitle: 'Fantasy RPG SIDE QUEST<br /><span class="title-lockup">PLANNER</span>',
-    subtitle: 'A modular fantasy RPG adventure planner with expandable sections, structured NPC and encounter tools, optional printable stat blocks, save/load support, and clean export formatting, built to turn rough ideas into table-ready jobs fast.',
+    subtitle: 'A modular, system agnostic, fantasy RPG adventure planner with expandable sections, structured NPC and encounter tools, optional printable stat blocks, save/load support, and clean export formatting, built to turn rough ideas into table-ready jobs fast.',
     buttons: {
       newGig: 'New',
       saveGig: 'Save',
@@ -202,7 +203,7 @@ const plannerModes = {
     },
     statBlock: {
       layout: 'fantasy',
-      toggle: 'Stat block',
+      toggle: 'Show stat block',
       hide: 'Hide stat block',
       role: 'Role',
       creatureType: 'Creature Type / Alignment',
@@ -240,13 +241,87 @@ const plannerModes = {
       ],
     },
     formatOptions: [
-      'Escort', 'Heist', 'Investigation', 'Monster Hunt', 'Mystery',
-      'Rescue', 'Sabotage', 'Sanctuary', 'Trade', 'Travel', 'Other',
+      'Assassination', 'Escort', 'Heist', 'Investigation', 'Moral Quandary',
+      'Mystery', 'Rescue', 'Sabotage', 'Sanctuary', 'Trade', 'Travel',
+      'Monster Hunt', 'Relic Recovery', 'Other',
     ],
   },
 };
 
 const DEFAULT_MODE = 'cyberpunk';
+const DEFAULT_FANTASY_NPC_SYSTEM = 'generic';
+const fantasyStatBlockVariants = {
+  generic: {
+    layout: 'fantasy-generic',
+    toggle: 'Show stat block',
+    hide: 'Hide stat block',
+    role: 'Role',
+    creatureType: 'Type',
+    attacks: 'Attacks',
+    traits: 'Traits',
+    behaviour: 'Behaviour',
+    loot: 'Loot',
+    editorRows: [
+      ['statHitPoints', 'statDefense', 'statSpeed'],
+      ['statStr', 'statDex', 'statWill'],
+    ],
+    printRows: [
+      ['statHitPoints', 'statDefense', 'statSpeed'],
+      ['statStr', 'statDex', 'statWill'],
+    ],
+    fields: [
+      { key: 'statCreatureType', label: 'Type', placeholder: 'Medium humanoid, Disciplined' },
+      { key: 'statHitPoints', label: 'HP', placeholder: '11' },
+      { key: 'statDefense', label: 'DEF', placeholder: '16 (armour, shield)' },
+      { key: 'statSpeed', label: 'SPD', placeholder: 'normal' },
+      { key: 'statStr', label: 'STR', placeholder: '+1' },
+      { key: 'statDex', label: 'DEX', placeholder: '+1' },
+      { key: 'statWill', label: 'WIL', placeholder: '+0' },
+      { key: 'statAttacks', label: 'Attacks', placeholder: 'Spear +3 -> 1d6+1 (piercing, thrown 20/60)' },
+      { key: 'statTraits', label: 'Traits', placeholder: 'Alert: Advantage on initiative or cannot be surprised.' },
+      { key: 'statBehaviour', label: 'Behaviour', placeholder: 'Holds position unless outnumbered.\nRetreats if half HP or leader falls.' },
+      { key: 'statLoot', label: 'Loot', placeholder: 'Spear, 1d6 coins' },
+    ],
+  },
+  dnd5e: plannerModes.fantasy.statBlock,
+  nimble: {
+    layout: 'fantasy-nimble',
+    toggle: 'Show stat block',
+    hide: 'Hide stat block',
+    role: 'Role',
+    creatureType: 'Type / Tags',
+    traits: 'Abilities',
+    actions: 'Actions',
+    bloodied: 'Bloodied',
+    lastStand: 'Last Stand',
+    notes: 'Extra Effects',
+    editorRows: [
+      ['statLevel', 'statSize', 'statArmorClass', 'statHitPoints', 'statSpeed'],
+      ['statDamagePerRound', 'statAttackDice', 'statSaveDc', 'statChallenge'],
+    ],
+    printRows: [
+      ['statLevel', 'statSize', 'statArmorClass', 'statHitPoints', 'statSpeed'],
+      ['statDamagePerRound', 'statAttackDice', 'statSaveDc', 'statChallenge'],
+    ],
+    fields: [
+      { key: 'statCreatureType', label: 'Type / Tags', placeholder: 'Beast, burrower, solo' },
+      { key: 'statLevel', label: 'Level', placeholder: '2' },
+      { key: 'statSize', label: 'Size', placeholder: 'Medium' },
+      { key: 'statArmorClass', label: 'Armor', placeholder: '- / M / H' },
+      { key: 'statHitPoints', label: 'HP', placeholder: '34' },
+      { key: 'statSpeed', label: 'Speed', placeholder: '6' },
+      { key: 'statDamagePerRound', label: 'Damage / Round', placeholder: '13' },
+      { key: 'statAttackDice', label: 'Attack Dice', placeholder: '2d8+4' },
+      { key: 'statSaveDc', label: 'Save DC', placeholder: '11' },
+      { key: 'statChallenge', label: 'CR Equiv.', placeholder: '1' },
+      { key: 'statTraits', label: 'Abilities', placeholder: 'Tremor Sight. Advantage against creatures that moved since the worm\'s last turn.' },
+      { key: 'statActions', label: 'Actions', placeholder: 'Crush. Creatures in a 2x6 area take 50 damage on a failed DC 18 DEX save.' },
+      { key: 'statBloodied', label: 'Bloodied', placeholder: 'At 37 HP, its damage increases to 1d12+2.' },
+      { key: 'statLastStand', label: 'Last Stand', placeholder: 'When dying, it gets one final burst before collapsing.' },
+      { key: 'statNotes', label: 'Extra Effects', placeholder: 'Swallowed. You take 20 damage at the start of your turn.' },
+    ],
+  },
+};
 const tagMeta = {
   sceneStyle: {
     'battle-map': { icon: 'assets/icons/battlemap.webp', label: 'Battlemap' },
@@ -266,7 +341,13 @@ const tagMeta = {
     friendly: { icon: 'assets/icons/friendly.webp', label: 'Friendly' },
     neutral: { icon: 'assets/icons/neutral.webp', label: 'Neutral' },
     enemy: { icon: 'assets/icons/enemy.webp', label: 'Enemy' },
+    monster: { icon: 'assets/icons/monster.webp', label: 'Monster' },
     boss: { icon: 'assets/icons/boss.webp', label: 'Boss' },
+  },
+  fantasyNpcSystem: {
+    generic: { label: 'Generic Fantasy' },
+    dnd5e: { label: 'D&D 5e' },
+    nimble: { label: 'Nimble' },
   },
 };
 
@@ -365,6 +446,7 @@ const demoDataByMode = {
   },
   fantasy: {
     mode: 'fantasy',
+    fantasyNpcSystem: 'dnd5e',
     title: 'Ashes at the Moonfair',
     format: 'Mystery',
     corePitch: '<p>A burned stall, a missing courier, and a memory crystal that should not exist. The party is pulled into the aftermath before the fair elders can decide whether this was random violence or a deliberate strike.</p><p>Every witness holds only part of the truth, and dawn will bring outside interests who would rather bury the whole affair than let anyone learn what the courier was carrying. Smoke, ash, and hushed suspicion hang over the fair, and every whispered rumour feels one heartbeat away from panic.</p>',
@@ -463,19 +545,62 @@ let suppressAutosave = false;
 let pendingDrag = null;
 let activeDrag = null;
 let currentMode = DEFAULT_MODE;
+let confirmModalResolver = null;
 
 function byId(id) { return document.getElementById(id); }
+
+function closeConfirmModal(result = false) {
+  const modal = byId('confirmModal');
+  if (!modal) return;
+  modal.hidden = true;
+  modal.setAttribute('aria-hidden', 'true');
+  document.body.classList.remove('modal-open');
+  const resolver = confirmModalResolver;
+  confirmModalResolver = null;
+  resolver?.(result);
+}
+
+function openConfirmModal({ title, message, confirmLabel = 'Continue', cancelLabel = 'Cancel' }) {
+  const modal = byId('confirmModal');
+  const titleNode = byId('confirmModalTitle');
+  const messageNode = byId('confirmModalMessage');
+  const confirmButton = byId('confirmModalConfirm');
+  const cancelButton = byId('confirmModalCancel');
+  if (!modal || !titleNode || !messageNode || !confirmButton || !cancelButton) {
+    return Promise.resolve(window.confirm(message));
+  }
+
+  titleNode.textContent = title;
+  messageNode.textContent = message;
+  confirmButton.textContent = confirmLabel;
+  cancelButton.textContent = cancelLabel;
+  modal.hidden = false;
+  modal.setAttribute('aria-hidden', 'false');
+  document.body.classList.add('modal-open');
+
+  return new Promise(resolve => {
+    confirmModalResolver = resolve;
+    cancelButton.focus();
+  });
+}
 
 function getModeConfig(modeId) {
   return plannerModes[modeId] || plannerModes[DEFAULT_MODE];
 }
 
-function getStatBlockConfig(modeId = currentMode) {
-  return getModeConfig(modeId).statBlock;
+function getActiveFantasyNpcSystem(systemId = null) {
+  return systemId || byId('fantasyNpcSystem')?.value || DEFAULT_FANTASY_NPC_SYSTEM;
 }
 
-function getStatFieldDefs(modeId = currentMode) {
-  return getStatBlockConfig(modeId).fields || [];
+function getStatBlockConfig(modeId = currentMode, fantasySystemId = null) {
+  const mode = getModeConfig(modeId);
+  if (mode.id !== 'fantasy') return mode.statBlock;
+  const resolvedSystem = getActiveFantasyNpcSystem(fantasySystemId);
+  return fantasyStatBlockVariants[resolvedSystem] || fantasyStatBlockVariants[DEFAULT_FANTASY_NPC_SYSTEM] || mode.statBlock;
+}
+
+function getStatFieldDefs(modeId = currentMode, fantasySystemId = null) {
+  return getStatBlockConfig(modeId, fantasySystemId).fields || [];
 }
 
 function applyModePlaceholders(modeId = currentMode, scope = document) {
@@ -564,8 +689,21 @@ function applyStatBlockUi(modeId = currentMode, scope = document) {
   });
 }
 
-function getStatFieldMetaMap(modeId = currentMode) {
-  return Object.fromEntries(getStatFieldDefs(modeId).map(field => [field.key, field]));
+function applyFantasyNpcSystemUi(modeId = currentMode) {
+  const menu = byId('fantasyNpcSystemMenu');
+  const section = byId('npcs-section');
+  const field = byId('fantasyNpcSystem');
+  if (!menu || !section || !field) return;
+
+  const isFantasy = modeId === 'fantasy';
+  menu.hidden = !isFantasy;
+  if (!isFantasy) return;
+
+  setComplicationTag(section, 'fantasyNpcSystem', '.fantasy-npc-system-toggle', field.value || DEFAULT_FANTASY_NPC_SYSTEM, 'System');
+}
+
+function getStatFieldMetaMap(modeId = currentMode, fantasySystemId = null) {
+  return Object.fromEntries(getStatFieldDefs(modeId, fantasySystemId).map(field => [field.key, field]));
 }
 
 function getEditorRowClass(fields) {
@@ -610,9 +748,89 @@ function buildFantasyStatEditorMarkup(modeId = currentMode) {
   `;
 }
 
+function buildGenericFantasyStatEditorMarkup(modeId = currentMode) {
+  const statBlock = getStatBlockConfig(modeId, 'generic');
+  const fieldMap = getStatFieldMetaMap(modeId, 'generic');
+  const statRows = statBlock.editorRows.map((fields, index) => `
+    <div class="${getEditorRowClass(fields)}" style="margin-top:${index === 0 ? '14px' : '14px'};">
+      ${fields.map(key => {
+        const field = fieldMap[key];
+        return `<label class="compact-stat-field"><span>${escapeHtml(field.label)}</span><input data-field="${escapeHtml(key)}"${field.placeholder ? ` placeholder="${escapeHtml(field.placeholder)}"` : ''} /></label>`;
+      }).join('')}
+    </div>
+  `).join('');
+
+  return `
+    <div style="margin-top:14px;">
+      <label>${escapeHtml(fieldMap.statCreatureType.label)}</label>
+      <input data-field="statCreatureType"${fieldMap.statCreatureType.placeholder ? ` placeholder="${escapeHtml(fieldMap.statCreatureType.placeholder)}"` : ''} />
+    </div>
+    ${statRows}
+    <div style="margin-top:14px;">
+      <label>${escapeHtml(fieldMap.statAttacks.label)}</label>
+      <textarea data-field="statAttacks" data-autogrow="true"${fieldMap.statAttacks.placeholder ? ` placeholder="${escapeHtml(fieldMap.statAttacks.placeholder)}"` : ''}></textarea>
+    </div>
+    <div style="margin-top:14px;">
+      <label>${escapeHtml(fieldMap.statTraits.label)}</label>
+      <textarea data-field="statTraits" data-autogrow="true"${fieldMap.statTraits.placeholder ? ` placeholder="${escapeHtml(fieldMap.statTraits.placeholder)}"` : ''}></textarea>
+    </div>
+    <div style="margin-top:14px;">
+      <label>${escapeHtml(fieldMap.statBehaviour.label)}</label>
+      <textarea data-field="statBehaviour" data-autogrow="true"${fieldMap.statBehaviour.placeholder ? ` placeholder="${escapeHtml(fieldMap.statBehaviour.placeholder)}"` : ''}></textarea>
+    </div>
+    <div style="margin-top:14px;">
+      <label>${escapeHtml(fieldMap.statLoot.label)}</label>
+      <textarea data-field="statLoot" data-autogrow="true"${fieldMap.statLoot.placeholder ? ` placeholder="${escapeHtml(fieldMap.statLoot.placeholder)}"` : ''}></textarea>
+    </div>
+  `;
+}
+
+function buildNimbleStatEditorMarkup(modeId = currentMode) {
+  const statBlock = getStatBlockConfig(modeId, 'nimble');
+  const fieldMap = getStatFieldMetaMap(modeId, 'nimble');
+  const statRows = statBlock.editorRows.map((fields, index) => `
+    <div class="${getEditorRowClass(fields)}" style="margin-top:${index === 0 ? '14px' : '14px'};">
+      ${fields.map(key => {
+        const field = fieldMap[key];
+        return `<label class="compact-stat-field"><span>${escapeHtml(field.label)}</span><input data-field="${escapeHtml(key)}"${field.placeholder ? ` placeholder="${escapeHtml(field.placeholder)}"` : ''} /></label>`;
+      }).join('')}
+    </div>
+  `).join('');
+
+  return `
+    <div style="margin-top:14px;">
+      <label>${escapeHtml(fieldMap.statCreatureType.label)}</label>
+      <input data-field="statCreatureType"${fieldMap.statCreatureType.placeholder ? ` placeholder="${escapeHtml(fieldMap.statCreatureType.placeholder)}"` : ''} />
+    </div>
+    ${statRows}
+    <div style="margin-top:14px;">
+      <label>${escapeHtml(fieldMap.statTraits.label)}</label>
+      <textarea data-field="statTraits" data-autogrow="true"${fieldMap.statTraits.placeholder ? ` placeholder="${escapeHtml(fieldMap.statTraits.placeholder)}"` : ''}></textarea>
+    </div>
+    <div style="margin-top:14px;">
+      <label>${escapeHtml(fieldMap.statActions.label)}</label>
+      <textarea data-field="statActions" data-autogrow="true"${fieldMap.statActions.placeholder ? ` placeholder="${escapeHtml(fieldMap.statActions.placeholder)}"` : ''}></textarea>
+    </div>
+    <div style="margin-top:14px;">
+      <label>${escapeHtml(fieldMap.statBloodied.label)}</label>
+      <textarea data-field="statBloodied" data-autogrow="true"${fieldMap.statBloodied.placeholder ? ` placeholder="${escapeHtml(fieldMap.statBloodied.placeholder)}"` : ''}></textarea>
+    </div>
+    <div style="margin-top:14px;">
+      <label>${escapeHtml(fieldMap.statLastStand.label)}</label>
+      <textarea data-field="statLastStand" data-autogrow="true"${fieldMap.statLastStand.placeholder ? ` placeholder="${escapeHtml(fieldMap.statLastStand.placeholder)}"` : ''}></textarea>
+    </div>
+    <div style="margin-top:14px;">
+      <label>${escapeHtml(fieldMap.statNotes.label)}</label>
+      <textarea data-field="statNotes" data-autogrow="true"${fieldMap.statNotes.placeholder ? ` placeholder="${escapeHtml(fieldMap.statNotes.placeholder)}"` : ''}></textarea>
+    </div>
+  `;
+}
+
 function buildStatEditorMarkup(modeId = currentMode) {
   const statBlock = getStatBlockConfig(modeId);
+  if (statBlock.layout === 'fantasy-generic') return buildGenericFantasyStatEditorMarkup(modeId);
   if (statBlock.layout === 'fantasy') return buildFantasyStatEditorMarkup(modeId);
+  if (statBlock.layout === 'fantasy-nimble') return buildNimbleStatEditorMarkup(modeId);
   const fieldMap = getStatFieldMetaMap(modeId);
   const statRows = statBlock.editorRows.map((fields, index) => `
     <div class="${getEditorRowClass(fields)}" style="margin-top:${index === 0 ? '14px' : '14px'};">
@@ -690,6 +908,7 @@ function rerenderNpcStatBlockEditors() {
     button.classList.toggle('is-open', isOpen);
   });
   applyStatBlockUi(currentMode);
+  applyNpcTypeOptionVisibility(document, currentMode);
 }
 
 function applyMode(modeId, options = {}) {
@@ -752,6 +971,8 @@ function applyMode(modeId, options = {}) {
   applyModePlaceholders(mode.id);
   rerenderNpcStatBlockEditors();
   applyStatBlockUi(mode.id);
+  applyFantasyNpcSystemUi(mode.id);
+  applyNpcTypeOptionVisibility(document, mode.id);
 
   document.querySelectorAll('.mode-tab').forEach(button => {
     const isActive = button.dataset.mode === mode.id;
@@ -1195,6 +1416,12 @@ function getNpcTypeMeta(type) {
   return tagMeta.npcType[type] || null;
 }
 
+function getFantasyNpcSystemMeta(system, modeId = currentMode) {
+  if (modeId !== 'fantasy') return null;
+  const resolvedSystem = system || DEFAULT_FANTASY_NPC_SYSTEM;
+  return tagMeta.fantasyNpcSystem[resolvedSystem] || tagMeta.fantasyNpcSystem[DEFAULT_FANTASY_NPC_SYSTEM] || null;
+}
+
 function getTagMeta(fieldName, type) {
   return fieldName === 'dangerLevel'
     ? getDangerLevelMeta(type)
@@ -1202,6 +1429,8 @@ function getTagMeta(fieldName, type) {
       ? getSceneStyleMeta(type)
     : fieldName === 'npcType'
       ? getNpcTypeMeta(type)
+      : fieldName === 'fantasyNpcSystem'
+        ? getFantasyNpcSystemMeta(type)
       : getComplicationTypeMeta(type);
 }
 
@@ -1223,19 +1452,44 @@ function hydrateTypeOptionIcons(scope) {
   });
 }
 
+function applyNpcTypeOptionVisibility(scope, modeId = currentMode) {
+  scope.querySelectorAll('.npc-type-fantasy-only').forEach(option => {
+    option.hidden = modeId !== 'fantasy';
+  });
+}
+
 function npcHasStatBlockData(npc, modeId = currentMode) {
   return getStatFieldDefs(modeId).some(field => hasMeaningfulValue(npc[field.key]));
+}
+
+function getCardData(card, options = {}) {
+  const { respectAdvancedToggle = true } = options;
+  const obj = {};
+  card.querySelectorAll('[data-field]').forEach(field => {
+    const advancedWrap = field.closest('.npc-advanced');
+    const statWrap = field.closest('.npc-statblock-details');
+    if (statWrap) {
+      obj[field.dataset.field] = field.value.trim();
+    } else if (advancedWrap) {
+      const toggle = card.querySelector('[data-toggle="advanced"]');
+      obj[field.dataset.field] = respectAdvancedToggle && toggle && !toggle.checked ? '' : field.value.trim();
+    } else {
+      obj[field.dataset.field] = field.value.trim();
+    }
+  });
+  return obj;
 }
 
 function setComplicationTag(card, fieldName, buttonSelector, type, placeholder) {
   const hidden = card.querySelector(`[data-field="${fieldName}"]`);
   const button = card.querySelector(buttonSelector);
   const meta = getTagMeta(fieldName, type);
+  const label = meta?.label || placeholder;
 
   hidden.value = meta ? type : '';
   button.classList.toggle('is-placeholder', !meta);
-  button.innerHTML = meta?.icon ? renderIconImage(meta.icon, meta.label) : escapeHtml(placeholder);
-  button.title = meta ? meta.label : placeholder;
+  button.innerHTML = meta?.icon ? renderIconImage(meta.icon, meta.label) : escapeHtml(label);
+  button.title = label;
 }
 
 function updateTypeMenuState() {
@@ -1307,7 +1561,7 @@ function addComplication(data = {}, options = {}) {
 }
 
 function addNpc(data = {}, options = {}) {
-  const { prepend = true } = options;
+  const { prepend = true, afterCard = null, openAdvanced = null, openStatBlock = null } = options;
   const container = byId('npcs');
   const tpl = byId('npcTemplate').content.firstElementChild.cloneNode(true);
   tpl.querySelectorAll('[data-field]').forEach(input => {
@@ -1337,9 +1591,10 @@ function addNpc(data = {}, options = {}) {
     (data.incongruency && data.incongruency.trim()) ||
     hasStatBlock
   );
-  toggle.checked = hasAdvanced;
-  advanced.style.display = hasAdvanced ? 'block' : 'none';
-  if (hasAdvanced) {
+  const advancedOpen = openAdvanced ?? hasAdvanced;
+  toggle.checked = advancedOpen;
+  advanced.style.display = advancedOpen ? 'block' : 'none';
+  if (advancedOpen) {
     advanced.querySelectorAll('textarea[data-autogrow="true"]').forEach(autosizeTextarea);
   }
   toggle.addEventListener('change', () => {
@@ -1374,6 +1629,15 @@ function addNpc(data = {}, options = {}) {
     }
     renderPreview();
   });
+  tpl.querySelector('.duplicate-npc-btn')?.addEventListener('click', () => {
+    const duplicateData = getCardData(tpl, { respectAdvancedToggle: false });
+    addNpc(duplicateData, {
+      prepend: false,
+      afterCard: tpl,
+      openAdvanced: toggle.checked,
+      openStatBlock: statDetails.style.display !== 'none',
+    });
+  });
 
   tpl.querySelector('.remove-btn').addEventListener('click', () => {
     tpl.remove();
@@ -1392,6 +1656,7 @@ function addNpc(data = {}, options = {}) {
     });
   });
   hydrateTypeOptionIcons(tpl);
+  applyNpcTypeOptionVisibility(tpl, currentMode);
   tpl.querySelectorAll('.type-option').forEach(option => {
     option.addEventListener('click', () => {
       setComplicationTag(tpl, 'npcType', '.npc-type-toggle', option.dataset.type, 'NPC type');
@@ -1401,12 +1666,19 @@ function addNpc(data = {}, options = {}) {
     });
   });
   setComplicationTag(tpl, 'npcType', '.npc-type-toggle', data.npcType || '', 'NPC type');
-  if (prepend) {
+  if (afterCard && afterCard.parentNode === container) {
+    afterCard.insertAdjacentElement('afterend', tpl);
+  } else if (prepend) {
     container.prepend(tpl);
   } else {
     container.appendChild(tpl);
   }
   applyStatBlockUi(currentMode, tpl);
+  if (openStatBlock) {
+    statDetails.style.display = 'block';
+    statToggleButton.classList.add('is-open');
+    statToggleButton.textContent = statBlock.hide;
+  }
   autosizeCardFields(tpl);
   animateCardEntry(tpl);
   refreshCardSummary(tpl);
@@ -1450,6 +1722,11 @@ function hasCurrentModeStatBlockData() {
   return gatherData().npcs.some(npc => npcHasStatBlockData(npc, currentMode));
 }
 
+function hasFantasyNpcStatBlockData() {
+  if (currentMode !== 'fantasy') return false;
+  return gatherData().npcs.some(npc => npcHasStatBlockData(npc, 'fantasy'));
+}
+
 function clearCurrentModeStatBlockData() {
   const statKeys = new Set(getStatFieldDefs(currentMode).map(field => field.key));
   const statBlock = getStatBlockConfig(currentMode);
@@ -1473,10 +1750,24 @@ function clearCurrentModeStatBlockData() {
   });
 }
 
-function requestModeSwitch(modeId) {
+function clearFantasyNpcStatBlockData() {
+  const previousMode = currentMode;
+  currentMode = 'fantasy';
+  try {
+    clearCurrentModeStatBlockData();
+  } finally {
+    currentMode = previousMode;
+  }
+}
+
+async function requestModeSwitch(modeId) {
   if (modeId === currentMode) return;
   if (hasCurrentModeStatBlockData()) {
-    const confirmed = window.confirm('Switching modes will delete all existing NPC stat block data in this planner. Continue?');
+    const confirmed = await openConfirmModal({
+      title: 'Switch planner mode?',
+      message: 'Switching modes will delete all existing NPC stat block data in this planner.',
+      confirmLabel: 'Switch mode',
+    });
     if (!confirmed) return;
     clearCurrentModeStatBlockData();
   }
@@ -1598,10 +1889,126 @@ function buildFantasyStatSection(label, value) {
   `;
 }
 
-function buildFantasyNpcStatPages(npcs, mode) {
+function splitFirstParagraph(value) {
+  if (!hasMeaningfulValue(value)) return { first: '', rest: '' };
+  const normalized = String(value).trim();
+  const parts = normalized.split(/\n+/).map(part => part.trim()).filter(Boolean);
+  return {
+    first: parts[0] || '',
+    rest: parts.slice(1).join('\n'),
+  };
+}
+
+function formatInlineSection(value) {
+  if (!hasMeaningfulValue(value)) return '';
+  return escapeHtml(value).replace(/\n/g, '<br />');
+}
+
+function buildNimbleNpcStatPages(npcs, mode, fantasyNpcSystem = DEFAULT_FANTASY_NPC_SYSTEM) {
   const statNpcs = npcs.filter(npc => npcHasStatBlockData(npc, mode.id));
   if (!statNpcs.length) return '';
-  const fieldMap = getStatFieldMetaMap(mode.id);
+  const fieldMap = getStatFieldMetaMap(mode.id, fantasyNpcSystem);
+  const pages = [];
+  for (let index = 0; index < statNpcs.length; index += 6) {
+    pages.push(statNpcs.slice(index, index + 6));
+  }
+
+  return pages.map(pageNpcs => `
+    <article class="print-sheet stat-card-page fantasy-stat-page">
+      <div class="stat-card-stack fantasy-stat-stack fantasy-stat-stack-nimble">
+        ${pageNpcs.map(npc => {
+          const feature = splitFirstParagraph(npc.statTraits);
+          return `
+          <div class="fantasy-stat-card fantasy-stat-card-nimble nimble-stat-card">
+            <div class="fantasy-stat-header">
+              <div class="nimble-stat-topline">
+              <div class="nimble-stat-meta-left">${[
+                hasMeaningfulValue(npc.statLevel) ? `Level ${escapeHtml(npc.statLevel)}` : '',
+                hasMeaningfulValue(npc.statCreatureType) ? escapeHtml(npc.statCreatureType) : '',
+                hasMeaningfulValue(npc.statSize) ? escapeHtml(npc.statSize) : '',
+              ].filter(Boolean).join(' ') || '&nbsp;'}</div>
+              <div class="nimble-stat-meta-right">
+                  ${hasMeaningfulValue(npc.statArmorClass) ? `<span>${escapeHtml(npc.statArmorClass)}</span>` : ''}
+                  ${hasMeaningfulValue(npc.statHitPoints) ? `<span class="nimble-stat-meta-item nimble-stat-meta-item-heart"><span class="nimble-stat-meta-icon" aria-hidden="true"></span>${escapeHtml(npc.statHitPoints)}</span>` : ''}
+                  ${hasMeaningfulValue(npc.statSpeed) ? `<span class="nimble-stat-meta-item nimble-stat-meta-item-speed"><span class="nimble-stat-meta-icon" aria-hidden="true"></span>${escapeHtml(npc.statSpeed)}</span>` : ''}
+                </div>
+              </div>
+              <div class="fantasy-stat-title nimble-stat-title">${escapeHtml(npc.name || mode.emptyStates.fallbackNpcTitle)}</div>
+              ${npc.role ? `<div class="fantasy-stat-role">${escapeHtml(npc.role)}</div>` : ''}
+            </div>
+            ${feature.first ? `<div class="nimble-stat-banner">${formatInlineSection(feature.first)}</div>` : ''}
+            <div class="nimble-stat-rule"></div>
+            <div class="nimble-stat-block">
+              <div class="nimble-stat-actions">
+                <strong>${escapeHtml(fieldMap.statActions.label)}:</strong> ${formatInlineSection(npc.statActions) || '&nbsp;'}
+              </div>
+            </div>
+            <div class="nimble-stat-rule"></div>
+            <div class="nimble-stat-footer">
+              ${hasMeaningfulValue(npc.statBloodied) ? `<div class="nimble-stat-footer-line"><strong>${escapeHtml(fieldMap.statBloodied.label)}:</strong> ${formatInlineSection(npc.statBloodied)}</div>` : ''}
+              ${hasMeaningfulValue(npc.statLastStand) ? `<div class="nimble-stat-footer-line"><strong>${escapeHtml(fieldMap.statLastStand.label)}:</strong> ${formatInlineSection(npc.statLastStand)}</div>` : ''}
+              ${hasMeaningfulValue(npc.statNotes) ? `<div class="nimble-stat-footer-line"><strong>${escapeHtml(fieldMap.statNotes.label)}:</strong> ${formatInlineSection(npc.statNotes)}</div>` : ''}
+              ${feature.rest ? `<div class="nimble-stat-footer-line"><strong>${escapeHtml(fieldMap.statTraits.label)}:</strong> ${formatInlineSection(feature.rest)}</div>` : ''}
+              <div class="nimble-stat-builder">
+                ${[
+                  hasMeaningfulValue(npc.statDamagePerRound) ? `${escapeHtml(fieldMap.statDamagePerRound.label)} ${escapeHtml(npc.statDamagePerRound)}` : '',
+                  hasMeaningfulValue(npc.statAttackDice) ? `${escapeHtml(fieldMap.statAttackDice.label)} ${escapeHtml(npc.statAttackDice)}` : '',
+                  hasMeaningfulValue(npc.statSaveDc) ? `${escapeHtml(fieldMap.statSaveDc.label)} ${escapeHtml(npc.statSaveDc)}` : '',
+                  hasMeaningfulValue(npc.statChallenge) ? `${escapeHtml(fieldMap.statChallenge.label)} ${escapeHtml(npc.statChallenge)}` : '',
+                ].filter(Boolean).join(' • ')}
+              </div>
+            </div>
+          </div>
+        `;}).join('')}
+      </div>
+    </article>
+  `).join('');
+}
+
+function buildGenericFantasyNpcStatPages(npcs, mode, fantasyNpcSystem = DEFAULT_FANTASY_NPC_SYSTEM) {
+  const statNpcs = npcs.filter(npc => npcHasStatBlockData(npc, mode.id));
+  if (!statNpcs.length) return '';
+  const fieldMap = getStatFieldMetaMap(mode.id, fantasyNpcSystem);
+  const pages = [];
+  for (let index = 0; index < statNpcs.length; index += 4) {
+    pages.push(statNpcs.slice(index, index + 4));
+  }
+
+  return pages.map(pageNpcs => `
+    <article class="print-sheet stat-card-page fantasy-stat-page">
+      <div class="stat-card-stack fantasy-stat-stack">
+        ${pageNpcs.map(npc => `
+          <div class="fantasy-stat-card generic-stat-card">
+            <div class="fantasy-stat-header">
+              <div class="fantasy-stat-title">${escapeHtml(npc.name || mode.emptyStates.fallbackNpcTitle)}</div>
+              ${npc.role ? `<div class="fantasy-stat-role">${escapeHtml(npc.role)}</div>` : ''}
+              <div class="fantasy-stat-type">${hasMeaningfulValue(npc.statCreatureType) ? escapeHtml(npc.statCreatureType) : '&nbsp;'}</div>
+            </div>
+            <div class="fantasy-stat-divider"></div>
+            <div class="fantasy-stat-summary fantasy-stat-summary-generic">
+              ${buildFantasyStatLine(fieldMap.statHitPoints.label, npc.statHitPoints)}
+              ${buildFantasyStatLine(fieldMap.statDefense.label, npc.statDefense)}
+              ${buildFantasyStatLine(fieldMap.statSpeed.label, npc.statSpeed)}
+              ${buildFantasyStatLine(fieldMap.statStr.label, npc.statStr)}
+              ${buildFantasyStatLine(fieldMap.statDex.label, npc.statDex)}
+              ${buildFantasyStatLine(fieldMap.statWill.label, npc.statWill)}
+            </div>
+            ${buildFantasyStatSection(fieldMap.statAttacks.label, npc.statAttacks)}
+            ${buildFantasyStatSection(fieldMap.statTraits.label, npc.statTraits)}
+            ${buildFantasyStatSection(fieldMap.statBehaviour.label, npc.statBehaviour)}
+            ${buildFantasyStatSection(fieldMap.statLoot.label, npc.statLoot)}
+          </div>
+        `).join('')}
+      </div>
+    </article>
+  `).join('');
+}
+
+function buildFantasyNpcStatPages(npcs, mode, fantasyNpcSystem = DEFAULT_FANTASY_NPC_SYSTEM) {
+  const statNpcs = npcs.filter(npc => npcHasStatBlockData(npc, mode.id));
+  if (!statNpcs.length) return '';
+  const fieldMap = getStatFieldMetaMap(mode.id, fantasyNpcSystem);
+  const systemLabel = getFantasyNpcSystemMeta(fantasyNpcSystem, mode.id)?.label || 'Generic Fantasy';
   const pages = [];
   for (let index = 0; index < statNpcs.length; index += 4) {
     pages.push(statNpcs.slice(index, index + 4));
@@ -1615,6 +2022,7 @@ function buildFantasyNpcStatPages(npcs, mode) {
             <div class="fantasy-stat-header">
               <div class="fantasy-stat-title">${escapeHtml(npc.name || mode.emptyStates.fallbackNpcTitle)}</div>
               ${npc.role ? `<div class="fantasy-stat-role">${escapeHtml(npc.role)}</div>` : ''}
+              <div class="fantasy-stat-system">${escapeHtml(systemLabel)}</div>
               <div class="fantasy-stat-type">${hasMeaningfulValue(npc.statCreatureType) ? escapeHtml(npc.statCreatureType) : '&nbsp;'}</div>
             </div>
             <div class="fantasy-stat-divider"></div>
@@ -1642,9 +2050,15 @@ function buildFantasyNpcStatPages(npcs, mode) {
   `).join('');
 }
 
-function buildNpcStatPages(npcs, mode) {
-  if (mode.statBlock.layout === 'fantasy') {
-    return buildFantasyNpcStatPages(npcs, mode);
+function buildNpcStatPages(npcs, mode, data = {}) {
+  if (mode.id === 'fantasy') {
+    if (data.fantasyNpcSystem === 'generic') {
+      return buildGenericFantasyNpcStatPages(npcs, mode, data.fantasyNpcSystem);
+    }
+    if (data.fantasyNpcSystem === 'nimble') {
+      return buildNimbleNpcStatPages(npcs, mode, data.fantasyNpcSystem);
+    }
+    return buildFantasyNpcStatPages(npcs, mode, data.fantasyNpcSystem);
   }
   const statNpcs = npcs.filter(npc => npcHasStatBlockData(npc));
   if (!statNpcs.length) return '';
@@ -1772,7 +2186,7 @@ function buildPrintMarkup(data) {
     printField(labels.newHook, data.newHook),
   ].filter(Boolean).join('');
 
-  const statPages = buildNpcStatPages(data.npcs, mode);
+  const statPages = buildNpcStatPages(data.npcs, mode, data);
 
   return `<!DOCTYPE html>
 <html lang="en">
@@ -1875,6 +2289,7 @@ function populateForm(data = {}) {
       const el = byId(id);
       if (el) el.value = typeof data[id] === 'string' ? data[id] : '';
     });
+    applyFantasyNpcSystemUi(data.mode || currentMode);
 
     byId('corePitch').innerHTML = sanitizeRichText(data.corePitch || '');
     byId('locations').innerHTML = '';
@@ -1972,7 +2387,9 @@ ids.forEach(id => {
   if (el) el.addEventListener('input', renderPreview);
 });
 document.querySelectorAll('.mode-tab').forEach(button => {
-  button.addEventListener('click', () => requestModeSwitch(button.dataset.mode));
+  button.addEventListener('click', async () => {
+    await requestModeSwitch(button.dataset.mode);
+  });
 });
 byId('corePitch').addEventListener('input', () => {
   normalizeCorePitch();
@@ -2008,6 +2425,44 @@ byId('corePitchSize').addEventListener('change', event => {
 byId('addLocationBtn').addEventListener('click', () => addLocation());
 byId('addComplicationBtn').addEventListener('click', () => addComplication());
 byId('addNpcBtn').addEventListener('click', () => addNpc());
+byId('fantasyNpcSystemMenu')?.querySelector('.fantasy-npc-system-toggle')?.addEventListener('click', event => {
+  event.stopPropagation();
+  const menu = byId('fantasyNpcSystemMenu')?.querySelector('.type-menu-popup');
+  if (!menu) return;
+  document.querySelectorAll('.type-menu-popup').forEach(otherMenu => {
+    if (otherMenu !== menu) otherMenu.hidden = true;
+  });
+  menu.hidden = !menu.hidden;
+  updateTypeMenuState();
+});
+byId('fantasyNpcSystemMenu')?.querySelectorAll('.type-option')?.forEach(option => {
+  option.addEventListener('click', async () => {
+    const field = byId('fantasyNpcSystem');
+    if (!field) return;
+    const nextSystem = option.dataset.type || DEFAULT_FANTASY_NPC_SYSTEM;
+    const currentSystem = field.value || DEFAULT_FANTASY_NPC_SYSTEM;
+    if (nextSystem !== currentSystem && hasFantasyNpcStatBlockData()) {
+      const confirmed = await openConfirmModal({
+        title: 'Switch NPC system?',
+        message: 'This planner does not convert NPC stat blocks between fantasy systems. Switching systems will erase all current fantasy NPC stat block data.',
+        confirmLabel: 'Switch system',
+      });
+      if (!confirmed) {
+        option.closest('.type-menu-popup').hidden = true;
+        updateTypeMenuState();
+        return;
+      }
+      clearFantasyNpcStatBlockData();
+    }
+
+    field.value = nextSystem;
+    setComplicationTag(byId('npcs-section'), 'fantasyNpcSystem', '.fantasy-npc-system-toggle', field.value, 'System');
+    rerenderNpcStatBlockEditors();
+    option.closest('.type-menu-popup').hidden = true;
+    updateTypeMenuState();
+    renderPreview();
+  });
+});
 byId('newQuestBtn').addEventListener('click', clearForm);
 byId('loadDemoBtn').addEventListener('click', loadDemo);
 byId('importJsonBtn').addEventListener('click', () => byId('importJsonInput').click());
@@ -2017,6 +2472,11 @@ byId('printBtnBottom').addEventListener('click', printSheet);
 byId('importJsonInput').addEventListener('change', event => {
   importJsonFile(event.target.files?.[0]);
   event.target.value = '';
+});
+byId('confirmModalCancel')?.addEventListener('click', () => closeConfirmModal(false));
+byId('confirmModalConfirm')?.addEventListener('click', () => closeConfirmModal(true));
+byId('confirmModal')?.addEventListener('click', event => {
+  if (event.target === byId('confirmModal')) closeConfirmModal(false);
 });
 setupSectionCollapseShortcut('locations-section', '.location-card');
 setupSectionCollapseShortcut('complications-section', '.complication-card');
@@ -2029,6 +2489,11 @@ window.addEventListener('pointercancel', onGlobalPointerUp);
 window.addEventListener('blur', () => {
   if (activeDrag) finishCustomDrag(false);
   pendingDrag = null;
+});
+window.addEventListener('keydown', event => {
+  if (event.key === 'Escape' && confirmModalResolver) {
+    closeConfirmModal(false);
+  }
 });
 
 const autosavedData = loadAutosaveData();

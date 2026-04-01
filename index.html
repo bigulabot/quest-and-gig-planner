@@ -137,7 +137,24 @@
               <h3 id="npcsSectionTitle">Non-playable Characters</h3>
               <div class="section-hint">Double-click a card to collapse/expand, or double-click the section heading to toggle all.<br />Click and drag a card to reorder it.</div>
             </div>
-            <div class="actions"><button id="addNpcBtn">+ Add NPC</button></div>
+            <div class="actions">
+              <div class="type-menu" id="fantasyNpcSystemMenu" hidden>
+                <input type="hidden" id="fantasyNpcSystem" data-field="fantasyNpcSystem" value="generic" />
+                <button class="pill type-menu-toggle fantasy-npc-system-toggle" type="button">System</button>
+                <div class="type-menu-popup" hidden>
+                  <button type="button" class="type-option" data-field-name="fantasyNpcSystem" data-type="generic">
+                    <span class="type-option-copy"><strong>Generic Fantasy</strong></span>
+                  </button>
+                  <button type="button" class="type-option" data-field-name="fantasyNpcSystem" data-type="dnd5e">
+                    <span class="type-option-copy"><strong>D&amp;D 5e</strong></span>
+                  </button>
+                  <button type="button" class="type-option" data-field-name="fantasyNpcSystem" data-type="nimble">
+                    <span class="type-option-copy"><strong><em>Nimble</em></strong></span>
+                  </button>
+                </div>
+              </div>
+              <button id="addNpcBtn">+ Add NPC</button>
+            </div>
           </div>
           <div id="npcs"></div>
         </div>
@@ -180,6 +197,18 @@
   </div>
 
   <input id="importJsonInput" type="file" accept="application/json,.json" hidden />
+
+  <div class="modal-overlay" id="confirmModal" hidden aria-hidden="true">
+    <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="confirmModalTitle" aria-describedby="confirmModalMessage">
+      <div class="modal-eyebrow">Warning</div>
+      <h2 id="confirmModalTitle">Confirm action</h2>
+      <p id="confirmModalMessage">This action cannot be undone.</p>
+      <div class="modal-actions">
+        <button type="button" id="confirmModalCancel">Cancel</button>
+        <button type="button" class="primary" id="confirmModalConfirm">Continue</button>
+      </div>
+    </div>
+  </div>
 
   <template id="locationTemplate">
     <div class="item-card location-card">
@@ -313,6 +342,10 @@
                 <span class="type-option-symbol">!</span>
                 <span class="type-option-copy">Enemy</span>
               </button>
+              <button type="button" class="type-option npc-type-fantasy-only" data-field-name="npcType" data-type="monster" data-symbol="M" hidden>
+                <span class="type-option-symbol">M</span>
+                <span class="type-option-copy">Monster</span>
+              </button>
               <button type="button" class="type-option" data-field-name="npcType" data-type="boss" data-symbol="★">
                 <span class="type-option-symbol">★</span>
                 <span class="type-option-copy">Boss</span>
@@ -360,8 +393,9 @@
               <label>🙃 Incongruency / contradiction</label>
               <textarea data-field="incongruency" data-autogrow="true" placeholder="Details that don't fit in with stereotypical tropes, e.g. bandits that are deeply religious, or a ruthless mercenary who refuses to kill animals."></textarea>
             </div>
-            <div style="margin-top:14px;">
-              <button class="pill statblock-toggle" type="button">Stat block</button>
+            <div class="npc-card-actions-row" style="margin-top:14px;">
+              <button class="pill statblock-toggle" type="button">Show stat block</button>
+              <button class="pill duplicate-npc-btn" type="button">Duplicate NPC</button>
               <div class="npc-statblock-details" style="display:none;"></div>
             </div>
             </div>
