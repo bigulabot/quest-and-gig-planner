@@ -546,8 +546,52 @@ let pendingDrag = null;
 let activeDrag = null;
 let currentMode = DEFAULT_MODE;
 let confirmModalResolver = null;
+const PROJECT_CONTACT_EMAIL = 'bigulabot@gmail.com';
+const PROJECT_ISSUES_URL = 'https://github.com/bigulabot/quest-and-gig-planner/issues';
 
 function byId(id) { return document.getElementById(id); }
+
+async function sharePlannerPage() {
+  const shareData = {
+    title: document.title,
+    text: 'Cyberpunk RED GIG PLANNER',
+    url: window.location.href,
+  };
+
+  try {
+    if (navigator.share) {
+      await navigator.share(shareData);
+      return;
+    }
+  } catch (error) {
+    if (error?.name === 'AbortError') return;
+  }
+
+  try {
+    if (navigator.clipboard?.writeText) {
+      await navigator.clipboard.writeText(window.location.href);
+      window.alert('Page link copied to clipboard.');
+      return;
+    }
+  } catch (error) {
+    // Fall through to the manual copy message below.
+  }
+
+  window.prompt('Copy this page link:', window.location.href);
+}
+
+function openContactEmail() {
+  const topic = byId('contactTopic')?.value || 'Comments';
+  if (!PROJECT_CONTACT_EMAIL) {
+    window.alert('Email contact is not configured yet. Please use the issue tracker for now.');
+    window.open(PROJECT_ISSUES_URL, '_blank', 'noopener');
+    return;
+  }
+
+  const subject = encodeURIComponent(`[Gig Planner] ${topic}`);
+  const body = encodeURIComponent(`Hi,\n\nTopic: ${topic}\n\n`);
+  window.location.href = `mailto:${PROJECT_CONTACT_EMAIL}?subject=${subject}&body=${body}`;
+}
 
 function closeConfirmModal(result = false) {
   const modal = byId('confirmModal');
@@ -2477,6 +2521,10 @@ byId('importJsonBtn').addEventListener('click', () => byId('importJsonInput').cl
 byId('exportJsonBtn').addEventListener('click', exportJson);
 byId('printBtn').addEventListener('click', printSheet);
 byId('printBtnBottom').addEventListener('click', printSheet);
+byId('sharePageBtn')?.addEventListener('click', () => {
+  sharePlannerPage();
+});
+byId('contactEmailBtn')?.addEventListener('click', openContactEmail);
 byId('importJsonInput').addEventListener('change', event => {
   importJsonFile(event.target.files?.[0]);
   event.target.value = '';
