@@ -2071,9 +2071,9 @@ body.theme-fantasy .drag-placeholder {
 .print-preview-window .print-sheet {
   box-shadow: none;
   margin: 0 auto;
-  max-width: 210mm;
-  width: min(210mm, calc(100vw - 24px));
-  padding: 3mm 2mm 3mm;
+  max-width: 262mm;
+  width: min(262mm, calc(100vw - 48px));
+  padding: 3mm 7mm 3mm;
   font-size: 11px;
   box-sizing: border-box;
   border: 0;
