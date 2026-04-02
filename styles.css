@@ -2327,8 +2327,8 @@ body.theme-fantasy .drag-placeholder {
 }
 
 .theme-fantasy .setup-intro {
-  background: #fbf8e8;
-  border: 1px solid #c9d1af;
+  background: #fff;
+  border: 1px solid #e5e5e5;
   border-radius: 8px;
 }
 
@@ -2342,7 +2342,7 @@ body.theme-fantasy .drag-placeholder {
 .theme-fantasy .sheet-section {
   border-color: #c9d1af;
   border-left-color: #5f7444;
-  background: #eef0db;
+  background: #f0f0f0;
 }
 
 .theme-fantasy .sheet-section h4,

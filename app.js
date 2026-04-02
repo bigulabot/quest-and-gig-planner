@@ -2060,7 +2060,6 @@ function buildFantasyNpcStatPages(npcs, mode, fantasyNpcSystem = DEFAULT_FANTASY
   const statNpcs = npcs.filter(npc => npcHasStatBlockData(npc, mode.id));
   if (!statNpcs.length) return '';
   const fieldMap = getStatFieldMetaMap(mode.id, fantasyNpcSystem);
-  const systemLabel = getFantasyNpcSystemMeta(fantasyNpcSystem, mode.id)?.label || 'Generic Fantasy';
   const pages = [];
   for (let index = 0; index < statNpcs.length; index += 4) {
     pages.push(statNpcs.slice(index, index + 4));
@@ -2074,7 +2073,6 @@ function buildFantasyNpcStatPages(npcs, mode, fantasyNpcSystem = DEFAULT_FANTASY
             <div class="fantasy-stat-header">
               <div class="fantasy-stat-title">${escapeHtml(npc.name || mode.emptyStates.fallbackNpcTitle)}</div>
               ${npc.role ? `<div class="fantasy-stat-role">${escapeHtml(npc.role)}</div>` : ''}
-              <div class="fantasy-stat-system">${escapeHtml(systemLabel)}</div>
               <div class="fantasy-stat-type">${hasMeaningfulValue(npc.statCreatureType) ? escapeHtml(npc.statCreatureType) : '&nbsp;'}</div>
             </div>
             <div class="fantasy-stat-divider"></div>
